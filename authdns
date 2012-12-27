@@ -54,9 +54,9 @@ get_nameserver_ips() {
 }
 
 print_results() {
-	echo -e $greenbold"\ndig NS ${tld}. +short | head -n1"$clroff
+	echo -e $greenbold"\n# dig NS ${tld}. +short | head -n1"$clroff
 	echo $tld_server
-	echo -e $greenbold"\n"$dig_oneliner$clroff
+	echo -e $greenbold"\n# "$dig_oneliner$clroff
 	echo -e "${dig_result}\n"
 	echo -e $greenbold"Nameserver Names: \n"$clroff"${auth_ns}\n"
 	echo -e $greenbold"Nameserver IP's: \n"$clroff"${bare_result}\n"
