@@ -4,6 +4,7 @@
 # Todo:
 #	mac compatible
 #	nameserver names without dot
+#
 
 # Get input, initial variables
 dom=${1}
