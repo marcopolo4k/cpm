@@ -1,8 +1,10 @@
 #!/bin/sh
-# Get nameservers for a domain name from the TLD servers.
-# Also get the GLUE records if they exist.
-# If glue records do not exist, find the IP's manually.
+# This script shows some useful DNS information. It's to be run on the problem cPanel server.
+# The one argument is the domain having problems.
 #
+# Todo: show digs locally, authdns servers, and their default dns servers
+#
+
 
 # Check for dig commannd
 verify_tools() {
@@ -61,7 +63,7 @@ print_results() {
 
 
 
-# Run code
+# These find Authoritative DNS:
 verify_tools
 check_input
 create_dig_oneliner
@@ -71,12 +73,19 @@ get_nameservers
 get_nameserver_ips
 print_results
 
-# 
+# search named.conf for the domain
 printf "%b\n" "${greenbold}/etc/named.conf:${clroff}"
 egrep "ternal\" {|$dom" /etc/named.conf
+
+# the hosts line in nsswitch should look like this:
+# hosts:      files dns
 grep hosts /etc/nsswitch.conf
+
+# show resolv file. 
 printf "%b\n" "${greenbold}\n\n/etc/resolv.conf:${clroff}"
 cat /etc/resolv.conf
+
+# show hosts file. localhost should only be on 127, the hostname should be listed once, etc.
 printf "%b\n" "${greenbold}\n\n/etc/hosts:${clroff}"
 cat /etc/hosts
-
+echo
