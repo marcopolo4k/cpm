@@ -72,11 +72,11 @@ get_nameserver_ips
 print_results
 
 # 
-echo -e "\nNAMED.CONF:"
+printf "%b\n" "${greenbold}/etc/named.conf:\n${clroff}\n"
 egrep "ternal\" {|$dom" /etc/named.conf
 grep hosts /etc/nsswitch.conf
-echo -e "\nRESOLV:"
+printf "%b\n" "${greenbold}/etc/resolv.conf:\n${clroff}\n"
 cat /etc/resolv.conf
-echo -e "\nHOSTS:"
+printf "%b\n" "${greenbold}/etc/hosts:\n${clroff}\n"
 cat /etc/hosts
 
