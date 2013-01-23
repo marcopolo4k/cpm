@@ -56,7 +56,7 @@ get_nameserver_ips() {
 }
 
 print_results() {
-    printf "%b\n" "${greenbold}Authoritative Nameserver IPs:\n${clroff}${bare_result}\n"
+    printf "%b\n" "${greenbold}\nAuthoritative Nameserver IPs:\n${clroff}${bare_result}\n"
 }
 
 
@@ -72,11 +72,11 @@ get_nameserver_ips
 print_results
 
 # 
-printf "%b\n" "${greenbold}/etc/named.conf:\n${clroff}\n"
+printf "%b\n" "${greenbold}/etc/named.conf:${clroff}"
 egrep "ternal\" {|$dom" /etc/named.conf
 grep hosts /etc/nsswitch.conf
-printf "%b\n" "${greenbold}/etc/resolv.conf:\n${clroff}\n"
+printf "%b\n" "${greenbold}\n\n/etc/resolv.conf:${clroff}"
 cat /etc/resolv.conf
-printf "%b\n" "${greenbold}/etc/hosts:\n${clroff}\n"
+printf "%b\n" "${greenbold}\n\n/etc/hosts:${clroff}"
 cat /etc/hosts
 
