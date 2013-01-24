@@ -14,7 +14,8 @@ PROMPT_COMMAND='echo -ne "\033]0;${h}: ${PWD}\007"' ;
 
 export PS1="[\[\e[4;32m\]\u@\h \w\[\e[0m\]]# ";
 
-hn=`hostname`. ;
+# is this dot really important? it breaks mysqlerr later
+hn=`hostname` ;
 hip=`dig +short $hn`;
 if [ "$hip" ];
  then hrip=`dig +short -x $hip`;
@@ -27,6 +28,7 @@ fi;
 
 echo -ne $hn": "$h"\n";
 /usr/local/cpanel/cpanel -V;
+echo
 
 # Look for Cloudlinux
 lsmod|grep lve;
@@ -97,7 +99,7 @@ a='/usr/local/apache';
 conf=$a/conf/httpd.conf;
 c='/usr/local/cpanel';
 ea='/usr/local/cpanel/logs/easy/apache';
-# hn=$(hostname);
+hn=$(hostname);
 
 alias lf='echo `\ls -lrt|tail -1|awk "{print \\$9}"`';
 alias lf2='echo `\ls -lrt|tail -2|awk "{print \\$9}"|head -1`';
