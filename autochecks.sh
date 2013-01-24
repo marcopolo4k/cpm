@@ -140,4 +140,4 @@ if [ "$eafail1" ];
 fi #FB 60087
 
 rcbug=$(ps auxfwww | grep template.sto[r]);
-echo -e $red"rcbug:"$clroff"\n"$rcbug; #FB62001
+echo -e $red$rcbug$clroff; #FB62001
