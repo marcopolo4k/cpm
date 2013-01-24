@@ -104,9 +104,7 @@ alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|gr
 alias ips=$(ifconfig|grep inet|awk '{if ($2!~"127.0"&&$2!~":$") print $2}'|cut -d":" -f2|awk '{print "echo "$0}');
 alias localips='ips';
 alias ssl='openssl x509 -noout -text -in';
-alias mysqlerr='date;
-echo /var/lib/mysql/$hn.err;
-less -I /var/lib/mysql/$hn.err';
+alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
 function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
 alias lsp='ls -d -1 $PWD/**';
 
@@ -115,7 +113,11 @@ echo;
 unamefail=`egrep "^USER" /var/cpanel/users/* | egrep "/.*\..*"`;
 echo -e $red$unamefail$clroff;
 
-tail -1200 /var/log/chkservd.log |grep 'spamd \[Service' |awk '{print $1,$2,$3}'
+# I should add this to chksrvd, as I found it on 130123 in 3665403
+spamd_fail_chksrvd=$(tail -1200 /var/log/chkservd.log |grep 'spamd \[Service' |awk '{print $1,$2,$3}');
+if [ spamd_fail_chksrvd ];
+ then echo -e $red"Spamd error in chksrvd: \n"$clroff $spamd_fail_chksrvd;
+fi;
 
 rooterror=$(tail -1000 /usr/local/cpanel/logs/error_log|egrep "Illegal instruction|root' is empty or non-existent"|egrep "2012-0[89]");
 echo -e $red$rooterror$clroff;
