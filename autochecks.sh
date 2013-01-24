@@ -116,7 +116,7 @@ echo -e $red$unamefail$clroff;
 # I should add this to chksrvd, as I found it on 130123 in 3665403
 spamd_fail_chksrvd=$(tail -1200 /var/log/chkservd.log |grep 'spamd \[Service' |awk '{print $1,$2,$3}');
 if [ spamd_fail_chksrvd ];
- then echo -e $red"Spamd error in chksrvd: \n"$clroff $spamd_fail_chksrvd;
+ then echo -e $red"Spamd error in chksrvd:"$clroff"\n"$spamd_fail_chksrvd;
 fi;
 
 rooterror=$(tail -1000 /usr/local/cpanel/logs/error_log|egrep "Illegal instruction|root' is empty or non-existent"|egrep "2012-0[89]");
@@ -140,4 +140,4 @@ if [ "$eafail1" ];
 fi #FB 60087
 
 rcbug=$(ps auxfwww | grep template.sto[r]);
-echo -e $red$rcbug$clroff; #FB62001
+echo -e $red"rcbug:"$clroff"\n"$rcbug; #FB62001
