@@ -25,7 +25,7 @@ if [ "$hip" ];
  else echo -e $red"Hostname not resolvable"$clroff;
 fi;
 
-echo -ne $white$hn": "$h$clroff"\n";
+echo -ne $hn": "$h"\n";
 /usr/local/cpanel/cpanel -V;
 
 # Look for Cloudlinux
