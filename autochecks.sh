@@ -25,7 +25,7 @@ if [ "$hip" ];
  else echo -e $red"Hostname not resolvable"$clroff;
 fi;
 
-echo -ne $white$hn": "$h"\n"$clroff;
+echo -ne $white$hn": "$h$clroff"\n";
 /usr/local/cpanel/cpanel -V;
 
 # Look for Cloudlinux
@@ -91,6 +91,7 @@ echo -e $red$hta$clroff;
 # https://staffwiki.cpanel.net/LinuxSupport/OneLiners#Show_chksrvd_failures
 echo -e "\nRecent chksrvd errors:";
 every_n_min=10; tail -3200 /var/log/chkservd.log |awk -v n=$every_n_min '{if ($1~/\[20/) lastdate=$1" "$2" "$3; split($2,curdate,":"); dmin=(curdate[2]-lastmin); dhr=(curdate[1]-lasthr); if ($0!~/Restarting|nable|\*\*|imeout|ailure|terrupt/ && $0~/:-]/) print lastdate"....."; for (i=1;i<=NF;i=i+1) if ($i~/Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/) if ($1~/\[20/) print $1,$2,$3,$(i-1),$i,$(i+1); else print lastdate,$(i-1),$i,$(i+1); if($1~/\[20/ && (lastmin!=0 || lasthr!=0) && (dmin>n || (dhr==1 && (dmin>-(60-n))) || dhr>1 )) print $1,$2,$3" check took longer than "n" minutes. (hr:min): "dhr":"dmin; if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} }'
+echo "Current time: "; date
 
 a='/usr/local/apache';
 conf=$a/conf/httpd.conf;
@@ -115,7 +116,7 @@ echo -e $red$unamefail$clroff;
 
 # I should add this to chksrvd, as I found it on 130123 in 3665403
 spamd_fail_chksrvd=$(tail -1200 /var/log/chkservd.log |grep 'spamd \[Service' |awk '{print $1,$2,$3}');
-if [ spamd_fail_chksrvd ];
+if [ "$spamd_fail_chksrvd" ];
  then echo -e $red"Spamd error in chksrvd:"$clroff"\n"$spamd_fail_chksrvd;
 fi;
 
