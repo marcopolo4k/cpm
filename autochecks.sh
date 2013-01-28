@@ -150,5 +150,5 @@ echo -e $red$rcbug$clroff; #FB62001
 
 relayservers=$(head /etc/relayhosts)
 if [ "$relayservers" ];
- then echo -e $red"Relay Servers"$clroff" in /etc/relayhosts:\n"$relayservers"..."
+ then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
