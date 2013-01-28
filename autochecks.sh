@@ -148,7 +148,7 @@ fi #FB 60087
 rcbug=$(ps auxfwww | grep template.sto[r]);
 echo -e $red$rcbug$clroff; #FB62001
 
-relayservers=$(cat /etc/relayhosts)
+relayservers=$(head /etc/relayhosts)
 if [ "$relayservers" ];
- then echo -e $red"Relay Servers"$clroff" in /etc/relayhosts:\n"$relayservers
+ then echo -e $red"Relay Servers"$clroff" in /etc/relayhosts:\n"$relayservers"..."
 fi
