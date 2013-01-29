@@ -46,7 +46,7 @@ if [ -e /proc/user_beancounters ];
  echo -e $red$vzerr$clroff;
 fi;
 echo;
-\ls -l /usr/bin/perl /usr/local/bin/perl ;
+\ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ;
 
 echo -ne "\n\nSELinux: ";
 if [ -e /etc/selinux/config ];
@@ -152,3 +152,5 @@ relayservers=$(head /etc/relayhosts)
 if [ "$relayservers" ];
  then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
+
+echo
