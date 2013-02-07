@@ -76,3 +76,5 @@ else
 	get_nameserver_ips
 	print_results
 fi
+
+# test line
