@@ -9,10 +9,14 @@ greenbold='\033[1;32m'
 clroff="\033[0m";
 redbold='\033[1;31m'
 
+# Print out the ls of all the perls
+printf "\nHere's the common perl binary paths.  This can be copy/pasted to document the system:"
+printf "%b\n" "${greenbold}\n# \ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ${clroff}"
+\ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ;
 
 serverenv=$(strings -1 /var/cpanel/envtype)
 
-printf "\ncPanel claims this server is a $serverenv server, so we'll test it as such.\n\n"
+printf "\ncPanel claims this server is a ${greenbold}*$serverenv*${clroff} server, so we'll test it as such.\n\n"
 
 
 # set the two link vars.  if they are links, these vars will be full
