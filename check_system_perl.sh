@@ -36,7 +36,8 @@ if [ $serverenv = "standard" ]; then
  fi
  
  if [[ ! $(perl -v | grep thread) ]];
-  then printf "System perl is not threaded.  This is not correct\n";
+  then printf "System perl is not threaded.  This is not correct. Just to check, here it is:\n";
+  perl -v | grep built;
   verdict=2;
  fi
 
