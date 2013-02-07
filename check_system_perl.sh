@@ -29,18 +29,21 @@ if [ $serverenv = "standard" ]; then
 
  if [ $ubp ]; then
   printf "/usr/bin/perl is a link to $ubp. This is not correct. Just to check, here it is:\n";
+  printf "%b\n" "${greenbold}\n# \ls -la /usr/bin/perl ${clroff}";
   \ls -la /usr/bin/perl;
   verdict=2;
  fi
  
  if [ ! $ulbp ]; then
   printf "\n/usr/local/bin/perl is not a link. This is not correct. Just to check, here it is:\n";
+  printf "%b\n" "${greenbold}\n# \ls -la /usr/local/bin/perl ${clroff}";
   \ls -la /usr/local/bin/perl;
   verdict=2;
  fi
  
  if [[ ! $(perl -v | grep thread) ]];
   then printf "\nSystem perl is not threaded.  This is not correct. Just to check, here it is:\n";
+  printf "%b\n" "${greenbold}\n# \/usr/bin/perl -v | grep built ${clroff}";
   \/usr/bin/perl -v | grep built;
   verdict=2;
  fi
@@ -49,18 +52,21 @@ elif [ $serverenv ]; then
 
  if [ ! $ubp ]; then
   printf "\n/usr/bin/perl is not a link. This is not correct.  Just to check, here it is:\n";
+  printf "%b\n" "${greenbold}\n# \ls -la /usr/bin/perl ${clroff}";
   \ls -la /usr/bin/perl;
   verdict=2;
  fi
  
  if [ $ulbp ]; then
   printf "\n/usr/local/bin/perl is a link. This is not correct. Just to check, here it is:\n";
+  printf "%b\n" "${greenbold}\n# \ls -la /usr/local/bin/perl ${clroff}";
   \ls -la /usr/local/bin/perl;
   verdict=2;
  fi
  
  if [[ $(perl -v | grep thread) ]]; then
   printf "System perl is threaded.  This is not correct. Just to check, here it is:\n";
+  printf "%b\n" "${greenbold}\n# \/usr/bin/perl -v | grep built ${clroff}";
   \/usr/bin/perl -v | grep built;
   verdict=2;
  fi
