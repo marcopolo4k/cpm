@@ -12,7 +12,7 @@ redbold='\033[1;31m'
 
 serverenv=$(strings -1 /var/cpanel/envtype)
 
-printf "cPanel claims this server is a $serverenv server, so we'll test it as such.\n\n"
+printf "\ncPanel claims this server is a $serverenv server, so we'll test it as such.\n\n"
 
 
 # set the two link vars.  if they are links, these vars will be full
@@ -30,13 +30,13 @@ if [ $serverenv = "standard" ]; then
  fi
  
  if [ ! $ulbp ]; then
-  printf "/usr/local/bin/perl is not a link. This is not correct. Just to check, here it is:\n";
+  printf "\n/usr/local/bin/perl is not a link. This is not correct. Just to check, here it is:\n";
   ls -la /usr/local/bin/perl;
   verdict=2;
  fi
  
  if [[ ! $(perl -v | grep thread) ]];
-  then printf "System perl is not threaded.  This is not correct. Just to check, here it is:\n";
+  then printf "\nSystem perl is not threaded.  This is not correct. Just to check, here it is:\n";
   perl -v | grep built;
   verdict=2;
  fi
@@ -44,13 +44,13 @@ if [ $serverenv = "standard" ]; then
 elif [ $serverenv ]; then
 
  if [ ! $ubp ]; then
-  printf "/usr/bin/perl is not a link. This is not correct.  Just to check, here it is:\n";
+  printf "\n/usr/bin/perl is not a link. This is not correct.  Just to check, here it is:\n";
   ls -la /usr/bin/perl;
   verdict=2;
  fi
  
  if [ $ulbp ]; then
-  printf "/usr/local/bin/perl is a link. This is not correct. Just to check, here it is:\n";
+  printf "\n/usr/local/bin/perl is a link. This is not correct. Just to check, here it is:\n";
   ls -la /usr/local/bin/perl;
   verdict=2;
  fi
@@ -62,13 +62,13 @@ elif [ $serverenv ]; then
 
 else
 
- printf "There was a problem determining server environment.  You can try installing & running 'virt-what'.  Also, please let Marco know.\n"
+ printf "There was a problem determining server environment.  You can try installing & running 'virt-what'.  Also, please let Marco know.\n\n"
  verdict=2;
 
 fi
 
 if [ $verdict == 1 ]; then
- printf "%b\n" "${greenbold}PASS${clroff}: The system perl appears to be set correctly.";
+ printf "\n%b\n" "${greenbold}PASS${clroff}: The system perl appears to be set correctly.\n";
 else
- printf "%b\n" "${redbold}FAIL${clroff}: The system perl appears incorrect."
+ printf "\n%b\n" "${redbold}FAIL${clroff}: The system perl appears incorrect.\n"
 fi
