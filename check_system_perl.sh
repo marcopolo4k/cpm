@@ -6,6 +6,7 @@
 # Colors and formatting
 greenbold='\033[1;32m'
 clroff="\033[0m";
+redbold='\033[1;31m'
 
 
 serverenv=$(strings -1 /var/cpanel/envtype)
@@ -59,7 +60,7 @@ elif [ $serverenv ]; then
 
 else
 
- echo "There was a problem determining server environment.  You can try installing virt-what.  Also, please let Marco know."
+ echo "There was a problem determining server environment.  You can try installing & running 'virt-what'.  Also, please let Marco know."
  verdict=2;
 
 fi
@@ -67,5 +68,5 @@ fi
 if [ $verdict == 1 ]; then
  printf "%b\n" "${greenbold}PASS${clroff}: The system perl appears to be set correctly.";
 else
- printf "%b\n" "${greenbold}FAIL${clroff}: The system perl appears incorrect."
+ printf "%b\n" "${redbold}FAIL${clroff}: The system perl appears incorrect."
 fi
