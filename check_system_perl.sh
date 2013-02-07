@@ -11,7 +11,7 @@ redbold='\033[1;31m'
 
 serverenv=$(strings -1 /var/cpanel/envtype)
 
-printf "cPanel claims this server is a $serverenv server, so we'll test it as such."
+printf "cPanel claims this server is a $serverenv server, so we'll test it as such.\n"
 
 
 # set the two link vars.  if they are links, these vars will be full

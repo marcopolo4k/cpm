@@ -10,9 +10,9 @@ red="\E[37;41m\033[4m";
 echo -e $white"Some quick checks by cPanel Analyst:"$clroff;
 
 h=`hostname -i`;
-ticket_info_var=$PROMPT_COMMAND
-echo "Ticket Info: "$ticket_info_var
-echo $ticket_info_var
+#ticket_info_var=$PROMPT_COMMAND
+#echo "Ticket Info: "$ticket_info_var
+#echo $ticket_info_var
 PROMPT_COMMAND='echo -ne "\033]0;${h}: ${PWD}\007"' ;
 
 export PS1="[\[\e[4;32m\]\u@\h \w\[\e[0m\]]# ";
