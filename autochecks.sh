@@ -113,6 +113,7 @@ alias ssl='openssl x509 -noout -text -in';
 alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
 function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
 alias lsp='ls -d -1 $PWD/**';
+alias perms='awk 'BEGIN{dir=DIR?DIR:ENVIRON["PWD"];l=split(dir,parts,"/");last="";for(i=1;i<l+1;i++){d=last"/"parts[i];gsub("//","/",d);system("stat --printf \"%a\t%u\t%g\t\" \""d"\"; echo -n \" \";ls -ld \""d"\"");last=d}}''
 
 # Temporary checks
 echo;
