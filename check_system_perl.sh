@@ -5,9 +5,11 @@
 # http://staffwiki.cpanel.net/LinuxSupport/PerlIssues
 
 # Colors and formatting
+green='\033[0;32m'
 greenbold='\033[1;32m'
-clroff="\033[0m";
+red='\033[0;31m'
 redbold='\033[1;31m'
+clroff="\033[0m";
 
 # Print out the ls of all the perls
 printf "\nHere's the common perl binary paths.  This can be copy/pasted to document the system:"
@@ -29,21 +31,21 @@ if [ $serverenv = "standard" ]; then
 
  if [ $ubp ]; then
   printf "/usr/bin/perl is a link to $ubp. This is not correct. Just to check, here it is:";
-  printf "%b\n" "${greenbold}\n# ls -la /usr/bin/perl ${clroff}";
+  printf "%b\n" "${red}\n# ls -la /usr/bin/perl ${clroff}";
   \ls -la /usr/bin/perl;
   verdict=2;
  fi
  
  if [ ! $ulbp ]; then
   printf "\n/usr/local/bin/perl is not a link. This is not correct. Just to check, here it is:";
-  printf "%b\n" "${greenbold}\n# ls -la /usr/local/bin/perl ${clroff}";
+  printf "%b\n" "${red}\n# ls -la /usr/local/bin/perl ${clroff}";
   \ls -la /usr/local/bin/perl;
   verdict=2;
  fi
  
  if [[ ! $(perl -v | grep thread) ]];
   then printf "\nSystem perl is not threaded.  This is not correct. Just to check, here it is:";
-  printf "%b\n" "${greenbold}\n# /usr/bin/perl -v | grep built ${clroff}";
+  printf "%b\n" "${red}\n# /usr/bin/perl -v | grep built ${clroff}";
   \/usr/bin/perl -v | grep built;
   verdict=2;
  fi
@@ -52,21 +54,21 @@ elif [ $serverenv ]; then
 
  if [ ! $ubp ]; then
   printf "\n/usr/bin/perl is not a link. This is not correct.  Just to check, here it is:";
-  printf "%b\n" "${greenbold}\n# ls -la /usr/bin/perl ${clroff}";
+  printf "%b\n" "${red}\n# ls -la /usr/bin/perl ${clroff}";
   \ls -la /usr/bin/perl;
   verdict=2;
  fi
  
  if [ $ulbp ]; then
   printf "\n/usr/local/bin/perl is a link. This is not correct. Just to check, here it is:";
-  printf "%b\n" "${greenbold}\n# ls -la /usr/local/bin/perl ${clroff}";
+  printf "%b\n" "${red}\n# ls -la /usr/local/bin/perl ${clroff}";
   \ls -la /usr/local/bin/perl;
   verdict=2;
  fi
  
  if [[ $(perl -v | grep thread) ]]; then
   printf "System perl is threaded.  This is not correct. Just to check, here it is:";
-  printf "%b\n" "${greenbold}\n# /usr/bin/perl -v | grep built ${clroff}";
+  printf "%b\n" "${red}\n# /usr/bin/perl -v | grep built ${clroff}";
   \/usr/bin/perl -v | grep built;
   verdict=2;
  fi
