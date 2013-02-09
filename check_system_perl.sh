@@ -85,3 +85,4 @@ if [ $verdict == 1 ]; then
 else
  printf "\n%b\n" "${redbold}FAIL${clroff}: The system perl appears incorrect.\n"
 fi
+
