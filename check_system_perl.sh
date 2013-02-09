@@ -12,7 +12,7 @@ redbold='\033[1;31m'
 clroff="\033[0m";
 
 # Print out the ls of all the perls
-printf "\nHere's the common perl binary paths.  This can be copy/pasted to document the system:"
+printf "\nHere are the common perl binary paths.  This can be copy/pasted to document the system:"
 printf "%b\n" "${greenbold}\n# \ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ${clroff}"
 \ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ;
 
@@ -27,7 +27,7 @@ ubp="$(readlink /usr/bin/perl)"
 ulbp="$(readlink /usr/local/bin/perl)"
 verdict=1
 
-if [ $serverenv = "standard" ]; then
+if [ "$serverenv" = "standard" ]; then
 
  if [ $ubp ]; then
   printf "/usr/bin/perl is a link to $ubp. This is not correct. Just to check, here it is:";
@@ -50,7 +50,7 @@ if [ $serverenv = "standard" ]; then
   verdict=2;
  fi
 
-elif [ $serverenv ]; then
+elif [ "$serverenv" ]; then
 
  if [ ! $ubp ]; then
   printf "\n/usr/bin/perl is not a link. This is not correct.  Just to check, here it is:";
