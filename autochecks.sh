@@ -13,7 +13,7 @@ h=`hostname -i`;
 #ticket_info_var=$PROMPT_COMMAND
 #echo "Ticket Info: "$ticket_info_var
 #echo $ticket_info_var
-PROMPT_COMMAND='echo -ne "\033]0;${h}: ${PWD}\007"' ;
+#PROMPT_COMMAND='echo -ne "\033]0;${h}: ${PWD}\007"' ;
 
 export PS1="[\[\e[4;32m\]\u@\h \w\[\e[0m\]]# ";
 
@@ -153,5 +153,8 @@ relayservers=$(head /etc/relayhosts)
 if [ "$relayservers" ];
  then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
+
+perlexclude=$(grep perl /etc/yum.conf|egrep -v "#.*perl"); # FB 63294
+if [ ! "$perlexclude" ]; then echo -e $red"Perl is missing from /etc/yum.conf excludes"$clroff; fi
 
 echo
