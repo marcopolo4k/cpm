@@ -145,9 +145,8 @@ if [ -f "$backup_log_dir" ]; then
  cd ~;
  else
   echo -e $red"No backup log dir"$clroff;
-  echo -ne "Are account backups on?"$red;
+  echo -n "Are account backups on? ";
   grep BACKUPACCTS /etc/cpbackup.conf | cut -d" " -f2;
-  echo -ne $clroff;
 fi;
 
 cd $ea;
