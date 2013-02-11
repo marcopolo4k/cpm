@@ -1,6 +1,10 @@
 # Auto-checks by cPanel Marco
 # These are some quick checks for a variety of settings and configurations
 # No configuration files are changed or saved in this script
+# How to run this script:
+# curl -O https://raw.github.com/cPMarco/cpm/master/autochecks.sh > autochecks.sh; chmod u+x autochecks.sh
+# ./autochecks.sh
+
 
 # Establish colors (White for heading, red for errors)
 white="\E[37;44m\033[7m";
@@ -113,7 +117,7 @@ alias ssl='openssl x509 -noout -text -in';
 alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
 function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
 alias lsp='ls -d -1 $PWD/**';
-alias perms='awk 'BEGIN{dir=DIR?DIR:ENVIRON["PWD"];l=split(dir,parts,"/");last="";for(i=1;i<l+1;i++){d=last"/"parts[i];gsub("//","/",d);system("stat --printf \"%a\t%u\t%g\t\" \""d"\"; echo -n \" \";ls -ld \""d"\"");last=d}}''
+#alias perms=$(awk 'BEGIN{dir=DIR?DIR:ENVIRON["PWD"];l=split(dir,parts,"/");last="";for(i=1;i<l+1;i++){d=last"/"parts[i];gsub("//","/",d);system("stat --printf \"%a\t%u\t%g\t\" \""d"\"; echo -n \" \";ls -ld \""d"\"");last=d}}'|awk '{print "echo "$0}')
 
 # Temporary checks
 echo;
@@ -154,7 +158,14 @@ if [ "$relayservers" ];
  then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
 
-perlexclude=$(grep perl /etc/yum.conf|egrep -v "#.*perl"); # FB 63294
-if [ ! "$perlexclude" ]; then echo -e $red"Perl is missing from /etc/yum.conf excludes"$clroff; fi
+# FB 63294
+for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do ex_in_conf=$(grep $ex_in_list /etc/yum.conf|egrep -v "#.*$ex_in_list"); if [ ! "$ex_in_conf" ]; then echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff; fi; done
+
+# FB 63311
+num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
+if [ "$num_exclude_lines" -gt 1 ];
+ then echo $red"There should only be 1 exclude line in /etc/yum.conf, but there's "$num_exclude_lines". (FB 63311)"$clroff;
+fi
+
 
 echo
