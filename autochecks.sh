@@ -159,12 +159,18 @@ if [ "$relayservers" ];
 fi
 
 # FB 63294
-for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do ex_in_conf=$(grep $ex_in_list /etc/yum.conf|egrep -v "#.*$ex_in_list"); if [ ! "$ex_in_conf" ]; then echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff; fi; done
+for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do
+ ex_in_conf=$(grep $ex_in_list /etc/yum.conf|egrep -v "#.*$ex_in_list");
+ if [ ! "$ex_in_conf" ]; then
+  echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff;
+ fi;
+done
+# as one-line:  for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do ex_in_conf=$(grep $ex_in_list /etc/yum.conf|egrep -v "#.*$ex_in_list"); if [ ! "$ex_in_conf" ]; then echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff; fi; done
 
 # FB 63311
 num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
 if [ "$num_exclude_lines" -gt 1 ];
- then echo $red"There should only be 1 exclude line in /etc/yum.conf, but there's "$num_exclude_lines". (FB 63311)"$clroff;
+ then echo -e $red"There should only be 1 exclude line in /etc/yum.conf, but there's "$num_exclude_lines". (FB 63311)"$clroff;
 fi
 
 
