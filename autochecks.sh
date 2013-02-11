@@ -173,5 +173,5 @@ if [ "$num_exclude_lines" -gt 1 ];
  then echo -e $red"There should only be 1 exclude line in /etc/yum.conf, but there's "$num_exclude_lines". (FB 63311)"$clroff;
 fi
 
-
-echo
+postfx_error=$(lsof -i :25 | awk '/localhost:smtp/ {print $2}')
+if [ "$postfix_error" ]; then echo -e $red$postfix_error"\n\n see tristan email"$clroff; fi
