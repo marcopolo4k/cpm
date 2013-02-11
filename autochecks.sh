@@ -167,7 +167,7 @@ fi
 
 # FB 63294
 for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do
- ex_in_conf=$(grep $ex_in_list /etc/yum.conf|egrep -v "#.*$ex_in_list");
+ ex_in_conf=$(egrep -i "exclude=.*$ex_in_list" /etc/yum.conf|egrep -v "#.*$ex_in_list");
  if [ ! "$ex_in_conf" ]; then
   echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff;
  fi;
