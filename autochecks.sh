@@ -138,9 +138,17 @@ egrep -i "Illegal instruction|Undefined subroutine" /usr/local/cpanel/logs/easy/
 badrepo=$(egrep "alt\.ru|ksplice-up" /etc/yum.repos.d/*);
 echo -e $red$badrepo$clroff;
 
-cd /usr/local/cpanel/logs/cpbackup;
-lf | xargs grep EOF | tail -3;
-cd ~;
+backup_log_dir='/usr/local/cpanel/logs/cpbackup';
+if [ -f "$backup_log_dir" ]; then
+ cd $backup_log_dir;
+ lf | xargs grep EOF | tail -3;
+ cd ~;
+ else
+  echo -e $red"No backup log dir"$clroff;
+  echo -ne "Are account backups on?"$red;
+  grep BACKUPACCTS /etc/cpbackup.conf | cut -d" " -f2;
+  echo -ne $clroff;
+fi;
 
 cd $ea;
 eafail1=$(for i in $(\ls); do tail -3 $i; done | grep -i "Failed");
