@@ -139,7 +139,7 @@ badrepo=$(egrep "alt\.ru|ksplice-up" /etc/yum.repos.d/*);
 echo -e $red$badrepo$clroff;
 
 backup_log_dir='/usr/local/cpanel/logs/cpbackup';
-if [ -f "$backup_log_dir" ]; then
+if [ -d "$backup_log_dir" ]; then
  cd $backup_log_dir;
  lf | xargs grep EOF | tail -3;
  cd ~;
