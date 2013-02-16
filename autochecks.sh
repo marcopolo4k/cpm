@@ -182,3 +182,17 @@ fi
 
 postfx_error=$(lsof -i :25 | awk '/localhost:smtp/ {print $2}')
 if [ "$postfix_error" ]; then echo -e $red$postfix_error"\n\n see tristan email"$clroff; fi
+
+# See email about libkey issue
+libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
+libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
+if [ -e "$libkey_check_results" ]; then
+    echo -e $red"libkey check failed. version: \n"$libkey_ver_check$clroff;
+fi
+libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
+libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
+assiciated_rpm=$(rpm -qf "/"$libkey_dir"/"$libkey_ver)
+if [ -z "$assiciated_rpm" ]; then
+    echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
+    echo $assiciated_rpm
+fi
