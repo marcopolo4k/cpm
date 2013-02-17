@@ -193,7 +193,7 @@ libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
 libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
 assiciated_rpm=$(rpm -qf "/"$libkey_dir"/"$libkey_ver)
 assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
-if [ "$assiciated_rpm" ]; then
+if [ "$assiciated_rpm_check" ]; then
     echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
     echo $assiciated_rpm
 fi
