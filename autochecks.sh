@@ -197,3 +197,8 @@ if [ "$assiciated_rpm_check" ]; then
     echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
 fi
 echo $assiciated_rpm
+
+fb63493=$(ps aux | grep -i postfi[x])
+if [ "$fb63493" ];
+ then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
+fi
