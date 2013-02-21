@@ -102,21 +102,21 @@ echo -e "\nRecent chksrvd errors:";
 every_n_min=10; tail -3200 /var/log/chkservd.log |awk -v n=$every_n_min '{if ($1~/\[20/) lastdate=$1" "$2" "$3; split($2,curdate,":"); dmin=(curdate[2]-lastmin); dhr=(curdate[1]-lasthr); if ($0!~/Restarting|nable|\*\*|imeout|ailure|terrupt/ && $0~/:-]/) print lastdate"....."; for (i=1;i<=NF;i=i+1) if ($i~/Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/) if ($1~/\[20/) print $1,$2,$3,$(i-1),$i,$(i+1); else print lastdate,$(i-1),$i,$(i+1); if($1~/\[20/ && (lastmin!=0 || lasthr!=0) && (dmin>n || (dhr==1 && (dmin>-(60-n))) || dhr>1 )) print $1,$2,$3" check took longer than "n" minutes. (hr:min): "dhr":"dmin; if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} }'
 echo "Current time: "; date
 
-a='/usr/local/apache';
-conf=$a/conf/httpd.conf;
-c='/usr/local/cpanel';
-ea='/usr/local/cpanel/logs/easy/apache';
-hn=$(hostname);
-
-alias lf='echo `\ls -lrt|tail -1|awk "{print \\$9}"`';
-alias lf2='echo `\ls -lrt|tail -2|awk "{print \\$9}"|head -1`';
-alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
-alias ips=$(ifconfig|grep inet|awk '{if ($2!~"127.0"&&$2!~":$") print $2}'|cut -d":" -f2|awk '{print "echo "$0}');
-alias localips='ips';
-alias ssl='openssl x509 -noout -text -in';
-alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
-function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
-alias lsp='ls -d -1 $PWD/**';
+# a='/usr/local/apache';
+# conf=$a/conf/httpd.conf;
+# c='/usr/local/cpanel';
+# ea='/usr/local/cpanel/logs/easy/apache';
+# hn=$(hostname);
+# 
+# alias lf='echo `\ls -lrt|tail -1|awk "{print \\$9}"`';
+# alias lf2='echo `\ls -lrt|tail -2|awk "{print \\$9}"|head -1`';
+# alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
+# alias ips=$(ifconfig|grep inet|awk '{if ($2!~"127.0"&&$2!~":$") print $2}'|cut -d":" -f2|awk '{print "echo "$0}');
+# alias localips='ips';
+# alias ssl='openssl x509 -noout -text -in';
+# alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
+# function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
+# alias lsp='ls -d -1 $PWD/**';
 #alias perms=$(awk 'BEGIN{dir=DIR?DIR:ENVIRON["PWD"];l=split(dir,parts,"/");last="";for(i=1;i<l+1;i++){d=last"/"parts[i];gsub("//","/",d);system("stat --printf \"%a\t%u\t%g\t\" \""d"\"; echo -n \" \";ls -ld \""d"\"");last=d}}'|awk '{print "echo "$0}')
 
 # Temporary checks
