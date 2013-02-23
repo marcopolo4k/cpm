@@ -188,3 +188,17 @@ fb63493=$(ps aux | grep -i postfi[x])
 if [ "$fb63493" ];
  then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
 fi
+
+libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
+libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
+if [ "$libkey_check_results" ]; then
+    echo -e $red"libkey check failed. version: \n"$libkey_ver_check$clroff;
+fi
+libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
+libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
+assiciated_rpm=$(rpm -qf "/"$libkey_dir"/"$libkey_ver)
+assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
+if [ "$assiciated_rpm_check" ]; then
+    echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
+fi
+echo $assiciated_rpm
