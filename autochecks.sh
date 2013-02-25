@@ -201,4 +201,9 @@ assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package"
 if [ "$assiciated_rpm_check" ]; then
     echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
 fi
+
+check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
+if [ "$check_ipcs_lk" ];
+ then echo -e $red$check_ipcs_lk$clroff;
+fi
 echo $assiciated_rpm
