@@ -38,14 +38,16 @@ echo -ne $hn": "$h"\n";
 echo
 
 # Look for Cloudlinux
-lsmod|grep lve;
-uname -a|grep -o lve;
+cl_check=$(lsmod|grep lve; uname -a|grep -o lve;);
+if [ "cl_check" ]; then
+    echo $cl_check;
+fi
 echo;
 
 cat /proc/loadavg;
 echo -ne "\nEnvironment: ";
 strings -1 /var/cpanel/envtype;
-if [ -e /proc/user_beancounters ];
+if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
  then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
  echo -e $red$vzerr$clroff;
 fi;
