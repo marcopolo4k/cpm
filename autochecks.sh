@@ -44,7 +44,6 @@ if [ "cl_check" ]; then
 fi
 echo;
 
-cat /proc/loadavg;
 echo -ne "\nEnvironment: ";
 strings -1 /var/cpanel/envtype;
 if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
@@ -52,7 +51,6 @@ if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
  echo -e $red$vzerr$clroff;
 fi;
 echo;
-\ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ;
 
 echo -ne "\n\nSELinux: ";
 if [ -e /etc/selinux/config ];
