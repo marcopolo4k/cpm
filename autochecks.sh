@@ -213,7 +213,7 @@ if [ "$keyu_pckg_chg_test" ]; then
 fi
 
 # Command 2
-cmd_2_chk=$(\ls -la $assiciated_rpm | egrep "so.1.9|so.1.3.2|1.2.so.2");
+cmd_2_chk=$(\ls -la $thelibkey | egrep "so.1.9|so.1.3.2|1.2.so.2");
 if [ "$cmd_2_chk" ]; then
     echo -e $red"Cmd2: Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff
     echo $cmd_2_chk
