@@ -206,6 +206,7 @@ fi
 
 check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
 if [ "$check_ipcs_lk" ];
- then echo -e $red$check_ipcs_lk$clroff;
+ then echo -e $red"IPCS Check failed.  Doesn't necessarily mean anything:\n"$clroff$check_ipcs_lk;
 fi
+
 echo $assiciated_rpm
