@@ -208,35 +208,35 @@ fi
 # Command 1
 keyu_pckg_chg_test=$(rpm -V keyutils-libs)
 if [ "$keyu_pckg_chg_test" ]; then
-    echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
+    echo -e $red"Cmd1: keyutils-libs check failed. The rpm shows the following file changes: "$clroff
     echo $keyu_pckg_chg_test
 fi
 
 # Command 2
 cmd_2_chk=$(\ls -la $assiciated_rpm | egrep "so.1.9|so.1.3.2|1.2.so.2");
 if [ "$cmd_2_chk" ]; then
-    echo -e $red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff
+    echo -e $red"Cmd2: Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff
     echo $cmd_2_chk
 fi
 
 # Command 3
 cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
 if [ "$cmd_3_chk" ]; then
-    echo -e $red"libkeyutils libraries contain networking tools: "$clroff
+    echo -e $red"Cmd3: libkeyutils libraries contain networking tools: "$clroff
     echo $cmd_3_chk
 fi
 
 # Command 4
 check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
 if [ "$check_ipcs_lk" ];
- then echo -e $red"IPCS Check failed.  Doesn't necessarily mean anything:\n"$clroff$check_ipcs_lk;
+ then echo -e $red"Cmd4: IPCS Check failed.  Doesn't necessarily mean anything:\n"$clroff$check_ipcs_lk;
 fi
 
 # Command 6
 for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
  sshd_library=$(rpm -qf $i);
  if [ ! "sshd_library" ]; then
-  echo -e "\n"$i" has no associated library."; echo $sshd_library;
+  echo -e "\nCmd 6: "$i" has no associated library."; echo $sshd_library;
  fi;
 done
 
