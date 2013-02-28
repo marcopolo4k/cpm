@@ -189,6 +189,8 @@ if [ "$fb63493" ];
  then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
 fi
 
+
+# libkey issue
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
 if [ "$libkey_check_results" ]; then
@@ -196,15 +198,46 @@ if [ "$libkey_check_results" ]; then
 fi
 libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
 libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
-assiciated_rpm=$(rpm -qf "/"$libkey_dir"/"$libkey_ver)
+thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
+assiciated_rpm=$(rpm -qf $thelibkey)
 assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
 if [ "$assiciated_rpm_check" ]; then
     echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
 fi
 
+# Command 1
+keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+if [ "$keyu_pckg_chg_test" ]; then
+    echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
+    echo $keyu_pckg_chg_test
+fi
+
+# Command 2
+cmd_2_chk=$(\ls -la $assiciated_rpm | egrep "so.1.9|so.1.3.2|1.2.so.2");
+if [ "$cmd_2_chk" ]; then
+    echo -e $red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff
+    echo $cmd_2_chk
+fi
+
+# Command 3
+cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
+if [ "$cmd_3_chk" ]; then
+    echo -e $red"libkeyutils libraries contain networking tools: "$clroff
+    echo $cmd_3_chk
+fi
+
+# Command 4
 check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
 if [ "$check_ipcs_lk" ];
  then echo -e $red"IPCS Check failed.  Doesn't necessarily mean anything:\n"$clroff$check_ipcs_lk;
 fi
+
+# Command 6
+for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
+ sshd_library=$(rpm -qf $i);
+ if [ ! "sshd_library" ]; then
+  echo -e "\n"$i" has no associated library."; echo $sshd_library;
+ fi;
+done
 
 echo $assiciated_rpm
