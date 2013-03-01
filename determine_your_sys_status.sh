@@ -14,7 +14,7 @@ echo -e "\nFirst general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
 if [ "$libkey_check_results" ]; then
- echo -e $red"libkey check failed due to version number: \n"$clroff$libkey_ver_check;
+ echo -e $red"libkey check failed due to version number: "$clroff"\n"$libkey_ver_check;
  num_fails=$((num_fails+1))
 fi
 libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
