@@ -10,7 +10,7 @@ red="\E[37;41m\033[4m";
 num_fails=0
 
 # First general checks
-echo "First general checks:"
+echo -e "\nFirst general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
 if [ "$libkey_check_results" ]; then
@@ -87,3 +87,5 @@ if [ "$num_fails" -gt 0 ]; then
  done
  echo -e "\nTotal Number of checks failed: "$num_fails" (out of 7 checks currently)"
 fi
+
+echo
