@@ -3,6 +3,10 @@
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
 
+# Establish colors
+clroff="\033[0m";
+red="\E[37;41m\033[4m";
+
 num_fails=0
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
