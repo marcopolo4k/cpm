@@ -27,6 +27,7 @@ if [ "$assiciated_rpm_check" ]; then
  num_fails=$((num_fails+1))
 else
  echo -e "RPM associated with libkey file:\n"$assiciated_rpm
+ echo "Passed."
 fi
 
 # Command 1
@@ -36,6 +37,7 @@ if [ "$keyu_pckg_chg_test" ]; then
  echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
  echo $keyu_pckg_chg_test
  num_fails=$((num_fails+1))
+else echo "Passed."
 fi
 
 # Command 2
@@ -45,6 +47,7 @@ if [ "$cmd_2_chk" ]; then
  echo -e $red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff
  echo $cmd_2_chk
  num_fails=$((num_fails+1))
+else echo "Passed."
 fi
 
 # Command 3
@@ -54,6 +57,7 @@ if [ "$cmd_3_chk" ]; then
     echo -e $red"libkeyutils libraries contain networking tools: "$clroff
     echo $cmd_3_chk
     num_fails=$((num_fails+1))
+else echo "Passed."
 fi
 
 # Command 4
@@ -62,6 +66,7 @@ check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do
 if [ "$check_ipcs_lk" ];
  then echo -e $red"IPCS Check failed.  Doesn't necessarily mean anything:\n"$clroff$check_ipcs_lk;
  num_fails=$((num_fails+1))
+else echo "Passed."
 fi
 
 # Command 5
@@ -75,6 +80,7 @@ for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
   echo -e "\n"$i" has no associated library."; echo $sshd_library;
   num_fails=$((num_fails+1))
  fi;
+else echo "Passed."
 done
 
 if [ "$num_fails" -gt 0 ]; then
