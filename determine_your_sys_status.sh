@@ -36,9 +36,9 @@ keyu_pckg_chg_test=$(rpm -V keyutils-libs)
 if [ "$keyu_pckg_chg_test" ]; then
  echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
  echo $keyu_pckg_chg_test
- echo -e "\n If the above changes are any of the following, then maybe it's ok (possible false positive - ask the sysadmin what actions may have caused these):
- .M....GT
- However, if changes are any of the following, then it's definitely a problem:
+ echo -e "\n If the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+ .M.....T
+ However, if changes are any of the following, then it's definitely suspicious:
  S.5.L...
  see 'man rpm' and look under VERIFY OPTIONS"
  num_fails=$((num_fails+1))
@@ -93,7 +93,7 @@ else echo "Passed."
 fi
 
 if [ "$num_fails" -gt 0 ]; then
- echo -e "\nChange times of the compromised files:"
+ echo -e "\nPossible change times of the compromised files:"
  for i in $(\ls /lib*/libkeyutils*); do
   cmd_3_chk=$(strings $i | egrep 'connect|socket|inet_ntoa|gethostbyname');
   if [ "$cmd_3_chk" ]; then
