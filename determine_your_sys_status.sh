@@ -14,7 +14,7 @@ echo "First general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
 if [ "$libkey_check_results" ]; then
- echo -e "\n"$red"libkey check failed. version: \n"$libkey_ver_check$clroff;
+ echo -e $red"libkey check failed. version: \n"$libkey_ver_check$clroff;
  num_fails=$((num_fails+1))
 fi
 libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
@@ -23,10 +23,11 @@ thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
 assiciated_rpm=$(rpm -qf $thelibkey)
 assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
 if [ "$assiciated_rpm_check" ]; then
- echo -e $red"libkey check failed. rpm associated with libkey file: "$clroff
- echo $assiciated_rpm
+ echo -e $red"libkey check failed"$clroff
  num_fails=$((num_fails+1))
 fi
+echo "RPM associated with libkey file:"
+echo $assiciated_rpm
 
 # Command 1
 echo -e "\nCommand 1 Test:"
@@ -77,10 +78,10 @@ for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
 done
 
 if [ "$num_fails" -gt 0 ]; then
+ echo -e "\nChange times of the compromised files:"
  for i in $(\ls /lib*/libkeyutils*); do
   cmd_3_chk=$(strings $i | egrep 'connect|socket|inet_ntoa|gethostbyname');
   if [ "$cmd_3_chk" ]; then
-   echo -e "\nChange times of the compromised files:"
    stat $i | grep -i change;
   fi;
  done
