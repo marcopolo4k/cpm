@@ -23,11 +23,11 @@ thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
 assiciated_rpm=$(rpm -qf $thelibkey)
 assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
 if [ "$assiciated_rpm_check" ]; then
- echo -e $red"libkey check failed"$clroff
+ echo -e $red"libkey check failed:"$clroff"\n"$assiciated_rpm
  num_fails=$((num_fails+1))
+else
+ echo -e "RPM associated with libkey file:\n"$assiciated_rpm
 fi
-echo "RPM associated with libkey file:"
-echo $assiciated_rpm
 
 # Command 1
 echo -e "\nCommand 1 Test:"
