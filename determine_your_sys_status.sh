@@ -74,13 +74,17 @@ echo -e "\nCommand 5 Test is not designed to run by this automated script"
 
 # Command 6
 echo -e "\nCommand 6 Test:"
+cmd6fail=0
 for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
  sshd_library=$(rpm -qf $i);
  if [ ! "sshd_library" ]; then
   echo -e "\n"$i" has no associated library."; echo $sshd_library;
-  num_fails=$((num_fails+1))
+  cmd6fail=$((cmd6fail+1))
  fi;
+if [ "$cmd6fail" -gt 0 ]; then
+ num_fails=$((num_fails+1))
 else echo "Passed."
+fi
 done
 
 if [ "$num_fails" -gt 0 ]; then
