@@ -71,8 +71,8 @@ if [ "$num_fails" -gt 0 ]; then
    echo -e "\nChange times of the compromised files:"
    stat $i | grep -i change;
   fi;
-  echo -e "\nTotal Number of checks failed: "$num_fails
  done
+ echo -e "\nTotal Number of checks failed: "$num_fails
 fi
 
 # Just for info:
