@@ -14,7 +14,7 @@ echo -e "\nFirst general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
 if [ "$libkey_check_results" ]; then
- echo -e $red"libkey check failed. version: \n"$libkey_ver_check$clroff;
+ echo -e $red"libkey check failed due to version number: \n"$clroff$libkey_ver_check;
  num_fails=$((num_fails+1))
 fi
 libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
@@ -23,7 +23,7 @@ thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
 assiciated_rpm=$(rpm -qf $thelibkey)
 assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
 if [ "$assiciated_rpm_check" ]; then
- echo -e $red"libkey check failed:"$clroff"\n"$assiciated_rpm
+ echo -e $red"libkey check failed due to associated RPM:"$clroff"\n"$assiciated_rpm
  num_fails=$((num_fails+1))
 else
  echo -e "RPM associated with libkey file:\n"$assiciated_rpm
@@ -36,11 +36,11 @@ keyu_pckg_chg_test=$(rpm -V keyutils-libs)
 if [ "$keyu_pckg_chg_test" ]; then
  echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
  echo $keyu_pckg_chg_test
- echo -e "If changes are any of the following, then maybe it's ok (possible false positive - ask the sysadmin what actions may have caused these):
+ echo -e "\nIf changes are any of the following, then maybe it's ok (possible false positive - ask the sysadmin what actions may have caused these):
  .M....GT
  However, if changes are any of the following, then it's definitely a problem:
- S.5.L..."
- echo "see 'man rpm' and look under VERIFY OPTIONS"
+ S.5.L...
+ see 'man rpm' and look under VERIFY OPTIONS"
  num_fails=$((num_fails+1))
 else echo "Passed."
 fi
