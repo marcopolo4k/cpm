@@ -36,9 +36,9 @@ keyu_pckg_chg_test=$(rpm -V keyutils-libs)
 if [ "$keyu_pckg_chg_test" ]; then
  echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
  echo $keyu_pckg_chg_test
- echo -e "If changes are any of the following, then maybe it's ok (possible false positive - ask the sysadmin what actions may have caused these):\n
- .M....GT"
- echo -e "However, if changes are any of the following, then it's definitely a problem:\n
+ echo -e "If changes are any of the following, then maybe it's ok (possible false positive - ask the sysadmin what actions may have caused these):
+ .M....GT
+ However, if changes are any of the following, then it's definitely a problem:
  S.5.L..."
  echo "see 'man rpm' and look under VERIFY OPTIONS"
  num_fails=$((num_fails+1))
