@@ -81,11 +81,11 @@ for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
   echo -e "\n"$i" has no associated library."; echo $sshd_library;
   cmd6fail=$((cmd6fail+1))
  fi;
+done
 if [ "$cmd6fail" -gt 0 ]; then
  num_fails=$((num_fails+1))
 else echo "Passed."
 fi
-done
 
 if [ "$num_fails" -gt 0 ]; then
  echo -e "\nChange times of the compromised files:"
