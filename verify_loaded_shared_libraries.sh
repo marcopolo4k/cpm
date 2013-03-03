@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+date
 for sorted_associated_lib in $(
  for file in $(strings /etc/ld.so.cache | grep / | sort | uniq); do
   if [ ! -d $file ]; then
@@ -26,3 +27,4 @@ do
   fi
  fi
 done
+date
