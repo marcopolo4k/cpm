@@ -40,7 +40,7 @@ if [ "$keyu_pckg_chg_test" ]; then
  .M.....T
  However, if changes are any of the following, then it's definitely suspicious:
  S.5.L...
- see 'man rpm' and look under VERIFY OPTIONS"
+ see 'man rpm' and look for 'Each of the 8 characters'"
  num_fails=$((num_fails+1))
 else echo "Passed."
 fi
