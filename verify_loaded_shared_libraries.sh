@@ -19,7 +19,7 @@ for sorted_associated_lib in $(
 do
  new_orphan_file=$(echo $sorted_associated_lib | grep '_is_not_owned_by_any_package')
  if [ "$new_orphan_file" ]; then
-  echo -e "\n"$sorted_associated_lib
+  echo $sorted_associated_lib
  else
   result=$(rpm -V $sorted_associated_lib)
   if [ "$result" ]; then
