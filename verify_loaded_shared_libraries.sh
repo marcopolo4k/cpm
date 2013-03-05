@@ -2,7 +2,7 @@
 #
 echo "Starting scan at: "; date; echo
 for sorted_associated_lib in $(
- for file in $(strings /etc/ld.so.cache | grep / | sort | uniq); do
+ for file in $(strings /etc/ld.so.cache | grep / | egrep -vi "pam.d|memcache|libevent|libhashkit" | sort | uniq); do
   if [ ! -d $file ]; then
    if [ -h $file ]; then
     file=$(readlink -f $file)
