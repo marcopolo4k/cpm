@@ -90,6 +90,11 @@ dmesg | egrep -i "failed|timed out|[^c]hang|BAD|SeekComplete Error|DriveStatusEr
 echo "Segfaults in messages:";
 tail -1000 /var/log/messages|egrep -i "segfault|I/O error"|uniq;
 
+fatal_hd_error=$(dmesg|fgrep "SeekComplete Error" /var/logs/messages)
+if [ "$fatal_hd_error" ];
+ then echo -e $red"This error indicates a failing HD in dmesg:"$clroff"\n"$fatal_hd_error"\n"
+fi
+
 echo -e "\n\nDisable Files:";
 \ls /etc|grep --color disable|egrep -v "entropy|interch";
 
