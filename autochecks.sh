@@ -85,7 +85,7 @@ fi;
 echo;
 
 lsattr -ld /;
-dmesg | egrep -i "failed|timed out|[^c]hang|BAD|SeekComplete Error|DriveStatusError|UncorrectableError" | uniq ;
+dmesg | egrep -i "failed|timed out|[^c]hang|BAD|SeekComplete Error|DriveStatusError|UncorrectableError|oom-kill|comm:.*Not" | uniq ;
 
 echo "Segfaults in messages:";
 tail -1000 /var/log/messages|egrep -i "segfault|I/O error"|uniq;
