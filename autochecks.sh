@@ -90,7 +90,7 @@ dmesg | egrep -i "failed|timed out|[^c]hang|BAD|SeekComplete Error|DriveStatusEr
 echo "Segfaults in messages:";
 tail -1000 /var/log/messages|egrep -i "segfault|I/O error"|uniq;
 
-fatal_hd_error=$(dmesg|fgrep "SeekComplete Error" /var/logs/messages)
+fatal_hd_error=$(dmesg|fgrep "SeekComplete Error" /var/log/messages)
 if [ "$fatal_hd_error" ];
  then echo -e $red"This error indicates a failing HD in dmesg:"$clroff"\n"$fatal_hd_error"\n"
 fi
@@ -187,7 +187,7 @@ if [ "$num_exclude_lines" -gt 1 ];
 fi
 
 postfx_error=$(lsof -i :25 | awk '/localhost:smtp/ {print $2}')
-if [ "$postfix_error" ]; then echo -e $red$postfix_error"\n\n see tristan email"$clroff; fi
+if [ "$postfix_error" ]; then echo -e $red$postfix_error"\n\n see tristan email, FB 63493"$clroff; fi
 
 fb63493=$(ps aux | grep -i postfi[x])
 if [ "$fb63493" ];
