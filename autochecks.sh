@@ -22,10 +22,10 @@ h=`hostname -i`;
 export PS1="[\[\e[4;32m\]\u@\h \w\[\e[0m\]]# ";
 
 # is this dot really important? it breaks mysqlerr later
-hn=`hostname` ;
-hip=`dig +short $hn`;
+hn=$(hostname) ;
+hip=$(dig +short $hn);
 if [ "$hip" ];
- then hrip=`dig +short -x $hip`;
+ then hrip=$(dig +short -x $hip | sed 's/\.$//');
  if [ "$hn" == "$hrip" ];
   then echo ;
   else echo -e $red"Reverse DNS: "$clroff$hn" != "$hrip;
@@ -109,6 +109,7 @@ echo -e $red$hta$clroff;
 # Checkservd log
 # https://staffwiki.cpanel.net/LinuxSupport/OneLiners#Show_chksrvd_failures
 echo -e "\nRecent chksrvd errors:";
+echo -n "starting search at: ";  tail -3200 /var/log/chkservd.log | awk '{print $1,$2,$3}' | head -1
 every_n_min=10; tail -3200 /var/log/chkservd.log |awk -v n=$every_n_min '{if ($1~/\[20/) lastdate=$1" "$2" "$3; split($2,curdate,":"); dmin=(curdate[2]-lastmin); dhr=(curdate[1]-lasthr); if ($0!~/Restarting|nable|\*\*|imeout|ailure|terrupt/ && $0~/:-]/) print lastdate"....."; for (i=1;i<=NF;i=i+1) if ($i~/Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/) if ($1~/\[20/) print $1,$2,$3,$(i-1),$i,$(i+1); else print lastdate,$(i-1),$i,$(i+1); if($1~/\[20/ && (lastmin!=0 || lasthr!=0) && (dmin>n || (dhr==1 && (dmin>-(60-n))) || dhr>1 )) print $1,$2,$3" check took longer than "n" minutes. (hr:min): "dhr":"dmin; if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} }'
 echo "Current time: "; date
 
