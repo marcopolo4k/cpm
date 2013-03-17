@@ -11,6 +11,18 @@ white="\E[37;44m\033[7m";
 clroff="\033[0m";
 red="\E[37;41m\033[4m";
 
+fb63493=$(ps aux | grep -i postfi[x])
+if [ "$fb63493" ];
+ then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
+ fi
+
+# plan is to find an error that returns positive, then try the following:
+function checkfor() {
+if [ "$1" ];
+ then echo $2; echo $1;
+ fi
+}
+
 echo -e $white"Some quick checks by cPanel Analyst:"$clroff;
 
 h=`hostname -i`;
@@ -85,7 +97,9 @@ fi;
 echo;
 
 lsattr -ld /;
-dmesg | egrep -i "failed|timed out|[^c]hang|BAD|SeekComplete Error|DriveStatusError|UncorrectableError|oom-kill|comm:.*Not" | uniq ;
+dmesg | egrep -i "failed|timed out|[^c]hang|BAD|SeekComplete Error|DriveStatusError|UncorrectableError|oom-kill|comm:.*Not|Drive timeout detected" | uniq ;
+
+# if Drive timeout detected, see ticket 3874851.  not sure if that's anything or not
 
 echo "Segfaults in messages:";
 tail -1000 /var/log/messages|egrep -i "segfault|I/O error"|uniq;
