@@ -5,6 +5,8 @@
 # curl -O https://raw.github.com/cPMarco/cpm/master/autochecks.sh > autochecks.sh; chmod u+x autochecks.sh
 # ./autochecks.sh
 
+# todo:
+# check for /var/cpanel/use_old_easyapache 
 
 # Establish colors (White for heading, red for errors)
 white="\E[37;44m\033[7m";
@@ -143,6 +145,7 @@ alias ssl='openssl x509 -noout -text -in';
 alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
 function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
 alias lsp='ls -d -1 $PWD/**';
+#todo:
 #alias perms=$(awk 'BEGIN{dir=DIR?DIR:ENVIRON["PWD"];l=split(dir,parts,"/");last="";for(i=1;i<l+1;i++){d=last"/"parts[i];gsub("//","/",d);system("stat --printf \"%a\t%u\t%g\t\" \""d"\"; echo -n \" \";ls -ld \""d"\"");last=d}}'|awk '{print "echo "$0}')
 
 # Temporary checks
@@ -159,8 +162,10 @@ fi;
 rooterror=$(tail -1000 /usr/local/cpanel/logs/error_log|egrep "Illegal instruction|root' is empty or non-existent"|egrep "2012-0[89]");
 echo -e $red$rooterror$clroff;
 
-egrep -i "Illegal instruction|Undefined subroutine" /var/cpanel/updatelogs/*
-egrep -i "Illegal instruction|Undefined subroutine" /usr/local/cpanel/logs/easy/apache/*
+#egrep -i "Illegal instruction|Undefined subroutine" /var/cpanel/updatelogs/*
+cd /var/cpanel/updatelogs/; for i in $(ls -rt | tail -3); do egrep -i "Illegal instruction|Undefined subroutine" $i; done
+#egrep -i "Illegal instruction|Undefined subroutine" /usr/local/cpanel/logs/easy/apache/*
+cd /usr/local/cpanel/logs/easy/apache; for i in $(ls -rt | tail -5); do egrep -i "Illegal instruction|Undefined subroutine" $i; done
 badrepo=$(egrep "alt\.ru|ksplice-up" /etc/yum.repos.d/*);
 echo -e $red$badrepo$clroff;
 
@@ -179,9 +184,8 @@ cd $ea;
 eafail1=$(for i in $(\ls); do tail -3 $i; done | grep -i "Failed");
 cd ~;
 if [ "$eafail1" ];
- then echo -e $red$eafail1$clroff;
- ls -la /bin/egrep;
-fi #FB 60087
+ then echo -e $red"Recent EasyApache failure:"$clroff"\n"$eafail1;
+fi #FB 60087 says if egrep is a link theres a prob, but havent seen in forever, can ignore
 
 rcbug=$(ps auxfwww | grep template.sto[r]);
 echo -e $red$rcbug$clroff; #FB62001
