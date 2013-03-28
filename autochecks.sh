@@ -136,17 +136,7 @@ c='/usr/local/cpanel';
 ea='/usr/local/cpanel/logs/easy/apache';
 hn=$(hostname);
 
-alias lf='echo `\ls -lrt|tail -1|awk "{print \\$9}"`';
-alias lf2='echo `\ls -lrt|tail -2|awk "{print \\$9}"|head -1`';
-alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
-alias ips=$(ifconfig|grep inet|awk '{if ($2!~"127.0"&&$2!~":$") print $2}'|cut -d":" -f2|awk '{print "echo "$0}');
-alias localips='ips';
-alias ssl='openssl x509 -noout -text -in';
-alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
-function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
-alias lsp='ls -d -1 $PWD/**';
-#todo:
-#alias perms=$(awk 'BEGIN{dir=DIR?DIR:ENVIRON["PWD"];l=split(dir,parts,"/");last="";for(i=1;i<l+1;i++){d=last"/"parts[i];gsub("//","/",d);system("stat --printf \"%a\t%u\t%g\t\" \""d"\"; echo -n \" \";ls -ld \""d"\"");last=d}}'|awk '{print "echo "$0}')
+# I removed the aliases, trying to keep one location.  still ugly.
 
 # Temporary checks
 echo;
