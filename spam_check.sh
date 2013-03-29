@@ -29,7 +29,7 @@ done | awk '{
         }
     else {print}
     }
-    END {print}'
+    END {printf "\n\n"}'
 
 # Domains sending:
 declare -a sendingaddys=($(egrep "<" $temp_dir/cptemp_eximbp | awk '{print $4}' | sort | uniq -c | sort -n | sed 's/<>/no_address_in_logs/g' | tail -4));
