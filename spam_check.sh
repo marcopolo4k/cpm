@@ -29,15 +29,22 @@ done | awk '{
         }
     else {print}
     }
-    END {printf "\n\n"}'
+    END {printf "\n"}'
 
 # Domains sending:
 declare -a sendingaddys=($(egrep "<" $temp_dir/cptemp_eximbp | awk '{print $4}' | sort | uniq -c | sort -n | sed 's/<>/no_address_in_logs/g' | tail -4));
-echo -e "Addresses sending out: " ${sendingaddys[@]} "\n"| sed 's/ \([0-9]*\) /\n\1 /g'
-bigsender=$(echo ${sendingaddys[@]} | awk '{print $NF}'); echo -e "So the big sender is:\n"$bigsender
+echo -e "\nAddresses sending out: " ${sendingaddys[@]} "\n"| sed 's/ \([0-9]*\) /\n\1 /g'
+bigsender=$(echo ${sendingaddys[@]} | awk '{print $NF}'); 
+echo -e "So the big sender is:\n"$bigsender
 
 # Are they local?
 # for i in $doms; do echo -n $i": "; grep $i /etc/localdomains; done
 
-echo; for j in $doms; do dom=$j; echo "Mails attempting to be sent to domain [$j], from:"; cat $temp_dir/cptemp_eximbp | grep -B1 $dom | egrep -v "\-\-|$dom" | awk '{print $4}' | sort | uniq -c | sort -n | tail -5; echo; done
+echo; 
+for j in $doms; do
+    dom=$j; 
+    echo "Mails attempting to be sent to domain [$j], from:"; 
+    cat $temp_dir/cptemp_eximbp | grep -B1 $dom | egrep -v "\-\-|$dom" | awk '{print $4}' | sort | uniq -c | sort -n | tail -5; 
+    echo; 
+done
 
