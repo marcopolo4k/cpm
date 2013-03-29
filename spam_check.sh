@@ -10,8 +10,8 @@ temp_dir=/root/
 exim -bp > $temp_dir/cptemp_eximbp
 
 echo -e "\nDomains stopping up the queue:"; 
-cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5; 
-doms=`cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | grep -v TOTAL | tail -5 | awk '{print $5}'`
+cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5;
+doms=`cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | egrep -v "---|TOTAL" | tail -5 | awk '{print $5}'`
 echo; 
 for j in $doms; do
    dom=$j;
