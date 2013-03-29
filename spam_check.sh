@@ -23,7 +23,7 @@ done | awk '{
     split($4,encdata,"?"); 
     command = (" base64 -d;echo"); 
     if ($0~/UTF-8\?B/) {
-        printf "      "$1,$2,$3; 
+        printf "      "$1" "$2"  "$3; 
         print encdata[4] | command; 
         close(command);
         }
