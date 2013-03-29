@@ -21,9 +21,9 @@ for j in $doms; do
    done | sort | uniq -c | sort -n | tail; 
 done | awk '{
     split($4,encdata,"?"); 
-    command = (" base64 -d;echo"); 
-    if ($0~/UTF-8\?B/) {
-        printf "      "$1" "$2"  "$3; 
+    command = (" base64 -d -i;echo"); 
+    if ($0~/(UTF|utf)-8\?(B|b)/) {
+        printf "      "$1" "$2"  "$3" "; 
         print encdata[4] | command; 
         close(command);
         }
