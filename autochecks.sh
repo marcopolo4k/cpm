@@ -153,7 +153,8 @@ rooterror=$(tail -1000 /usr/local/cpanel/logs/error_log|egrep "Illegal instructi
 echo -e $red$rooterror$clroff;
 
 #egrep -i "Illegal instruction|Undefined subroutine" /var/cpanel/updatelogs/*
-cd /var/cpanel/updatelogs/; for i in $(ls -rt | tail -3); do egrep -i "Illegal instruction|Undefined subroutine" $i; done
+# Error downloading, see ticket 3900473
+cd /var/cpanel/updatelogs/; for i in $(ls -rt | tail -3); do egrep -i "Illegal instruction|Undefined subroutine|Error downloading" $i; done
 #egrep -i "Illegal instruction|Undefined subroutine" /usr/local/cpanel/logs/easy/apache/*
 cd /usr/local/cpanel/logs/easy/apache; for i in $(ls -rt | tail -5); do egrep -i "Illegal instruction|Undefined subroutine" $i; done
 badrepo=$(egrep "alt\.ru|ksplice-up" /etc/yum.repos.d/*);
@@ -208,3 +209,7 @@ if [ "$fb63493" ];
  then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
 fi
 
+fb64265=$(\ls /root/perl5)
+if [ "$fb64265" ];
+ then echo -e "\n"$fb63493"\n"$red"See FB 64265"$clroff"\n"
+fi
