@@ -19,10 +19,10 @@ if [ "$fb63493" ];
  fi
 
 # plan is to find an error that returns positive, then try the following:
-function checkfor() {
+function checkfor() { 
 if [ "$1" ];
  then echo $2; echo $1;
- fi
+ fi ;
 }
 
 echo -e $white"Some quick checks by cPanel Analyst:"$clroff;
@@ -187,7 +187,7 @@ if [ "$relayservers" ];
 fi
 
 # FB 63294
-for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do
+for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd php proftpd pure-ftpd ruby spamassassin squirrelmail; do
  ex_in_conf=$(egrep -i "exclude=.*$ex_in_list" /etc/yum.conf|egrep -v "#.*$ex_in_list");
  if [ ! "$ex_in_conf" ]; then
   echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff;
