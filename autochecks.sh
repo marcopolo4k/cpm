@@ -16,13 +16,13 @@ red="\E[37;41m\033[4m";
 fb63493=$(ps aux | grep -i postfi[x])
 if [ "$fb63493" ];
  then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
- fi
+fi
 
 # plan is to find an error that returns positive, then try the following:
 function checkfor() { 
 if [ "$1" ];
- then echo $2; echo $1;
- fi ;
+ then echo -e $red"$2"$clroff; echo "$1";
+fi
 }
 
 # Get cPanel Version
@@ -68,8 +68,12 @@ echo -ne "\nEnvironment: ";
 strings -1 /var/cpanel/envtype;
 if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
  then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
- echo -e $red$vzerr$clroff;
+ checkfor "$vzerr" "The VPS is running out of resources:"
 fi;
+# if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
+#  then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
+#  echo -e $red$vzerr$clroff;
+# fi;
 echo;
 
 echo -ne "\n\nSELinux: ";
@@ -141,6 +145,7 @@ conf=$a/conf/httpd.conf;
 c='/usr/local/cpanel';
 ea='/usr/local/cpanel/logs/easy/apache';
 hn=$(hostname);
+alias lf='echo `\ls -lrt|\tail -1|awk "{print \\$9}"`';
 
 # I removed the aliases, trying to keep one location.  still ugly.
 
@@ -192,7 +197,9 @@ if [ "$relayservers" ];
  then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
 
-# Perl Checks
+# ************
+# Perl Checks for pre-11.36
+# ************
 if [ $minor -lt 36 ]; then
  echo -e "This system has not been upgraded to 11.36 yet, so running some perl & yum.conf checks:\n"
 
@@ -206,8 +213,6 @@ if [ $minor -lt 36 ]; then
   fi;
  done
 fi
-
-
 
 # FB 63311
 num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
