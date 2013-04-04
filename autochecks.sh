@@ -25,6 +25,12 @@ if [ "$1" ];
  fi ;
 }
 
+# Get cPanel Version
+version=$(/usr/local/cpanel/cpanel -V)
+major=$(echo $version | cut -d. -f1)
+minor=$(echo $version | cut -d. -f2)
+
+
 echo -e $white"Some quick checks by cPanel Analyst:"$clroff;
 
 h=`hostname -i`;
@@ -125,7 +131,7 @@ echo -e $red$hta$clroff;
 # Checkservd log
 # https://staffwiki.cpanel.net/LinuxSupport/OneLiners#Show_chksrvd_failures
 echo -e "\nRecent chksrvd errors:";
-echo -n "starting search at: ";  tail -3200 /var/log/chkservd.log | awk '{print $1,$2,$3}' | head -1
+echo -n "starting search at: ";  tail -3200 /var/log/chkservd.log | awk '{if ($1~/\[20/) print $1,$2,$3}' | head -1
 every_n_min=10; tail -3200 /var/log/chkservd.log |awk -v n=$every_n_min '{if ($1~/\[20/) lastdate=$1" "$2" "$3; split($2,curdate,":"); dmin=(curdate[2]-lastmin); dhr=(curdate[1]-lasthr); if ($0!~/Restarting|nable|\*\*|imeout|ailure|terrupt/ && $0~/:-]/) print lastdate"....."; for (i=1;i<=NF;i=i+1) if ($i~/Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/) if ($1~/\[20/) print $1,$2,$3,$(i-1),$i,$(i+1); else print lastdate,$(i-1),$i,$(i+1); if($1~/\[20/ && (lastmin!=0 || lasthr!=0) && (dmin>n || (dhr==1 && (dmin>-(60-n))) || dhr>1 )) print $1,$2,$3" check took longer than "n" minutes. (hr:min): "dhr":"dmin; if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} }'
 echo "Current time: "; date
 
@@ -186,14 +192,22 @@ if [ "$relayservers" ];
  then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
 
-# FB 63294
-for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd php proftpd pure-ftpd ruby spamassassin squirrelmail; do
- ex_in_conf=$(egrep -i "exclude=.*$ex_in_list" /etc/yum.conf|egrep -v "#.*$ex_in_list");
- if [ ! "$ex_in_conf" ]; then
-  echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff;
- fi;
-done
-# as one-line:  for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do ex_in_conf=$(grep $ex_in_list /etc/yum.conf|egrep -v "#.*$ex_in_list"); if [ ! "$ex_in_conf" ]; then echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff; fi; done
+# Perl Checks
+if [ $minor -lt 36 ]; then
+ echo -e "This system has not been upgraded to 11.36 yet, so running some perl & yum.conf checks:\n"
+
+ curl https://raw.github.com/cPMarco/cpm/master/check_system_perl.sh | sh
+
+ # FB 63294
+ for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do
+  ex_in_conf=$(egrep -i "exclude=.*$ex_in_list" /etc/yum.conf|egrep -v "#.*$ex_in_list");
+  if [ ! "$ex_in_conf" ]; then
+   echo -e $red"$ex_in_list is missing from /etc/yum.conf excludes (FB 63294)"$clroff;
+  fi;
+ done
+fi
+
+
 
 # FB 63311
 num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
