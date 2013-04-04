@@ -11,6 +11,8 @@ red='\033[0;31m'
 redbold='\033[1;31m'
 clroff="\033[0m";
 
+printf "\nNote: This is for pre-11.36 only\n"
+
 # Print out the ls of all the perls
 printf "\nHere are the common perl binary paths.  This can be copy/pasted to document the system:"
 printf "%b\n" "${greenbold}\n# \ls -l /usr/bin/perl /usr/local/bin/perl /usr/local/cpanel/3rdparty/bin/perl ${clroff}"
