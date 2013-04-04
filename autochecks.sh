@@ -13,12 +13,9 @@ white="\E[37;44m\033[7m";
 clroff="\033[0m";
 red="\E[37;41m\033[4m";
 
-fb63493=$(ps aux | grep -i postfi[x])
-if [ "$fb63493" ];
- then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
-fi
 
-# plan is to find an error that returns positive, then try the following:
+# Implemented late, but I do this now.
+# If an error that returns positive, print the error in read first, then the results
 function checkfor() { 
 if [ "$1" ];
  then echo -e $red"$2"$clroff; echo "$1";
@@ -70,10 +67,6 @@ if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
  then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
  checkfor "$vzerr" "The VPS is running out of resources:"
 fi;
-# if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
-#  then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
-#  echo -e $red$vzerr$clroff;
-# fi;
 echo;
 
 echo -ne "\n\nSELinux: ";
@@ -196,6 +189,9 @@ relayservers=$(head /etc/relayhosts)
 if [ "$relayservers" ];
  then echo -e "Relay Servers in /etc/relayhosts:\n"$relayservers"..."
 fi
+
+fb63493=$(ps aux | grep -i postfi[x])
+checkfor "$fb63493" "Postfix processes are running (See FB 63493):"
 
 # ************
 # Perl Checks for pre-11.36
