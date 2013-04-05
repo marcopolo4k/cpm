@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Establish colors (White for heading, red for errors)
+white="\E[37;44m\033[7m";
+clroff="\033[0m";
+red="\E[37;41m\033[4m";
+
+# If an error that returns positive, print the error in red first, then the results
+function checkfor() {
+    if [ "$1" ];
+     then echo -e $red"$2"$clroff; echo "$1";
+     fi
+}
+
 echo -ne "\nEnvironment: ";
 strings -1 /var/cpanel/envtype;
 if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
