@@ -62,7 +62,7 @@ fi
 echo;
 
 # Hardware checks
-curl https://raw.github.com/cPMarco/cpm/master/hardware_checks.sh | sh
+curl -s https://raw.github.com/cPMarco/cpm/master/hardware_checks.sh | sh
 
 echo -e "\nCluster Function, Status:";
 if [ -e /var/cpanel/cluster/root/config ];
