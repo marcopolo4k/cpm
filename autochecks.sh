@@ -1,7 +1,7 @@
 # Auto-checks by cPanel Marco
 # These are some quick checks for a variety of settings and configurations
 # No configuration files are changed or saved in this script
-# How to run this script:
+# One way to run this script:
 # curl -O https://raw.github.com/cPMarco/cpm/master/autochecks.sh > autochecks.sh; chmod u+x autochecks.sh
 # ./autochecks.sh
 
@@ -15,7 +15,7 @@ red="\E[37;41m\033[4m";
 
 
 # Implemented late, but I do this now.
-# If an error that returns positive, print the error in read first, then the results
+# If an error that returns positive, print the error in red first, then the results
 function checkfor() { 
 if [ "$1" ];
  then echo -e $red"$2"$clroff; echo "$1";
