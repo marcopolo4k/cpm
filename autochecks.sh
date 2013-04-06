@@ -127,7 +127,8 @@ echo -e $red$badrepo$clroff;
 backup_log_dir='/usr/local/cpanel/logs/cpbackup';
 if [ -d "$backup_log_dir" ]; then
  cd $backup_log_dir;
- lf | xargs grep EOF | tail -3;
+ backup_interrupted=$(lf | xargs grep EOF | tail -3;)
+ checkfor "$backup_interrupted" "Backup errors that could be a HD issue (full/bad):"
  cd ~;
  else
   echo -e $red"No backup log dir"$clroff;
@@ -169,6 +170,13 @@ if [ $minor -lt 36 ]; then
   fi;
  done
 fi
+
+echo "Perl checks for all versions of cPanel:"
+perl -V:installsitearch
+perl -V:installsitelib
+perl -V:installvendorarch
+perl -V:installvendorlib
+perl -v | head -2 | awk NF; which perl; echo
 
 # FB 63311
 num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
