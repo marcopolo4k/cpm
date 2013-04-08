@@ -193,6 +193,11 @@ if [ "$fb63493" ];
 fi
 
 fb64265=$(\ls /root/perl5)
-if [ "$fb64265" ];
- then echo -e "\n"$fb63493"\n"$red"See FB 64265"$clroff"\n"
+checkfor "$fb63493" "See FB 64265:"
+
+# prompt to clean up any test email account on this server
+if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
+    old_test_email=$(grep cptestm /home/*/etc/*/passwd)
+    checkfor "$old_test_email" "Cruft test email account:"
+    echo "Found test email account. Probably removed it on this date." > /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
 fi
