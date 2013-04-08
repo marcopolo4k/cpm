@@ -199,6 +199,7 @@ checkfor "$fb63493" "See FB 64265:"
 if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
 #    old_test_email=$(grep cptestm /home/*/etc/*/passwd)
 #    checkfor "$old_test_email" "Cruft test email account:"
-    echo "Found cruft test email account. Probably removed it on this date." > /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
+#    echo "Found cruft test email account. Probably removed it on this date." > /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
+    touch /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
     echo -e "Possibly a cruft test email account:\n grep cptestm /home/*/etc/*/passwd"
 fi
