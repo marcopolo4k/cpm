@@ -201,5 +201,5 @@ if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
 #    checkfor "$old_test_email" "Cruft test email account:"
 #    echo "Found cruft test email account. Probably removed it on this date." > /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
     touch /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
-    echo -e "Possibly a cruft test email account:\n grep cptestm /home/*/etc/*/passwd"
+    echo -e $red"Possibly a cruft test email account:"$clroff"\n grep cptestm /home/*/etc/*/passwd"
 fi
