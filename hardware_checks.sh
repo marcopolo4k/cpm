@@ -17,13 +17,10 @@ strings -1 /var/cpanel/envtype;
 
 # make sure not Cloudlinux, before checking for vz errors
 cl_check=$(lsmod|grep lve; uname -a|grep -o lve;);
-if [ ! "cl_check" ]; then
- if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
-  then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
-  checkfor "$vzerr" "The VPS is running out of resources:"
- fi;
- echo;
-fi
+if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
+ then vzerr=$(awk 'NR>2{if($1~/[0-9]/&&$7>0)print$2" failcnt "$7; else if($1!~/[0-9]/&&$6>0)print$1" failcnt "$6}' /proc/user_beancounters;);
+ checkfor "$vzerr" "The VPS is running out of resources:"
+fi;
 echo;
 
 echo -ne "\n\nSELinux: ";
