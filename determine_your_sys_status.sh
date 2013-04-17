@@ -7,6 +7,15 @@
 clroff="\033[0m";
 red="\E[37;41m\033[4m";
 
+# If an error that returns positive, print the error in red first, then the results.  Optional 2nd error afterwards as well.
+function checkfor() {
+if [ "$1" ];
+ then echo -e $red"$2"$clroff; echo -e "$1\n$3";
+ num_fails=$((num_fails+1))
+ else echo "Passed."
+fi
+}
+
 num_fails=0
 
 # First general checks
@@ -14,6 +23,7 @@ echo -e "\nFirst general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 #length_check $libkey_ver_check
 libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
+
 if [ "$libkey_check_results" ]; then
  echo -e $red"libkey check failed due to version number: "$clroff"\n"$libkey_ver_check;
  num_fails=$((num_fails+1))
@@ -34,46 +44,26 @@ fi
 # Command 1
 echo -e "\nCommand 1 Test:"
 keyu_pckg_chg_test=$(rpm -V keyutils-libs)
-if [ "$keyu_pckg_chg_test" ]; then
- echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff
- echo $keyu_pckg_chg_test
- echo -e "\n If the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+checkfor "$keyu_pckg_chg_test" "keyutils-libs check failed. The rpm shows the following file changes: " "\n If the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
  .M.....T
  However, if changes are any of the following, then it's definitely suspicious:
  S.5.L...
  see 'man rpm' and look for 'Each of the 8 characters'"
- num_fails=$((num_fails+1))
-else echo "Passed."
-fi
 
 # Command 2
 echo -e "\nCommand 2 Test:"
 cmd_2_chk=$(\ls -la $thelibkey | egrep "so.1.9|so.1.3.2|1.2.so.2");
-if [ "$cmd_2_chk" ]; then
- echo -e $red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff
- echo $cmd_2_chk
- num_fails=$((num_fails+1))
-else echo "Passed."
-fi
+checkfor "$cmd_2_chk" "Known bad package check failed. The following file is linked to libkeyutils.so.1: "
 
 # Command 3
 echo -e "\nCommand 3 Test:"
 cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
-if [ "$cmd_3_chk" ]; then
-    echo -e $red"libkeyutils libraries contain networking tools: "$clroff
-    echo $cmd_3_chk
-    num_fails=$((num_fails+1))
-else echo "Passed."
-fi
+checkfor "$cmd_3_chk" "libkeyutils libraries contain networking tools: "
 
 # Command 4
 echo -e "\nCommand 4 Test:"
 check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
-if [ "$check_ipcs_lk" ];
- then echo -e $red"IPCS Check failed.  Doesn't necessarily mean anything:\n"$clroff$check_ipcs_lk;
- num_fails=$((num_fails+1))
-else echo "Passed."
-fi
+checkfor "$check_ipcs_lk" "IPCS Check failed.  Doesn't necessarily mean anything:\n"
 
 # Command 5
 echo -e "\nCommand 5 Test is not designed to run by this automated script"
