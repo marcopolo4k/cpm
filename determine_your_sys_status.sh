@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script checks for the Libkey compromise.  Commands mostly from:
+# This script checks for the Libkey compromise.  6 Commands are from:
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
 
@@ -7,31 +7,33 @@
 clroff="\033[0m";
 red="\E[37;41m\033[4m";
 
-# If an error that returns positive, print the error in red first, then the results.  Optional 2nd error afterwards as well.
-function checkfor() {
-if [ "$1" ];
- then echo -e $red"$2"$clroff; echo -e "$1\n$3";
- num_fails=$((num_fails+1))
- else echo "Passed."
-fi
-}
-
 num_fails=0
 
-# First general checks
+# Standard error check:
+# If an error check variable returns anything, then it failed the check, so describe 
+# what the error is in red first, then the results of the check.  Optional 2nd error 
+# afterwards as well.
+function checkfor() {
+ if [ "$1" ];
+  then echo -e $red"$2"$clroff"\n$1\n$3";
+  num_fails=$((num_fails+1))
+  else echo "Passed."
+ fi
+}
+
+# Code starts here
+# First, some general checks.  These are not the 6 commands listed on the website
 echo -e "\nFirst general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 #length_check $libkey_ver_check
-libkey_check_results=$(echo $libkey_ver_check | grep 1.9)
+libkey_check_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2")
+checkfor "$libkey_check_results" "libkey check failed due to version number: "
 
-if [ "$libkey_check_results" ]; then
- echo -e $red"libkey check failed due to version number: "$clroff"\n"$libkey_ver_check;
- num_fails=$((num_fails+1))
-fi
 libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
 libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
 thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
 assiciated_rpm=$(rpm -qf $thelibkey)
+
 assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
 if [ "$assiciated_rpm_check" ]; then
  echo -e $red"libkey check failed due to associated RPM:"$clroff"\n"$assiciated_rpm
@@ -41,6 +43,7 @@ else
  echo "Passed."
 fi
 
+# Here the 6 commands listed on the website start
 # Command 1
 echo -e "\nCommand 1 Test:"
 keyu_pckg_chg_test=$(rpm -V keyutils-libs)
@@ -63,7 +66,7 @@ checkfor "$cmd_3_chk" "libkeyutils libraries contain networking tools: "
 # Command 4
 echo -e "\nCommand 4 Test:"
 check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
-checkfor "$check_ipcs_lk" "IPCS Check failed.  Doesn't necessarily mean anything:\n"
+checkfor "$check_ipcs_lk" "IPCS Check failed.  This is sometimes a false positive:\n"
 
 # Command 5
 echo -e "\nCommand 5 Test is not designed to run by this automated script"
