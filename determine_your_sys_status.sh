@@ -7,10 +7,14 @@
 clroff="\033[0m";
 red="\E[37;41m\033[4m";
 
+# At the end, we'll show how many checks failed.  Based on what I've seen so far:
+# 1 check failed = 50/50 false positive. This is usually cmd 4 or 6
+# 2 checks failed = probably real
+# 3+ checks failed = definitely real
 num_fails=0
 
 # Standard error check:
-# If an error check variable returns anything, then it failed the check, so describe 
+# If an error check variable is not empty, then it failed the check, so describe 
 # what the error is in red first, then the results of the check.  Optional 2nd error 
 # afterwards as well.
 function checkfor() {
