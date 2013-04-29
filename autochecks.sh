@@ -31,6 +31,7 @@ minor=$(echo $version | cut -d. -f2)
 echo -e $white"Some quick checks by cPanel Analyst:"$clroff;
 
 h=`hostname -i`;
+#todo: wish I could access those ticket variables
 #ticket_info_var=$PROMPT_COMMAND
 #echo "Ticket Info: "$ticket_info_var
 #echo $ticket_info_var
@@ -171,7 +172,7 @@ if [ $minor -lt 36 ]; then
  done
 fi
 
-echo "Perl checks for all versions of cPanel:"
+echo -e "Perl checks for all versions of cPanel:"
 perl -V:installsitearch
 perl -V:installsitelib
 perl -V:installvendorarch
@@ -189,11 +190,11 @@ if [ "$postfix_error" ]; then echo -e $red$postfix_error"\n\n see tristan email,
 
 fb63493=$(ps aux | grep -i postfi[x])
 if [ "$fb63493" ];
- then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493"
+ then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493\n"
 fi
 
 fb64265=$(\ls /root/perl5)
-checkfor "$fb63493" "See FB 64265:"
+checkfor "$fb64265" "See FB 64265:"
 
 # prompt to clean up any test email account on this server
 if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
@@ -203,3 +204,6 @@ if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
     touch /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)
     echo -e $red"Possibly a cruft test email account:"$clroff"\n grep cptestm /home/*/etc/*/passwd"
 fi
+
+ac3524=$(fgrep -r open_tty /usr/local/apache/)
+checkfor "$ac3524" "see ac3524:"
