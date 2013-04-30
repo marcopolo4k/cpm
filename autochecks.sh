@@ -205,5 +205,5 @@ if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
     echo -e $red"Possibly a cruft test email account:"$clroff"\n grep cptestm /home/*/etc/*/passwd"
 fi
 
-ac3524=$(fgrep -r open_tty /usr/local/apache/)
-checkfor "$ac3524" "see ac3524:"
+#ac3524=$(fgrep -r open_tty /usr/local/apache/)
+#checkfor "$ac3524" "see ac3524:"
