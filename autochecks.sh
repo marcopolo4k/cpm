@@ -172,12 +172,13 @@ if [ $minor -lt 36 ]; then
  done
 fi
 
-echo -e "Perl checks for all versions of cPanel:"
-perl -V:installsitearch
-perl -V:installsitelib
-perl -V:installvendorarch
-perl -V:installvendorlib
-perl -v | head -2 | awk NF; which perl; echo
+# Maybe ill put this back later, but perl problems seem to be going away
+# echo -e "Perl checks for all versions of cPanel:"
+# perl -V:installsitearch
+# perl -V:installsitelib
+# perl -V:installvendorarch
+# perl -V:installvendorlib
+# perl -v | head -2 | awk NF; which perl; echo
 
 # FB 63311
 num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
