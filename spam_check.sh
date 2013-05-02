@@ -7,10 +7,21 @@
 # 
 #todo: check if this already exists & use that one
 #todo: ask user if they want to use existing or not
-#
-# Choose a directory to store the temporary file.  This will store the output of exim -bp
-temp_dir=/root/
-exim -bp > $temp_dir/cptemp_eximbp
+
+function get_temp_file_dir () {
+ read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp: " -e -i /root temp_dir
+ if [ -e $temp_dir ]; then
+  echo -e "Thank you.
+   This file can be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'.
+   Remember to delete it when you're done."
+  exim -bp > $temp_dir/cptemp_eximbp
+ else
+  echo "That directory does not exist."
+  get_temp_file_dir
+ fi
+}
+
+get_temp_file_dir 
 
 #todo: put this in an awk printf statement, report if domain is local/remote at the end:
 # Are they local?
