@@ -8,6 +8,9 @@
 #todo: check if this already exists & use that one
 #todo: ask user if they want to use existing or not
 
+# been having problems doing this, so ill set it default this way (temporarily)
+temp_dir="/root/cptemp_eximbp"
+
 function get_temp_file_dir () {
  if [ $BASH_VERSINFO -eq 4 ]; then
   read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp: " -e -i /root temp_dir
