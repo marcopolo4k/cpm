@@ -8,8 +8,6 @@
 #todo: check if this already exists & use that one
 #todo: ask user if they want to use existing or not
 
-temp_dir=/root
-
 function debug() {
  debug="off"
  if [ "$debug" = "on" ]; then
@@ -17,8 +15,9 @@ function debug() {
  fi
 }
 # example:
-# debug "libkey_ver_check is ${libkey_ver_check}"
+# debug "variable_name is ${variable_name}"
 
+temp_dir=/root
 function get_temp_file_dir () {
  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
  debug "input_dir is ${input_dir}"
@@ -33,7 +32,7 @@ function get_temp_file_dir () {
   echo "There was a problem, or that directory does not exist. Please try again."
   get_temp_file_dir
  fi
- echo -e "This file can later be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'. Remember to delete it when you're done."
+ echo -e "This file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. Remember to delete it when you're done."
  debug "temp_dir is ${temp_dir}"
 }
 
@@ -68,7 +67,6 @@ function check_if_local () {
 }
 check_if_local 
 
-echo; 
 for j in $doms; do
    dom=$j;
    echo -e "\n\n Count / Subjects for domain = $j:";
