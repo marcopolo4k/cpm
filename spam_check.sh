@@ -11,9 +11,10 @@
 function get_temp_file_dir () {
  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp: " -e -i /root temp_dir
  if [ -e $temp_dir ]; then
-  echo -e "Thank you.
-   This file can be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'.
-   Remember to delete it when you're done."
+  echo -e "
+Thank you. This file can later be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'. Remember to delete it when you're done.
+
+Now, beginning to run the command 'exim -bp > $temp_dir/cptemp_eximbp'.  If this takes an excruciatingly long time, you can cancel (control-c) it, and the script should still work on the part that has already been created, which will probably show you what you need to know anyway."
   exim -bp > $temp_dir/cptemp_eximbp
  else
   echo "That directory does not exist."
