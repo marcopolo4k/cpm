@@ -198,7 +198,8 @@ fb64265=$(\ls /root/perl5)
 checkfor "$fb64265" "See FB 64265:"
 
 # prompt to clean up any test email account on this server
-if [ -e /root/cptestm/ ] && [ ! -e /root/cptestm/.login* ]; then
+tracks=$(\ls /root/cptestm/.login*)
+if [ -e /root/cptestm/ ] && [ ! -e "$tracks" ]; then
 #    old_test_email=$(grep cptestm /home/*/etc/*/passwd)
 #    checkfor "$old_test_email" "Cruft test email account:"
 #    echo "Found cruft test email account. Probably removed it on this date." > /root/cptestm/.login.log.$(date +%Y%m%d%H%M%S)

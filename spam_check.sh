@@ -9,17 +9,23 @@
 #todo: ask user if they want to use existing or not
 
 function get_temp_file_dir () {
- read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp: " -e -i /root temp_dir
- if [ -e $temp_dir ]; then
-  echo -e "
-Thank you. This file can later be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'. Remember to delete it when you're done.
-
-Now, beginning to run the command 'exim -bp > $temp_dir/cptemp_eximbp'.  If this takes an excruciatingly long time, you can cancel (control-c) it, and the script should still work on the part that has already been created, which will probably show you what you need to know anyway."
-  exim -bp > $temp_dir/cptemp_eximbp
+ if [ $BASH_VERSINFO -eq 4 ]; then
+  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp: " -e -i /root temp_dir
+  if [ -e $temp_dir ]; then
+   echo -e "Thank you."
+  else
+   echo "That directory does not exist."
+   get_temp_file_dir
+  fi
  else
-  echo "That directory does not exist."
-  get_temp_file_dir
+  $temp_dir="/root"
+  echo -e "Server is not running the bash 4, so using /root/cptemp_eximbp as the output file."
  fi
+
+ echo -e "This file can later be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'. Remember to delete it when you're done.
+
+Now, beginning to run the command 'exim -bp'.  If this takes an excruciatingly long time, you can cancel (control-c) it, and the script should still work on the part that has already been created, which will probably show you what you need to know anyway."
+ exim -bp > $temp_dir/cptemp_eximbp
 }
 
 get_temp_file_dir 
