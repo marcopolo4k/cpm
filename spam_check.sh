@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script creates a few summaries from the mail queue to help you decide if
 # the server is sending spam or not.
 # 
