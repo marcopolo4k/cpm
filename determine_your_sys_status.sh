@@ -7,15 +7,12 @@
 clroff="\033[0m";
 red="\E[37;41m\033[4m";
 
-# At the end, we'll show how many checks failed.  Based on what I've seen so far:
-# 1 check failed = 50/50 false positive. This is usually cmd 4 or 6
-# 2 checks failed = probably real
-# 3+ checks failed = definitely real
+# At the end, we'll show how many checks failed.
 num_fails=0
 
 # Standard error check:
 # If an error check variable is not empty, then it failed the check, so describe 
-# what the error is in red first, then the results of the check.  Optional 2nd error 
+# what the error is in red, then the results of the check.  Optional 2nd error msg
 # afterwards as well.
 function checkfor() {
  if [ "$1" ];
@@ -24,6 +21,7 @@ function checkfor() {
   else echo "Passed."
  fi
 }
+
 
 # Code starts here
 # First, some general checks.  These are not the 6 commands listed on the website
@@ -47,7 +45,13 @@ else
  echo "Passed."
 fi
 
-# Here the 6 commands listed on the website start
+# this will take too long:
+# "The RPMs contain 3-digit release numbers to prevent updates from overwriting them"
+# 3dig_release=$(rpm -qa | grep -i ssh | egrep "p[0-9]-[0-9]{3}\.")
+# checkfor "$3dig_release" "SSH RPM's with 3-digit release numbers found:"
+
+
+# Here the 6 commands listed on the website 
 # Command 1
 echo -e "\nCommand 1 Test:"
 keyu_pckg_chg_test=$(rpm -V keyutils-libs)
@@ -70,7 +74,7 @@ checkfor "$cmd_3_chk" "libkeyutils libraries contain networking tools: "
 # Command 4
 echo -e "\nCommand 4 Test:"
 check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
-checkfor "$check_ipcs_lk" "IPCS Check failed.  This is sometimes a false positive:\n"
+checkfor "$check_ipcs_lk" "IPCS Check failed.  This is sometimes a false positive:"
 
 # Command 5
 echo -e "\nCommand 5 Test is not designed to run by this automated script"
@@ -89,6 +93,14 @@ if [ "$cmd6fail" -gt 0 ]; then
  num_fails=$((num_fails+1))
 else echo "Passed."
 fi
+
+
+# Summary: How many checks failed? Based on what I've seen so far:
+# 1 check failed = 50/50 false positive. This is usually cmd 4 or 6
+# 2 checks failed = probably real
+# 3+ checks failed = definitely real
+#
+# Also, show the dates on the files
 
 if [ "$num_fails" -gt 0 ]; then
  echo -e "\nPossible change times of the compromised files:"

@@ -13,14 +13,18 @@ temp_dir="/root"
 function get_temp_file_dir () {
  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
  input_dir=${input_dir:-/root}
+ echo "input_dir is "$input_dir
  temp_dir=$(echo $input_dir | sed 's/\/$//')
+ echo "temp_dir is "$temp_dir
  if [ -e $temp_dir ]; then
   echo -e "Thank you."
+ echo "temp_dir is "$temp_dir
  else
   echo "There was a problem, or that directory does not exist. Please try again."
   get_temp_file_dir
  fi
  echo -e "This file can later be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'. Remember to delete it when you're done."
+ echo "temp_dir is "$temp_dir
 }
 
 function run_eximbp () {

@@ -48,7 +48,7 @@ tail -1000 /var/log/messages|egrep -i "segfault|I/O error"|uniq;
 
 fatal_hd_error=$(dmesg|fgrep "SeekComplete Error")
 if [ "$fatal_hd_error" ];
- then echo -e $red"This error indicates a failing HD in dmesg:"$clroff"\n"$fatal_hd_error"\n"
+ then echo -e $red"This error indicates a failing drive in dmesg:"$clroff"\n"$fatal_hd_error"\n"
 fi
 
 fatal_hd_error_2=$(dmesg|fgrep "auto reallocate failed")
