@@ -10,15 +10,24 @@
 
 temp_dir="/root"
 
+function debug() {
+ if [ "${DEBUG}x" != "x" ]; then
+  echo $1
+ fi
+}
+# example:
+# debug "libkey_ver_check is ${libkey_ver_check}"
+
 function get_temp_file_dir () {
  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
+  debug "input_dir is ${input_dir}"
  input_dir=${input_dir:-/root}
- echo "input_dir is "$input_dir
+  debug "input_dir is ${input_dir}"
  temp_dir=$(echo $input_dir | sed 's/\/$//')
- echo "temp_dir is "$temp_dir
+  debug "temp_dir is ${temp_dir}"
  if [ -e $temp_dir ]; then
   echo -e "Thank you."
- echo "temp_dir is "$temp_dir
+  debug "temp_dir is ${temp_dir}"
  else
   echo "There was a problem, or that directory does not exist. Please try again."
   get_temp_file_dir
