@@ -9,7 +9,7 @@
 #todo: ask user if they want to use existing or not
 
 # been having problems doing this, so ill set it default this way (temporarily)
-temp_dir="/root/cptemp_eximbp"
+temp_dir="/root/"
 
 function get_temp_file_dir () {
  if [ $BASH_VERSINFO -eq 4 ]; then
