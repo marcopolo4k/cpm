@@ -8,7 +8,7 @@
 #todo: check if this already exists & use that one
 #todo: ask user if they want to use existing or not
 
-temp_dir="/root"
+temp_dir=/root
 
 function debug() {
  if [ "${DEBUG}x" != "x" ]; then
