@@ -11,7 +11,8 @@
 temp_dir=/root
 
 function debug() {
- if [ "${DEBUG}" != "x" ]; then
+ debug="off"
+ if [ "$debug" = "on" ]; then
   echo $1
  fi
 }
@@ -20,20 +21,20 @@ function debug() {
 
 function get_temp_file_dir () {
  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
-  debug "input_dir is ${input_dir}"
+ debug "input_dir is ${input_dir}"
  input_dir=${input_dir:-/root}
-  debug "input_dir is ${input_dir}"
+ debug "input_dir is ${input_dir}"
  temp_dir=$(echo $input_dir | sed 's/\/$//')
-  debug "temp_dir is ${temp_dir}"
+ debug "temp_dir is ${temp_dir}"
  if [ -e $temp_dir ]; then
   echo -e "Thank you."
-  debug "temp_dir is ${temp_dir}"
+ debug "temp_dir is ${temp_dir}"
  else
   echo "There was a problem, or that directory does not exist. Please try again."
   get_temp_file_dir
  fi
  echo -e "This file can later be used again to run commands (like 'exigrep user@domain $temp_dir/cptemp_eximbp'. Remember to delete it when you're done."
- echo "temp_dir is "$temp_dir
+ debug "temp_dir is ${temp_dir}"
 }
 
 function run_eximbp () {
@@ -41,8 +42,8 @@ echo -e "\nNow, beginning to run the command 'exim -bp'.  If this takes an excru
  exim -bp > $temp_dir/cptemp_eximbp
 }
 
-get_temp_file_dir 
-run_eximbp 
+get_temp_file_dir
+run_eximbp
 
 
 #todo: put this in an awk printf statement, report if domain is local/remote at the end:
@@ -54,6 +55,19 @@ cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5;
 
 # Get domains from Exim queue
 doms=$(cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | egrep -v "\-\-\-|TOTAL|Domain" | tail -5 | awk '{print $5}')
+
+function check_if_local () {
+ echo -e "\nDomains from above that are local:"
+ for onedomain in $doms; do
+  islocal=$(grep $onedomain /etc/localdomains)
+  ishostname=$(hostname | grep $onedomain)
+  if [ "$islocal" -o "$ishostname" ]; then
+   echo $onedomain;
+  fi
+ done
+}
+check_if_local 
+
 echo; 
 for j in $doms; do
    dom=$j;
