@@ -11,7 +11,7 @@
 temp_dir=/root
 
 function debug() {
- if [ "${DEBUG}x" != "x" ]; then
+ if [ "${DEBUG}" != "x" ]; then
   echo $1
  fi
 }
@@ -21,7 +21,6 @@ function debug() {
 function get_temp_file_dir () {
  read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
   debug "input_dir is ${input_dir}"
-  echo "input_dir is "$input_dir
  input_dir=${input_dir:-/root}
   debug "input_dir is ${input_dir}"
  temp_dir=$(echo $input_dir | sed 's/\/$//')
