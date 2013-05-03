@@ -19,7 +19,8 @@ function debug() {
 
 temp_dir=/root
 function get_temp_file_dir () {
- read -p "Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
+ read -p "
+ Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
  debug "input_dir is ${input_dir}"
  input_dir=${input_dir:-/root}
  debug "input_dir is ${input_dir}"
