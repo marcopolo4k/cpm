@@ -106,7 +106,7 @@ function find_addresses_sending_to_top_domains () {
 }
 
 # Run all functions
-get_temp_file_dir
+#get_temp_file_dir
 run_eximbp
 exiqsumm_to_get_top_domains 
 check_if_local 
