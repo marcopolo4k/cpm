@@ -4,6 +4,7 @@
 # 
 # Description:
 # http://staffwiki.cpanel.net/LinuxSupport/EximSpamOneLiners
+# for a summary of the code, the main code block is at the bottom
 # 
 #todo: check if this already exists & use that one
 #todo: ask user if they want to use existing or not
@@ -42,17 +43,15 @@ function run_eximbp () {
  exim -bp > $temp_dir/cptemp_eximbp
 }
 
-
 #todo: put this in an awk printf statement, report if domain is local/remote at the end:
 # Are they local?
 # for i in $doms; do echo -n $i": "; grep $i /etc/localdomains; done
-
 function exiqsumm_to_get_top_domains () {
-echo -e "\nDomains stopping up the queue:"; 
-cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5;
-
-# Get domains from Exim queue
-doms=$(cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | egrep -v "\-\-\-|TOTAL|Domain" | tail -5 | awk '{print $5}')
+ echo -e "\nDomains stopping up the queue:"; 
+ cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5;
+ 
+ # Get domains from Exim queue
+ doms=$(cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | egrep -v "\-\-\-|TOTAL|Domain" | tail -5 | awk '{print $5}')
 }
 
 function check_if_local () {
