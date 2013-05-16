@@ -18,7 +18,7 @@ red="\E[37;41m\033[4m";
 # If an error that returns positive, print the error in red first, then the results
 function checkfor() { 
 if [ "$1" ];
- then echo -e $red"$2"$clroff; echo "$1";
+ then echo -e $red"$2"$clroff"\n$1\n$3";
 fi
 }
 
@@ -84,7 +84,7 @@ echo;
 
 
 hta=$(\ls / /home | grep htaccess);
-echo -e $red$hta$clroff;
+checkfor "$hta" "Global? htaccess file in home" "This is sometimes associated with hacks"
 
 # Checkservd log
 # https://staffwiki.cpanel.net/LinuxSupport/OneLiners#Show_chksrvd_failures
