@@ -23,14 +23,19 @@ if [[ -e /proc/user_beancounters && ! "$cl_check" ]];
 fi;
 echo;
 
+# Security and Users
 echo -ne "\n\nSELinux: ";
 if [ -e /etc/selinux/config ];
  then grep ^SELINUX /etc/selinux/config|cut -d"=" -f2;
  else echo "none";
 fi;
-ps -ef | grep gd[m];
+ps -ef | grep gd[m];w
+echo;
 
-w; echo;
+# Network
+lsof -Pni |grep -vE ':80|:443|imap|pop3|named|cpdavd|courier|dovecot|exim|mysql|pure|pro|sshd|cpsrvd|spamd|ntpd'; echo
+
+# Drive Stuff
 dfi=$(df -i|awk 'split($5,a,"%") {if(a[1]~/[0-9]/ && a[1]>85) print}');
 dff=$(df -ah|awk 'split($5,a,"%") {if(a[1]~/[0-9]/ && a[1]>85) print}');
 if [ "$dff" -o "$dfi" ];

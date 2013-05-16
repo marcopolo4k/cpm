@@ -23,19 +23,19 @@ temp_dir=/root
 function get_temp_file_dir () {
  read -p "
  Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
- debug "input_dir is ${input_dir}"
+  debug "input_dir is ${input_dir}"
  input_dir=${input_dir:-/root}
- debug "input_dir is ${input_dir}"
+  debug "input_dir is ${input_dir}"
  temp_dir=$(echo $input_dir | sed 's/\/$//')
- debug "temp_dir is ${temp_dir}"
+  debug "temp_dir is ${temp_dir}"
  if [ -e $temp_dir ]; then
   echo -e "Thank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. Remember to delete it when you're done."
- debug "temp_dir is ${temp_dir}"
+   debug "temp_dir is ${temp_dir}"
  else
   echo "There was a problem, or that directory does not exist. Please try again."
   get_temp_file_dir
  fi
- debug "temp_dir is ${temp_dir}"
+  debug "temp_dir is ${temp_dir}"
 }
 
 function run_eximbp () {

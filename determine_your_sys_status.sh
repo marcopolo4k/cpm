@@ -2,6 +2,7 @@
 # This script checks for the Libkey compromise.  6 Commands are from:
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
+# Todo: non-verbose mode
 
 # Establish colors
 clroff="\033[0m";
