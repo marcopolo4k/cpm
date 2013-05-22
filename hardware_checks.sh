@@ -33,7 +33,7 @@ ps -ef | grep gd[m];w
 echo;
 
 # Network
-lsof -Pni |grep -vE ':80|:443|imap|pop3|named|cpdavd|courier|dovecot|exim|mysql|pure|pro|sshd|cpsrvd|spamd|ntpd'; echo
+lsof -Pni |grep -vE ':80|:443|imap|pop3|named|cpdavd|courier|dovecot|exim|mysql|pure|pro|sshd|cpsrvd|spamd|ntpd|postgre'; echo
 
 # Drive Stuff
 dfi=$(df -i|awk 'split($5,a,"%") {if(a[1]~/[0-9]/ && a[1]>85) print}');
