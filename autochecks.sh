@@ -133,8 +133,8 @@ if [ -d "$backup_log_dir" ]; then
  cd ~;
  else
   echo -e $red"No backup log dir"$clroff;
-  echo -n "Are account backups on? ";
-  grep BACKUPACCTS /etc/cpbackup.conf | cut -d" " -f2;
+  echo -n "Are account backups on? (#1 legacy, #2 current config:)";
+  grep BACKUPACCTS /etc/cpbackup.conf /var/cpanel/backups/config;
 fi;
 
 cd $ea;
