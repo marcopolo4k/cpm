@@ -29,7 +29,7 @@ function checkfor() {
 echo -e "\nFirst general checks:"
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 #length_check $libkey_ver_check
-libkey_check_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2")
+libkey_check_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
 checkfor "$libkey_check_results" "libkey check failed due to version number: "
 
 libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
