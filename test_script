@@ -6,27 +6,27 @@
 # every_n_min=10;
 ## Just get the last x lines.  Otherwise, the check will take a long time.
 # tail -12000 /var/log/chkservd.log | awk -v n=$every_n_min '{
-## If the first field is a date...
+#     # If the first field is a date...
 #     if ($1~/\[20/) 
-## Then set the date (happens constantly):
+#      # Then set the date (happens constantly):
 #      lastdate=$1" "$2" "$3;
-## Check the time period for the 'took too long' error:
+#      # Check the time period for the 'took too long' error:
 #      split($2,curdate,":");
 #      dmin=(curdate[2]-lastmin);
 #      dhr=(curdate[1]-lasthr);
-## If there's problems on this line, except for certain ones:
+#      # If there's problems on this line, except for certain ones:
 #      if ($0!~/Restarting|nable|\*\*|imeout|ailure|terrupt/ && $0~/:-]/) 
-## Then first print the last date seen
+#         # Then first print the last date seen
 #         print lastdate".....";
-## Run through each field in the line:
+#         # Run through each field in the line:
 #         for (i=1; i<=NF; i=i+1) 
-## If there's a problem
+#             # If there's a problem
 #             if ($i~/Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/) 
-## And if the first field is a date, print the date and error, and the surrounding fields for more info
+#                 # And if the first field is a date, print the date and error, and the surrounding fields for more info
 #                 if ($1~/\[20/) print $1,$2,$3,$(i-1),$i,$(i+1);
-## Otherwise print the last date and the error, and the surrounding fields for more info
+#             # Otherwise print the last date and the error, and the surrounding fields for more info
 #             else print lastdate,$(i-1),$i,$(i+1);
-## Check for 'took too long'.  Print if found.
+#         # Check for 'took too long'.  Print if found.
 #         if($1~/\[20/ && (lastmin!=0 || lasthr!=0) && (dmin>n || (dhr==1 && (dmin>-(60-n))) || dhr>1 )) print $1,$2,$3" check took longer than "n" minutes. (hr:min): "dhr":"dmin;
 #     if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} 
 # }'
