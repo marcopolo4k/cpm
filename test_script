@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+# Here's the bash one-liner.  It's described at:
+# https://staffwiki.cpanel.net/bin/view/LinuxSupport/OneLiners#Both_of_above_two_one_45liners_combined_into_one
+# 
 # every_n_min=10;
 # tail -12000 /var/log/chkservd.log | awk -v n=$every_n_min '{
 #     if ($1~/\[20/) 
@@ -16,6 +19,7 @@
 #     if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} 
 # }'
 
+# Here's 3 major steps I need to do:
 # open log file
 open my $file, 'chkservd.log' or die "couldn't open file $!";
 
