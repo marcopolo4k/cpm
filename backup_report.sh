@@ -1,6 +1,18 @@
 #!/bin/bash
+# Quick backup report script
+# This tries to notice if new and/or legacy backups are enabled to report the number of skipped users as well
 
-echo; backlogdir=/usr/local/cpanel/logs/cpbackup; if [ -e $backlogdir ]; then cd $backlogdir; for i in `\ls`; do echo -n $i": "; grep "Started" $i; echo -n "Ended "; \ls -lrth | grep $i | awk '{print $6" "$7" "$8}'; echo -ne " Number of users backed up:\t"; grep "user :" $i | wc -l; done; echo -e "\nTotal users:"; wc -l /etc/trueuserdomains; fi; 
+echo;
+backlogdir=/usr/local/cpanel/logs/cpbackup;
+if [ -e $backlogdir ]; then
+ cd $backlogdir;
+ for i in `\ls`; do
+  echo -n $i": "; grep "Started" $i; echo -n "Ended ";
+  \ls -lrth | grep $i | awk '{print $6" "$7" "$8}';
+  echo -ne " Number of users backed up:\t";  grep "user :" $i | wc -l;
+ done;
+ echo -e "\nTotal users:"; wc -l /etc/trueuserdomains;
+fi;
 
 legacy_enabled=$(grep BACKUPENABLE /etc/cpbackup.conf | awk '{print $2'})
 legacy_users=$(grep "LEGACY_BACKUP=1" /var/cpanel/users/* | wc -l);
