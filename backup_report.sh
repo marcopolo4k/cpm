@@ -17,7 +17,7 @@ fi;
 legacy_enabled=$(grep BACKUPENABLE /etc/cpbackup.conf | awk '{print $2'})
 legacy_users=$(grep "LEGACY_BACKUP=1" /var/cpanel/users/* | wc -l);
 if [ $legacy_users -gt 0 -o $legacy_enabled == "yes" ]; then
- echo -e "\nLegacy Backups are enabled";
+ echo -e "\nLegacy Backups might be enabled";
  oldxs=$(egrep "LEGACY_BACKUP=0" /var/cpanel/users/* | wc -l);
  echo "EOL Skip file:"; wc -l /etc/cpbackup-userskip.conf;
  if [ $oldxs -gt 0 ]; then echo "Legacy backup exceptions: "$oldxs; fi;
