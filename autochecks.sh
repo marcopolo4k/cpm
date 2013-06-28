@@ -51,6 +51,10 @@ if [ "$hip" ];
  else echo -e $red"Hostname not resolvable"$clroff;
 fi;
 
+# The following requires ifm
+rvs_is_local=$(ifm | grep $(dig +short $(dig $(echo $hip | awk -F . '{print $4"."$3"."$2"."$1}').in-addr.arpa. | grep SOA | awk '{print $5}')))
+checkfor "$rvs_is_local" "This server actually controls it's own Reverse DNS:" "echo $hip | awk -F . '{print $4"."$3"."$2"."$1}').in-addr.arpa. | grep SOA"
+
 echo -ne $hn": "$h"\n";
 /usr/local/cpanel/cpanel -V;
 echo
