@@ -10,6 +10,7 @@
 #todo: ask user if they want to use existing or not
 #todo: check that there's some mail in the queue vs printing empty
 #todo: update variable names like 'j'
+#todo: move this to techscripts
 
 function debug() {
  debug="off"
