@@ -9,6 +9,7 @@
 #todo: check if the temp file already exists & give option to use that one
 #todo: ask user if they want to use existing or not
 #todo: check that there's some mail in the queue vs printing empty
+#todo: update variable names like 'j'
 
 function debug() {
  debug="off"
