@@ -6,7 +6,7 @@
 # http://staffwiki.cpanel.net/LinuxSupport/EximSpamOneLiners
 # for a summary of the code, the main code block is at the bottom
 # 
-#todo: check if this already exists & use that one
+#todo: check if the temp file already exists & give option to use that one
 #todo: ask user if they want to use existing or not
 #todo: check that there's some mail in the queue vs printing empty
 
@@ -65,6 +65,7 @@ function check_if_local () {
  done
 }
 
+# There's an awk script in here that decodes base64 subjects
 function get_subjects_of_top_domains () {
  for j in $doms; do
     dom=$j;
