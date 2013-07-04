@@ -9,7 +9,6 @@
 #todo: check if the temp file already exists & give option to use that one
 #todo: ask user if they want to use existing or not
 #todo: check that there's some mail in the queue vs printing empty
-#todo: update variable names like 'j'
 #todo: move this to techscripts
 
 function debug() {
@@ -69,11 +68,11 @@ function check_if_local () {
 
 # There's an awk script in here that decodes base64 subjects
 function get_subjects_of_top_domains () {
- for j in $doms; do
-    dom=$j;
-    echo -e "\n\n Count / Subjects for domain = $j:";
-    for i in `cat $temp_dir/cptemp_eximbp | grep -B1 $dom | awk '{print $3}'`; do
-        exim -Mvh $i | grep Subject; 
+ for onedomain_of_five in $doms; do
+    dom=$onedomain_of_five;
+    echo -e "\n\n Count / Subjects for domain = $onedomain_of_five:";
+    for email_id in `cat $temp_dir/cptemp_eximbp | grep -B1 $dom | awk '{print $3}'`; do
+        exim -Mvh $email_id | grep Subject; 
     done | sort | uniq -c | sort -n | tail; 
  done | awk '{
      split($4,encdata,"?"); 
@@ -98,10 +97,9 @@ function find_addresses_sending_out () {
 
 function find_addresses_sending_to_top_domains () {
  echo; 
- for j in $doms; do
-     dom=$j; 
-     echo "Mails attempting to be sent to domain [$j], from:"; 
-     cat $temp_dir/cptemp_eximbp | grep -B1 $dom | egrep -v "\-\-|$dom" | awk '{print $4}' | sort | uniq -c | sort -n | tail -5; 
+ for onedomain_of_five in $doms; do
+     echo "Mails attempting to be sent to domain [$onedomain_of_five], from:"; 
+     cat $temp_dir/cptemp_eximbp | grep -B1 $onedomain_of_five | egrep -v "\-\-|$onedomain_of_five" | awk '{print $4}' | sort | uniq -c | sort -n | tail -5; 
      echo; 
  done
 }
