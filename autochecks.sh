@@ -199,11 +199,11 @@ if [ "$fb63493" ];
  then echo -e "Postfix processes are running:\n"$fb63493"\nSee FB 63493\n"
 fi
 
-fb64265=$(\ls /root/perl5)
+fb64265=$(\ls /root/perl5 2>/dev/null)
 checkfor "$fb64265" "See FB 64265:"
 
 # prompt to clean up any test email account on this server
-tracks=$(\ls /root/cptestm/.login*)
+tracks=$(\ls /root/cptestm/.login* 2>/dev/null)
 if [ -e /root/cptestm/ ] && [ ! -e "$tracks" ]; then
 #    old_test_email=$(grep cptestm /home/*/etc/*/passwd)
 #    checkfor "$old_test_email" "Cruft test email account:"
