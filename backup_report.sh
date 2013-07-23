@@ -69,10 +69,11 @@ echo -e "\nNew backups in $new_backup_dir/*/accounts: "$number_new_backups
 }
 
 count_local_legacy_backups() {
-legacy_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /etc/cpbackup.conf)echo -e "\nLegacy backups in $legacy_backup_dir/cpbackup: "
-for i in daily weekly monthly; do 
- echo -n $i": "; 
- \ls $legacy_backup_dir/cpbackup/$i | egrep -v "^dirs$|^files$|cpbackup|status" | sed 's/\.tar.*//g' | sort | uniq | wc -l;
+legacy_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /etc/cpbackup.conf)
+echo -e "\nLegacy backups in $legacy_backup_dir/cpbackup: "
+for freq in daily weekly monthly; do 
+ echo -n $freq": "; 
+ \ls $legacy_backup_dir/cpbackup/$freq | egrep -v "^dirs$|^files$|cpbackup|status" | sed 's/\.tar.*//g' | sort | uniq | wc -l;
 done
 }
 
