@@ -13,8 +13,8 @@ backlogdir=/usr/local/cpanel/logs/cpbackup;
 # check if new backups are enabled
 function check_new_backups() {
  new_enabled=$(grep BACKUPENABLE /var/cpanel/backups/config | awk -F"'" '{print $2}')
- if [ "$new_enabled" == "yes" ]; then new_status="Enabled"
- else new_status="Disabled"
+ if [ "$new_enabled" == "yes" ]; then new_status='\033[1;32m'Enabled'\033[0m'
+ else new_status='\033[1;31m'Disabled'\033[0m'
  fi
  echo -e "\nNew Backups = $new_status"
 }
@@ -22,10 +22,10 @@ function check_new_backups() {
 # check if legacy or new backups are enabled.  if each one is, then show how many users are skipped
 function check_legacy_backups() {
  legacy_enabled=$(grep BACKUPENABLE /etc/cpbackup.conf | awk '{print $2'})
- if [ $legacy_enabled == "yes" ]; then legacy_status="Enabled"
- else legacy_status="Disabled"
+ if [ $legacy_enabled == "yes" ]; then legacy_status='\033[1;32m'Enabled'\033[0m'
+ else legacy_status='\033[1;31m'Disabled'\033[0m'
  fi
- echo "Legacy Backups = $legacy_status";
+ echo -e "Legacy Backups = $legacy_status";
 }
 
 # look at start, end times.  print number of users where backup was attempted
@@ -61,10 +61,27 @@ if [ "$new_status" == "Enabled" ]; then
 fi
 }
 
+count_local_new_backups() {
+echo -e "\n\nA count of the backup files on local disk currently:"
+new_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /var/cpanel/backups/config)
+number_new_backups=$(\ls $new_backup_dir/*/accounts/ | wc -l)
+echo -e "\nNew backups in $new_backup_dir/*/accounts: "$number_new_backups
+}
+
+count_local_legacy_backups() {
+legacy_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /etc/cpbackup.conf)echo -e "\nLegacy backups in $legacy_backup_dir/cpbackup: "
+for i in daily weekly monthly; do 
+ echo -n $i": "; 
+ \ls $legacy_backup_dir/cpbackup/$i | egrep -v "^dirs$|^files$|cpbackup|status" | sed 's/\.tar.*//g' | sort | uniq | wc -l;
+done
+}
+
 # Run all functions
 check_new_backups
 check_legacy_backups
 print_start_end_times 
 list_legacy_exceptions
 list_new_exceptions
+count_local_new_backups
+count_local_legacy_backups
 echo; echo
