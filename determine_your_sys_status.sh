@@ -25,8 +25,10 @@ function checkfor() {
 
 
 # Code starts here
+echo -e "\nSearching for Libkey compromise. The '6 commands' are described here:\n
+http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem"
 # First, some general checks.  These are not the 6 commands listed on the website
-echo -e "\nFirst general checks:"
+echo -e "\nFirst general checks:" 
 libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 #length_check $libkey_ver_check
 libkey_check_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
@@ -111,7 +113,11 @@ if [ "$num_fails" -gt 0 ]; then
    stat $i | grep -i change;
   fi;
  done
- echo -e "\nTotal Number of checks failed: "$num_fails" (out of 7 checks currently)"
+ echo -e "\nTotal Number of checks failed: "$num_fails" (out of 7 checks currently)\n\n
+Based on what I've seen so far, the following might be a general guide to interpret results:
+1 check failed = probably false positive. This is usually command 4 or 6
+2 checks failed = somewhat likely real
+3+ checks failed = definitely real"
 fi
 
 echo
