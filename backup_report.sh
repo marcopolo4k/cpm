@@ -44,7 +44,7 @@ fi;
 
 function list_legacy_exceptions() {
 legacy_users=$(grep "LEGACY_BACKUP=1" /var/cpanel/users/* | wc -l);
-if [ $legacy_status == "Enabled" ]; then
+if [ $legacy_enabled == "yes" ]; then
  echo -e "\nLegacy Backups Exceptions";
  oldxs=$(egrep "LEGACY_BACKUP=0" /var/cpanel/users/* | wc -l);
  if [ $oldxs -gt 0 ]; then echo "Number of real Legacy backup exceptions: "$oldxs; fi;
@@ -55,7 +55,7 @@ fi
 }
 
 function list_new_exceptions() {
-if [ "$new_status" == "Enabled" ]; then
+if [ "$new_enabled" == "yes" ]; then
  newxs=$(egrep "BACKUP=0" /var/cpanel/users/* | grep ":BACK" | wc -l);
  echo -e "\nNew Backups exceptions: $newxs";
 fi
