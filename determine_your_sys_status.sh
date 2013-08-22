@@ -76,7 +76,7 @@ checkfor "$cmd_3_chk" "libkeyutils libraries contain networking tools: "
 
 # Command 4
 echo -e "\nCommand 4 Test:"
-check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep $i | grep -v grep;done | grep -i ssh)
+check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep '\b'$i'\b' | grep -v grep;done | grep -i ssh)
 checkfor "$check_ipcs_lk" "IPCS Check failed.  This is sometimes a false positive:"
 
 # Command 5
