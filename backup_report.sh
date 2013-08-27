@@ -48,7 +48,8 @@ if [ $legacy_enabled == "yes" ]; then
  echo -e "\nLegacy Backups Exceptions";
  oldxs=$(egrep "LEGACY_BACKUP=0" /var/cpanel/users/* | wc -l);
  if [ $oldxs -gt 0 ]; then echo "Number of real Legacy backup exceptions: "$oldxs; fi;
- echo -e "\nExtra Information: This skip file should no longer be used"; wc -l /etc/cpbackup-userskip.conf;
+ skip_file_ct=$(wc -l /etc/cpbackup-userskip.conf 2>/dev/null)
+ if [ -n "$skip_file_ct" ]; then echo -e "\nExtra Information: This skip file should no longer be used"$skip_file_ct; fi
 elif [ $legacy_users -gt 0 -a $legacy_status == "Disabled" ]; then
  echo -e "\nExtra Information: Legacy Backups aren't enabled, but there are $legacy_users users ready to use them."
 fi
