@@ -12,7 +12,7 @@ backlogdir=/usr/local/cpanel/logs/cpbackup;
 
 # check if new backups are enabled
 function check_new_backups() {
- new_enabled=$(grep BACKUPENABLE /var/cpanel/backups/config | awk -F"'" '{print $2}')
+ new_enabled=$(grep BACKUPENABLE /var/cpanel/backups/config 2>/dev/null | awk -F"'" '{print $2}')
  if [ "$new_enabled" == "yes" ]; then new_status='\033[1;32m'Enabled'\033[0m'
  else new_status='\033[1;31m'Disabled'\033[0m'
  fi
@@ -63,14 +63,17 @@ if [ "$new_enabled" == "yes" ]; then
 fi
 }
 
-count_local_new_backups() {
+function count_local_new_backups() {
 echo -e "\n\nA count of the backup files on local disk currently:"
-new_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /var/cpanel/backups/config)
-number_new_backups=$(\ls $new_backup_dir/*/accounts/ | wc -l)
-echo -e "\nNew backups in $new_backup_dir/*/accounts: "$number_new_backups
+new_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /var/cpanel/backups/config 2>/dev/null)
+if [ -n "$new_backup_dir" ]; then
+ number_new_backups=$(\ls $new_backup_dir/*/accounts/ 2>/dev/null | wc -l)
+ echo -e "\nNew backups in $new_backup_dir/*/accounts: "$number_new_backups
+else echo "0 - No new backup directory configured"
+fi
 }
 
-count_local_legacy_backups() {
+function count_local_legacy_backups() {
 legacy_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /etc/cpbackup.conf)
 echo -e "\nLegacy backups in $legacy_backup_dir/cpbackup: "
 for freq in daily weekly monthly; do 
