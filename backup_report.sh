@@ -13,7 +13,7 @@ backlogdir=/usr/local/cpanel/logs/cpbackup;
 # check if new backups are enabled
 function check_new_backups() {
  new_enabled=$(grep BACKUPENABLE /var/cpanel/backups/config 2>/dev/null | awk -F"'" '{print $2}')
- if [ "$new_enabled" == "yes" ]; then new_status='\033[1;32m'Enabled'\033[0m'
+ if [ "$new_enabled" = "yes" ]; then new_status='\033[1;32m'Enabled'\033[0m'
  else new_status='\033[1;31m'Disabled'\033[0m'
  fi
  echo -e "\nNew Backups = $new_status"
@@ -22,7 +22,7 @@ function check_new_backups() {
 # check if legacy or new backups are enabled.  if each one is, then show how many users are skipped
 function check_legacy_backups() {
  legacy_enabled=$(grep BACKUPENABLE /etc/cpbackup.conf | awk '{print $2'})
- if [ $legacy_enabled == "yes" ]; then legacy_status='\033[1;32m'Enabled'\033[0m'
+ if [ $legacy_enabled = "yes" ]; then legacy_status='\033[1;32m'Enabled'\033[0m'
  else legacy_status='\033[1;31m'Disabled'\033[0m'
  fi
  echo -e "Legacy Backups = $legacy_status";
