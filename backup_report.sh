@@ -13,7 +13,7 @@ backlogdir=/usr/local/cpanel/logs/cpbackup;
 
 # check if new backups are enabled
 function check_new_backups() {
- echo -e "\n\n\033[36m[ cPTech Backup Report v1.0 ]\033[0m\n";
+ echo -e "\n\n\033[36m[ cPTech Backup Report v1.0 ]\033[0m";
  new_enabled=$(grep BACKUPENABLE /var/cpanel/backups/config 2>/dev/null | awk -F"'" '{print $2}')
  if [ "$new_enabled" = "yes" ]; then new_status='\033[1;32m'Enabled'\033[0m'
  else new_status='\033[1;31m'Disabled'\033[0m'
@@ -32,7 +32,7 @@ function check_legacy_backups() {
 
 # look at start, end times.  print number of users where backup was attempted
 function print_start_end_times () {
-echo -e "\n\n\033[36m[ Current Backup Logs in "$backlogdir" ]\033[0m\n";
+echo -e "\n\033[36m[ Current Backup Logs in "$backlogdir" ]\033[0m";
 if [ -e $backlogdir ]; then
  cd $backlogdir;
  for i in `\ls`; do
@@ -40,13 +40,13 @@ if [ -e $backlogdir ]; then
   \ls -lrth | grep $i | awk '{print $6" "$7" "$8}';
   echo -ne " Number of users backed up:\t";  grep "user :" $i | wc -l;
  done;
- echo -e "\n\n\033[36m[ Expected Number of Users ]\033[0m\n";
+ echo -e "\n\033[36m[ Expected Number of Users ]\033[0m";
  wc -l /etc/trueuserdomains;
 fi;
 }
 
 function exceptions_heading() {
- echo -e "\n\n\033[36m[ A count of user exceptions ]\033[0m\n";
+ echo -e "\n\033[36m[ A count of user exceptions ]\033[0m";
 }
 
 function list_legacy_exceptions() {
@@ -75,7 +75,7 @@ fi
 }
 
 function count_local_new_backups() {
-echo -e "\n\n\033[36m[ A count of the backup files on local disk currently ]\033[0m\n";
+echo -e "\n\033[36m[ A count of the backup files on local disk currently ]\033[0m";
 new_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /var/cpanel/backups/config 2>/dev/null)
 if [ -n "$new_backup_dir" ]; then
  number_new_backups=$(\ls $new_backup_dir/*/accounts/ 2>/dev/null | wc -l)
