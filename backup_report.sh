@@ -55,7 +55,6 @@ if [ $legacy_enabled == "yes" ]; then
  oldxs=$(egrep "LEGACY_BACKUP=0" /var/cpanel/users/* | wc -l);
  skip_file_ct=$(wc -l /etc/cpbackup-userskip.conf 2>/dev/null)
  if [ $oldxs -gt 0 -o "$skip_file_ct" ]; then
-  echo "oldxs="$oldxs " skip file="$skip_file_ct
   echo -e "Legacy Backups Exceptions";
  fi
  if [ $oldxs -gt 0 ]; then echo "Number of real Legacy backup exceptions: "$oldxs; fi;
