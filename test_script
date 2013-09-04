@@ -36,12 +36,20 @@
 open my $file, 'chkservd.log' or die "couldn't open file $!";
 
 #2.) make a for loop that reads the file
-#3.) break file into hash of hashes called "service_status"
 
 foreach my $line (readline $file) {
-    if ($line =~ /regular expression/){
+
+#3.) break file into hash of hashes called "service_status"
+# not sure what this means 
+# maybe Ill separate everything by at least two dots together (..) so, if the block contains "-]", then the check failed, and I can print the whole block.
+
+# old example of regex's
+    if ($line =~ /Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/){
+        print $line
     }
 }
+
+
 
 
 
