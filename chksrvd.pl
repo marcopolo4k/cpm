@@ -11,7 +11,7 @@ foreach my $line (readline $file) {
 #3.) no longer plan to break file into hash of hashes called "service_status"
 
 # Set the date
-$lastdate = $1 if $line =~ /(\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} \+[0-9]{4}\]).*/ ;
+$lastdate = $1 if $line =~ /(\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} [+-][0-9]{4}\]).*/ ;
 #DEBUG
 #print $lastdate ;
 
