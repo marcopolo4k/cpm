@@ -31,26 +31,37 @@
 #     if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} 
 # }'
 
+use Data::Dumper;
+
 # Here's 3 major steps I need to do:
 #1.) open log file
 open my $file, 'chkservd.log' or die "couldn't open file $!";
 
+
 #2.) make a for loop that reads the file
 
-foreach my $line (readline $file) {
+# foreach my $line (readline $file) {
 
 #3.) break file into hash of hashes called "service_status"
 # not sure what this means 
 # maybe Ill separate everything by at least two dots together (..) so, if the block contains "-]", then the check failed, and I can print the whole block.
 
-# old example of regex's
-    if ($line =~ /Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/){
-        print $line
-    }
-}
+my %hash = do {
+  local $/; # set to undef, for slurp
+  map {
+    my ($key, $vals) = split /\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} \+[0-9]{4}\]/, $_, 2; # split on first whitespace, into two strings
+    $key => [ split /\s*\.\.\.\.\s*/, $vals ];    # return a list of a key and a value array
+  } split /(?<!,)\n/, <FILE>;              # split the file into records
+};
+
+# # just getting some of the lines using the old regex
+#     if ($line =~ /Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/){
+#         print $line
+#     }
+# }
 
 
-
+# http://stackoverflow.com/questions/15476540/perl-parse-file-text-into-hash
 
 
 
@@ -67,4 +78,4 @@ close $file;
 
 
 
-$service_status->{'2012-08-05 12:38:47'}->{'mysql'} = "Mysql failed to connect";
+#$service_status->{'2012-08-05 12:38:47'}->{'mysql'} = "Mysql failed to connect";
