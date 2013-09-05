@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #1.) open log file
-open my $file, 'chkservd.log' or die "couldn't open file $!";
+open my $file, '/var/log/chkservd.log' or die "couldn't open file $!";
 
 
 #2.) make a for loop that reads the file
