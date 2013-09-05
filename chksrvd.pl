@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use strict;
 
 #1.) open log file
 open my $file, '/var/log/chkservd.log' or die "couldn't open file $!";
@@ -20,8 +21,8 @@ $lastdate = $1 if $line =~ /(\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}:
             print $lastdate, " ....\n";
         }
     if ($line =~ /Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/){
-        @a1 = split /(\.){2,}/,$line;
-        foreach (@a1) {
+        my @array_fields = split /(\.){2,}/,$line;
+        foreach (@array_fields) {
             if (/:\-\]/) {
                 print $lastdate, " ", $_, "\n";
             }
