@@ -5,13 +5,12 @@
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
 # How to run this script:
-# curl -s --insecure https://raw.github.com/cPMarco/cpm/master/determine_your_sys_status.sh | sh
+# curl -s --insecure https://raw.github.com/cPMarco/cpm/master/libkey_check.sh | sh
 #
-# Todo: non-verbose mode
 
 # Only print debugging messages if, well, debugging
 
-function debug() {
+debug() {
  debug="on"
  if [ "$debug" = "on" ]; then
   echo $1
@@ -41,7 +40,7 @@ num_fails=0
 # If an error check variable is not empty, then it failed the check, so describe 
 # what the error is in red, then the results of the check.  Optional 2nd error msg
 # afterwards as well.
-function checkfor() {
+checkfor() {
  if [ "$1" ];
   then echo -e $red"$2"$clroff"\n$1\n$3";
   num_fails=$((num_fails+1))
@@ -51,19 +50,19 @@ function checkfor() {
 
 
 # Code starts here
-function print_header() {
+print_header() {
  echo -e "\nSearching for Libkey compromise. The '6 commands' are described here:\n
 http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem"
 }
 
 # These general checks are not the 6 commands listed on the website
-function libkey_version_check() {
+libkey_version_check() {
  libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
  #todo: length_check $libkey_ver_check
  libkey_add_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
 }
  
-function is_rpm_owned() {
+is_rpm_owned() {
  libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
  libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
  thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
@@ -79,19 +78,19 @@ function is_rpm_owned() {
 
 
 # Here the 6 commands listed on the website 
-function command_1() {
+command_1() {
  keyu_pckg_chg_test=$(rpm -V keyutils-libs)
 }
 
-function command_2() {
+command_2() {
  cmd_2_chk=$(\ls -la $thelibkey | egrep "so.1.9|so.1.3.2|1.2.so.2");
 }
 
-function command_3() {
+command_3() {
  cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
 }
 
-function command_4() {
+command_4() {
  check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep '\b'$i'\b' | grep -v grep;done | grep -i ssh)
 }
 
@@ -99,7 +98,7 @@ function command_4() {
 #function command_5() {
 #}
 
-function command_6() {
+command_6() {
  cmd6fail=0
  for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
   sshd_library=$(rpm -qf $i);
@@ -113,7 +112,7 @@ function command_6() {
 }
 
 
-function add_results() {
+add_results() {
 	if [ "$libkey_add_results" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$assiciated_rpm_check" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$keyu_pckg_chg_test" ]; then num_fails=$((num_fails+1)); fi;
@@ -125,9 +124,8 @@ function add_results() {
 	#num_fails=$((num_fails+1));
 }
 
-function print_results() {
+print_results() {
 #debug "print_results is getting run"
-	#if [ "$silent" -ne "1" ]; then
 	if [ $num_fails -gt 0 -o $silent -ne "1" ]; then
 		print_header
 
@@ -197,7 +195,7 @@ fi
 }
 
 # Print Summary and show the dates on the files
-function summary_of_fail() {
+summary_of_fail() {
 	if [ "$num_fails" -gt 0 ]; then
 		echo -e "\nPossible change times of the compromised files:"
 		for i in $(\ls /lib*/libkeyutils*); do
