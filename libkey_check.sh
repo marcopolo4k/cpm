@@ -23,52 +23,40 @@ red="\E[37;41m\033[4m";
 
 # Get options
 silent=0
-while getopts ":s" opt; do
+verbose=0
+while getopts ":s:v" opt; do
 	case $opt in
         s) silent="1";;
+        v) verbose="1";;
         # h) print_help;;
         \?) echo "invalid option: -$OPTARG"; echo; # print_help;;
         #:) echo "option -$OPTARG requires an argument."; echo; print_help;;
     esac
 done
 
-
 # At the end, we'll show how many checks failed.
 num_fails=0
 
-# Standard error check:
-# If an error check variable is not empty, then it failed the check, so describe 
-# what the error is in red, then the results of the check.  Optional 2nd error msg
-# afterwards as well.
-checkfor() {
- if [ "$1" ];
-  then echo -e $red"$2"$clroff"\n$1\n$3";
-  num_fails=$((num_fails+1))
-  else echo "Passed."
- fi
-}
-
-
 # Code starts here
 print_header() {
- echo -e "\nSearching for Libkey compromise. The '6 commands' are described here:\n
+	echo -e "\nSearching for Libkey compromise. The '6 commands' are described here:\n
 http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem"
 }
 
 # These general checks are not the 6 commands listed on the website
 libkey_version_check() {
- libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
- #todo: length_check $libkey_ver_check
- libkey_add_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
+	libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
+	#todo: length_check $libkey_ver_check
+	libkey_add_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
 }
  
 is_rpm_owned() {
- libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
- libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
- thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
- assiciated_rpm=$(rpm -qf $thelibkey)
- 
- assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
+	libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
+	libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
+	thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
+	assiciated_rpm=$(rpm -qf $thelibkey)
+	 
+	assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
 }
 
 # this will take too long:
@@ -79,19 +67,19 @@ is_rpm_owned() {
 
 # Here the 6 commands listed on the website 
 command_1() {
- keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+	keyu_pckg_chg_test=$(rpm -V keyutils-libs)
 }
 
 command_2() {
- cmd_2_chk=$(\ls -la $thelibkey | egrep "so.1.9|so.1.3.2|1.2.so.2");
+	cmd_2_chk=$(\ls -la $thelibkey | egrep "so.1.9|so.1.3.2|1.2.so.2");
 }
 
 command_3() {
- cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
+	cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
 }
 
 command_4() {
- check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep '\b'$i'\b' | grep -v grep;done | grep -i ssh)
+	check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep '\b'$i'\b' | grep -v grep;done | grep -i ssh)
 }
 
 #placeholder for:
@@ -99,16 +87,16 @@ command_4() {
 #}
 
 command_6() {
- cmd6fail=0
- for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
-  sshd_library=$(rpm -qf $i);
-  if [ ! "sshd_library" ]; then
-   cmd6fail=$((cmd6fail+1))
-  fi;
- done
- if [ "$cmd6fail" -gt 0 ]; then
-  num_fails=$((num_fails+1))
- fi
+	cmd6fail=0
+	for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
+		sshd_library=$(rpm -qf $i);
+		if [ ! "sshd_library" ]; then
+			cmd6fail=$((cmd6fail+1))
+		fi;
+	done
+	if [ "$cmd6fail" -gt 0 ]; then
+		num_fails=$((num_fails+1))
+	fi
 }
 
 
@@ -126,70 +114,69 @@ add_results() {
 
 print_results() {
 #debug "print_results is getting run"
-	if [ $num_fails -gt 0 -o $silent -ne "1" ]; then
+	if [ $num_fails -gt 0 -o $verbose -eq "1" ]; then
 		print_header
-
 		#debug "num fails is ${num_fails}"
  
 		if [ "$libkey_add_results" ]; then 
 			echo -e "\n"$red"libkey check failed due to version number: "$clroff"\n$libkey_add_results\n";
+		#don't think i need this:
 		#else echo -e "Version number:\nPassed.\n"
 		fi
 
-	if [ "$assiciated_rpm_check" ]; then
-		echo -e "\n"$red"libkey check failed due to associated RPM:"$clroff"\n"$assiciated_rpm
-	else
-		echo -e "\nRPM associated with libkey file:\n"$assiciated_rpm
-	fi
+		if [ "$assiciated_rpm_check" ]; then
+			echo -e "\n"$red"libkey check failed due to associated RPM:"$clroff"\n"$assiciated_rpm
+		else
+			echo -e "\nRPM associated with libkey file:\n"$assiciated_rpm
+		fi
 
-	echo -e "\nCommand 1 Test:"
-	if [ "$keyu_pckg_chg_test" ]; then
-		echo -e "\n"$red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
-		echo -e "\n"$keyu_pckg_chg_test"\nIf the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+		echo -e "\nCommand 1 Test:"
+		if [ "$keyu_pckg_chg_test" ]; then
+			echo -e "\n"$red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
+			echo -e "\n"$keyu_pckg_chg_test"\nIf the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
 .M.....T
 However, if changes are any of the following, then it's definitely suspicious:
 S.5.L...
 see 'man rpm' and look for 'Each of the 8 characters'"
-	else echo -e "Passed."
-	fi
+		else echo -e "Passed."
+		fi
 
-	echo -e "\nCommand 2 Test:"
-	if [ "$cmd_2_chk" ]; then
-		echo -e "\n"$red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff"\n"
-		echo -e $cmd_2_chk"\n";
-	else echo -e "Passed."
-	fi
+		echo -e "\nCommand 2 Test:"
+		if [ "$cmd_2_chk" ]; then
+			echo -e "\n"$red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff"\n"
+			echo -e $cmd_2_chk"\n";
+		else echo -e "Passed."
+		fi
 
-	echo -e "\nCommand 3 Test:"
-	if [ "$cmd_3_chk" ]; then
-		echo -e "\n"$red"libkeyutils libraries contain networking tools: "$clroff"\n"
-		echo -e $cmd_3_chk"\n";
-	else echo -e "Passed."
-	fi
+		echo -e "\nCommand 3 Test:"
+		if [ "$cmd_3_chk" ]; then
+			echo -e "\n"$red"libkeyutils libraries contain networking tools: "$clroff"\n"
+			echo -e $cmd_3_chk"\n";
+		else echo -e "Passed."
+		fi
 
-	echo -e "\nCommand 4 Test:"
-	if [ "$check_ipcs_lk" ]; then
-		echo -e "\n"$red"IPCS Check failed.  This is sometimes a false positive:"$clroff"\n"
-                echo -e $check_ipcs_lk"\n";
-	else echo -e "Passed."
-        fi
+		echo -e "\nCommand 4 Test:"
+		if [ "$check_ipcs_lk" ]; then
+			echo -e "\n"$red"IPCS Check failed.  This is sometimes a false positive:"$clroff"\n"
+			echo -e $check_ipcs_lk"\n";
+		else echo -e "Passed."
+		fi
 
-	echo -e "\nCommand 5 Test is not designed to run by this automated script"
+		echo -e "\nCommand 5 Test is not designed to run by this automated script"
 
-	echo -e "\nCommand 6 Test:"
-	cmd6fail=0
-	for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
-		sshd_library=$(rpm -qf $i);
-		if [ ! "sshd_library" ]; then
-			echo -e "\n"$i" has no associated library."; echo $sshd_library;
-			cmd6fail=$((cmd6fail+1))
-		fi;
-	done
-	if [ "$cmd6fail" -gt 0 ]; then
-		num_fails=$((num_fails+1))
-	else echo "Passed."
-	fi
-
+		echo -e "\nCommand 6 Test:"
+		cmd6fail=0
+		for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
+			sshd_library=$(rpm -qf $i);
+			if [ ! "sshd_library" ]; then
+				echo -e "\n"$i" has no associated library."; echo $sshd_library;
+				cmd6fail=$((cmd6fail+1))
+			fi;
+		done
+		if [ "$cmd6fail" -gt 0 ]; then
+			num_fails=$((num_fails+1))
+		else echo "Passed."
+		fi
 
 fi
 }
@@ -208,10 +195,9 @@ summary_of_fail() {
 Based on what I've seen so far, the following might be a general guide to interpret results:
 1 check failed = probably false positive. This is usually commands 1, 4, or 6
 2 checks failed = somewhat likely real
-3+ checks failed = definitely real"
+3+ checks failed = definitely real\n"
 	fi
-	 
-	echo
+	echo "Single security check complete"
 }
 
 # Run all functions
