@@ -11,10 +11,10 @@
 # Only print debugging messages if, well, debugging
 
 debug() {
- debug="on"
- if [ "$debug" = "on" ]; then
-  echo $1
- fi
+	debug="on"
+	if [ "$debug" = "on" ]; then
+		echo $1
+	fi
 }
 
 # Establish colors
@@ -67,7 +67,7 @@ is_rpm_owned() {
 
 # Here the 6 commands listed on the website 
 command_1() {
-	keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+	cmd_1_chk=$(rpm -V keyutils-libs)
 }
 
 command_2() {
@@ -103,7 +103,7 @@ command_6() {
 add_results() {
 	if [ "$libkey_add_results" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$assiciated_rpm_check" ]; then num_fails=$((num_fails+1)); fi;
-	if [ "$keyu_pckg_chg_test" ]; then num_fails=$((num_fails+1)); fi;
+	if [ "$cmd_1_chk" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$cmd_2_chk" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$cmd_3_chk" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$cmd_4_chk" ]; then num_fails=$((num_fails+1)); fi;
@@ -131,9 +131,9 @@ print_results() {
 		fi
 
 		echo -e "\nCommand 1 Test:"
-		if [ "$keyu_pckg_chg_test" ]; then
+		if [ "$cmd_1_chk" ]; then
 			echo -e "\n"$red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
-			echo -e "\n"$keyu_pckg_chg_test"\nIf the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+			echo -e "\n"$cmd_1_chk"\nIf the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
 .M.....T
 However, if changes are any of the following, then it's definitely suspicious:
 S.5.L...
