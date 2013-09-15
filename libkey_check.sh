@@ -119,7 +119,7 @@ print_results() {
 		#debug "num fails is ${num_fails}"
  
 		if [ "$libkey_add_results" ]; then 
-			echo -e "\n"$red"libkey check failed due to version number: "$clroff"\n$libkey_add_results\n";
+			echo -e "\n"$red"libkey check failed due to version number: "$clroff"\n$libkey_add_results";
 		#don't think i need this:
 		#else echo -e "Version number:\nPassed.\n"
 		fi
@@ -132,19 +132,19 @@ print_results() {
 
 		echo -e "\nCommand 1 Test:"
 		if [ "$cmd_1_chk" ]; then
-			echo -e "\n"$red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
-			echo -e "\n"$cmd_1_chk"\nIf the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
-.M.....T
-However, if changes are any of the following, then it's definitely suspicious:
-S.5.L...
-see 'man rpm' and look for 'Each of the 8 characters'"
+			echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
+			echo -e "\n$cmd_1_chk\n\n If the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+ .M.....T
+ However, if changes are any of the following, then it's definitely suspicious:
+ S.5.L...
+ see 'man rpm' and look for 'Each of the 8 characters'"
 		else echo -e "Passed."
 		fi
 
 		echo -e "\nCommand 2 Test:"
 		if [ "$cmd_2_chk" ]; then
-			echo -e "\n"$red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff"\n"
-			echo -e $cmd_2_chk"\n";
+			echo -e $red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff"\n"
+			echo -e $cmd_2_chk
 		else echo -e "Passed."
 		fi
 
