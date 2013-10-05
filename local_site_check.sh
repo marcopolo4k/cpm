@@ -17,11 +17,9 @@ tmp_dir=/root/cptmp.doms
 host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d%H%M)
 summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d%H%M)
 
-echo "host_backup_file is: "$host_backup_file
-echo "summary_file is: "$summary_file
-
 cp -pv /etc/hosts $host_backup_file
 
+# Add files into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
 for i in $(cut -d: -f1 /etc/trueuserdomains); do echo -e "127.0.0.1\t\t$i" >> /etc/hosts; done
 
 mkdir $tmp_dir;
@@ -43,4 +41,5 @@ if [ -d $tmp_dir ]; then
 else echo "Error: "$tmp_dir" doesn't exist."
 fi
 
+# All done
 echo -e "\nSite Check Complete.  Summary at:\n"$summary_file"\n"
