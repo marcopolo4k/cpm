@@ -5,7 +5,7 @@
 # Description: 
 #
 # How to run this script:
-# curl -s --insecure https://raw.github.com/cPanelTechs/TechScripts/master/local_site_check.sh | sh
+# curl -s --insecure https://raw.github.com/cPMarco/cpm/master/local_site_check.sh | sh
 
 # This script checks if locally-hosted websites are responding via Apache, and creates a summary_file at:
 # /root/site_summary.HOST_IP_ADDRESS.cP.DATE_TAG
