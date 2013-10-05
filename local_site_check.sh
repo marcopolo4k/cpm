@@ -14,14 +14,16 @@
 
 # Feel free to customize the following fields:
 tmp_dir=/root/cptmp.doms
-host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d%H%M)
-summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d%H%M)
+host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d).$(date +%H).$(date +%M)
+summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
+# Backup hosts file
 cp -pv /etc/hosts $host_backup_file
 
 # Add files into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
 for i in $(cut -d: -f1 /etc/trueuserdomains); do echo -e "127.0.0.1\t\t$i" >> /etc/hosts; done
 
+# Main work
 mkdir $tmp_dir;
 for i in $(cut -d: -f1 /etc/trueuserdomains); do
   echo $i;
