@@ -11,7 +11,7 @@
 # Only print debugging messages if, well, debugging
 
 debug() {
-	debug="on"
+	debug="off"
 	if [ "$debug" = "on" ]; then
 		echo $1
 	fi
@@ -47,7 +47,7 @@ http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem"
 libkey_version_check() {
 	libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
 	#todo: length_check $libkey_ver_check
-	libkey_add_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
+	libkey_check_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
 }
  
 is_rpm_owned() {
@@ -57,6 +57,7 @@ is_rpm_owned() {
 	assiciated_rpm=$(rpm -qf $thelibkey)
 	 
 	assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
+	debug "the libkey is: ${thelibkey}"
 }
 
 # this will take too long:
@@ -101,7 +102,7 @@ command_6() {
 
 
 add_results() {
-	if [ "$libkey_add_results" ]; then num_fails=$((num_fails+1)); fi;
+	if [ "$libkey_check_results" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$assiciated_rpm_check" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$cmd_1_chk" ]; then num_fails=$((num_fails+1)); fi;
 	if [ "$cmd_2_chk" ]; then num_fails=$((num_fails+1)); fi;
@@ -118,8 +119,8 @@ print_results() {
 		print_header
 		#debug "num fails is ${num_fails}"
  
-		if [ "$libkey_add_results" ]; then 
-			echo -e "\n"$red"libkey check failed due to version number: "$clroff"\n$libkey_add_results\n";
+		if [ "$libkey_check_results" ]; then 
+			echo -e "\n"$red"libkey check failed due to version number: "$clroff"\n$libkey_check_results";
 		#don't think i need this:
 		#else echo -e "Version number:\nPassed.\n"
 		fi
@@ -132,19 +133,20 @@ print_results() {
 
 		echo -e "\nCommand 1 Test:"
 		if [ "$cmd_1_chk" ]; then
-			echo -e "\n"$red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
-			echo -e "\n"$cmd_1_chk"\nIf the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
-.M.....T
-However, if changes are any of the following, then it's definitely suspicious:
-S.5.L...
-see 'man rpm' and look for 'Each of the 8 characters'"
+			echo -e $red"keyutils-libs check failed. The rpm shows the following file changes: "$clroff;
+			echo -e "# rpm -V keyutils-libs";
+			echo -e "$cmd_1_chk\n\n If the above changes are any of the following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+ .M.....T
+ However, if changes are any of the following, then it's definitely suspicious:
+ S.5.L...
+ see 'man rpm' and look for 'Each of the 8 characters'"
 		else echo -e "Passed."
 		fi
 
 		echo -e "\nCommand 2 Test:"
 		if [ "$cmd_2_chk" ]; then
-			echo -e "\n"$red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff"\n"
-			echo -e $cmd_2_chk"\n";
+			echo -e $red"Known bad package check failed. The following file is linked to libkeyutils.so.1: "$clroff"\n"
+			echo -e $cmd_2_chk
 		else echo -e "Passed."
 		fi
 
@@ -191,6 +193,8 @@ summary_of_fail() {
 				stat $i | grep -i change;
 			fi;
 		done
+		debug "the libkey is: ${thelibkey}"
+		stat $thelibkey | grep -i change
 		echo -e "\nTotal Number of checks failed: "$num_fails" (out of 7 checks currently)\n\n
 Based on what I've seen so far, the following might be a general guide to interpret results:
 1 check failed = probably false positive. This is usually commands 1, 4, or 6
