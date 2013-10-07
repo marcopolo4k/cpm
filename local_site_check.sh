@@ -17,7 +17,7 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 function debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "on" ]; then
   echo $1
  fi
