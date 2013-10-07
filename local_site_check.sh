@@ -17,22 +17,27 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 function debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "on" ]; then
   echo $1
  fi
 }
 
 print_help(){
-    echo 'usage:'
-    echo './local_site_check.sh <detl>'
-    echo
-    echo 'optional:'
-    echo '-d use [D]NS resolution to get site content'
-    echo '-e use local resolution only (place 127.0.0.1 in /[E]tc/hosts for [E]ach domain) (this is default)'
-    echo '-t use /etc/[T]rueuserdomains (necessary for migrations) (this is default)'
-    echo '-l use /etc/[L]ocaldomains (can be done with cPanel servers)'
-    echo; echo; exit 1
+	debug "just after setting defaults:"
+	debug "dns_resolution is ${dns_resolution}"
+	debug "local_resolution is ${local_resolution}"
+	debug "use_trueuserdomains is ${use_trueuserdomains}"
+	debug "use_localdomains is ${use_localdomains}"
+	echo 'usage:'
+	echo './local_site_check.sh <detl>'
+	echo
+	echo 'optional:'
+	echo '-d use [D]NS resolution to get site content'
+	echo '-e use local resolution only (place 127.0.0.1 in /[E]tc/hosts for [E]ach domain) (this is default)'
+	echo '-t use /etc/[T]rueuserdomains (necessary for migrations) (this is default)'
+	echo '-l use /etc/[L]ocaldomains (can be done with cPanel servers)'
+	echo; echo; exit 1
 }
 
 # Set default options
@@ -41,18 +46,30 @@ local_resolution="1"
 use_trueuserdomains="1"
 use_localdomains="0"
 
-# Get options
-while getopts ":detl" opt; do
-    case $opt in
-        d) dns_resolution="1";;
-        e) local_resolution="1";;
-        t) use_trueuserdomains="1";;
-        l) use_localdomains="1";;
-        h) print_help;;
-        \?) echo "invalid option: -$OPTARG"; echo; print_help;;
-        :) echo "option -$OPTARG requires an argument."; echo; print_help;;
-    esac
+debug "just after setting defaults:"
+debug "dns_resolution is ${dns_resolution}"
+debug "local_resolution is ${local_resolution}"
+debug "use_trueuserdomains is ${use_trueuserdomains}"
+debug "use_localdomains is ${use_localdomains}" 
+
+# Get options (stolen code from cpmig)
+while getopts ":d:e:t:l" opt; do
+	case $opt in
+		d) dns_resolution="1";;
+		e) local_resolution="1";;
+		t) use_trueuserdomains="1";;
+		l) use_localdomains="1";;
+		h) print_help;;
+		\?) echo "invalid option: -$OPTARG"; echo; print_help;;
+		:) echo "option -$OPTARG requires an argument."; echo; print_help;;
+	esac
+	debug "dns_resolution is ${dns_resolution}"
+	debug "local_resolution is ${local_resolution}"
+	debug "use_trueuserdomains is ${use_trueuserdomains}"
+	debug "use_localdomains is ${use_localdomains}" 
 done
+# no required variables, so don't need this:
+#if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
 ## Get options, but with getopt
 # args=`getopt -l help :detl: $*`
@@ -69,9 +86,6 @@ done
 #         ;;
 #     esac
 # done
-
-if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
-
 
 main (){
     debug "Now in main.  domain_list is ${domain_list}"
