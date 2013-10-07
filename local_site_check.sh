@@ -35,14 +35,17 @@ print_help(){
 	echo 'optional arguments:'
 	echo '-d use [D]NS resolution to get site content'
 	echo '-e use local resolution only (place 127.0.0.1 in /[E]tc/hosts for [E]ach domain) (this is default)'
-	echo '-t use /etc/[T]rueuserdomains (necessary for migrations) (this is default for non-cPanel servers)'
+	echo '-t use /etc/[T]rueuserdomains (this is default for non-cPanel servers)'
 	echo '-l use /etc/[L]ocaldomains (this is default for cPanel servers)'
 	echo '-h print this help screen'
 	echo; echo; exit 1
 }
 
 # Set default options
-pver=$(cat /usr/local/psa/version 2>/dev/null); cver=$(cat /usr/local/cpanel/version 2>/dev/null); dver=$(/usr/local/directadmin/directadmin c 2>/dev/null | grep ^version); ever=$(cat /usr/lib/opcenter/VERSION 2>/dev/null);
+pver=$(cat /usr/local/psa/version 2>/dev/null); 
+cver=$(cat /usr/local/cpanel/version 2>/dev/null); 
+dver=$(/usr/local/directadmin/directadmin c 2>/dev/null | grep ^version); 
+ever=$(cat /usr/lib/opcenter/VERSION 2>/dev/null);
 
 dns_resolution="0"
 local_resolution="1"
@@ -60,7 +63,7 @@ debug "local_resolution is ${local_resolution}"
 debug "use_trueuserdomains is ${use_trueuserdomains}"
 debug "use_localdomains is ${use_localdomains}" 
 
-# Get options (stolen code from cpmig)
+# Get options (blatently stolen code from cpmig)
 while getopts ":d:e:t:l:h" opt; do
 	case $opt in
 		d) dns_resolution="1";;
