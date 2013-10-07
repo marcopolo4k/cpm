@@ -17,7 +17,7 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 function debug() {
- debug="off"
+ debug="on"
  if [ "$debug" = "on" ]; then
   echo $1
  fi
@@ -121,6 +121,7 @@ if [[ $local_resolution == "1" ]]; then
 
     # Backup hosts file
     host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d).$(date +%H).$(date +%M)
+    debug "host_backup_file is ${host_backup_file}"
     cp -pv /etc/hosts $host_backup_file
 
     # Add files into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
@@ -130,6 +131,7 @@ if [[ $local_resolution == "1" ]]; then
 
     # Cleanup
     cp -pv $host_backup_file /etc/hosts
+    debug "host_backup_file is ${host_backup_file}"
 
 fi
 
