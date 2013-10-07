@@ -19,12 +19,12 @@ summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(
 function debug() {
  debug="off"
  if [ "$debug" = "on" ]; then
-  echo $1
+  echo -e $1
  fi
 }
 
 print_help(){
-	debug "in the help section:"
+	debug "\nin the help section:"
 	debug "dns_resolution is ${dns_resolution}"
 	debug "local_resolution is ${local_resolution}"
 	debug "use_trueuserdomains is ${use_trueuserdomains}"
@@ -57,23 +57,24 @@ if [ "$cver" ]; then
     use_localdomains="1"
 fi
 
-debug "just after setting defaults:"
+debug "\njust after setting defaults:"
 debug "dns_resolution is ${dns_resolution}"
 debug "local_resolution is ${local_resolution}"
 debug "use_trueuserdomains is ${use_trueuserdomains}"
 debug "use_localdomains is ${use_localdomains}" 
 
 # Get options (blatently stolen code from cpmig)
-while getopts ":d:e:t:l:h" opt; do
+while getopts "detlh" opt; do
 	case $opt in
-		d) dns_resolution="1";;
-		e) local_resolution="1";;
-		t) use_trueuserdomains="1";;
-		l) use_localdomains="1";;
+		d) dns_resolution="1"; local_resolution="0";;
+		e) local_resolution="1"; dns_resolution="0";;
+		t) use_trueuserdomains="1"; use_localdomains="1";;
+		l) use_localdomains="1"; use_trueuserdomains="1";;
 		h) print_help;;
 		\?) echo "invalid option: -$OPTARG"; echo; print_help;;
 		:) echo "option -$OPTARG requires an argument."; echo; print_help;;
 	esac
+    debug "\nafter getting opts:"
 	debug "dns_resolution is ${dns_resolution}"
 	debug "local_resolution is ${local_resolution}"
 	debug "use_trueuserdomains is ${use_trueuserdomains}"
