@@ -113,6 +113,7 @@ if_trueuserdomains() {
         for u in $(cat /etc/trueuserdomains | \cut -d: -f2 | \tr -d ' '); do
             if [ "$dver" ]; then
                 dom_ip=$(head -1 /usr/local/directadmin/data/users/$u/user_ip.list)
+                debug "dom_ip is ${dom_ip}"
             else dom_ip=127.0.0.1
             fi
             echo -e "$dom_ip\t\t$dom" >> /root/doms_to_add
