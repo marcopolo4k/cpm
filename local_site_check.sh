@@ -17,7 +17,7 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "on" ]; then
   echo -e $1
  fi
@@ -36,7 +36,7 @@ print_help(){
 	echo '-d use [D]NS resolution to get site content'
 	echo '-e use local resolution only (place 127.0.0.1 in /[E]tc/hosts for [E]ach domain) (this is default)'
 	echo '-t use /etc/[T]rueuserdomains (this is default for non-cPanel servers)'
-	echo '-l use /etc/[L]ocaldomains (this is default for cPanel servers)'
+	echo '-l use /etc/[L]ocaldomains (can only be used, and is default on cPanel servers)'
 	echo '-h print this help screen'
 	echo; echo; exit 1
 }
@@ -63,7 +63,7 @@ debug "local_resolution is ${local_resolution}"
 debug "use_trueuserdomains is ${use_trueuserdomains}"
 debug "use_localdomains is ${use_localdomains}" 
 
-# Get options (blatently stolen code from cpmig)
+# Get options (code from cpmig)
 # I wasn't able to make this work inside a function.  Perhaps someone can tell me why.
 while getopts "detlh" opt; do
     case $opt in
@@ -101,21 +101,37 @@ done
 # done
 
 
-test_trueuserdomains() {
+if_trueuserdomains() {
     if [[ $use_trueuserdomains == "1" ]]; then
         domain_list=$(cut -d: -f1 /etc/trueuserdomains)
         debug "domain_list is ${domain_list}"
+        mkdir $tmp_dir;
+        for dom in $(cut -d: -f1 /etc/trueuserdomains); do
+            dom_ip=127.0.0.1
+            echo -e "$dom_ip\t\t$dom" >> /root/doms_to_add
+        done
     fi
 }
 
-test_localdomains() {
+if_localdomains() {
     if [[ $use_localdomains == "1" ]]; then
+        if [ ! -e /etc/localdomains ]; then
+            echo -e "No /etc/localdomains file found.\nPlease try again"
+            exit 0
+        fi
         domain_list=$(cat /etc/localdomains)
         debug "domain_list is ${domain_list}"
+        mkdir $tmp_dir;
+        # this is cheating.  ill fix later
+        for dom in $(cat /etc/localdomains); do
+            dom_ip=$(\grep ^ip /var/cpanel/userdata/$(/scripts/whoowns $dom)/$dom | \cut -d: -f2 | \tr -d ' ')
+            debug "$dom_ip\t$dom"
+            echo -e "$dom_ip\t$dom" >> /root/doms_to_add
+        done
     fi
 }
 
-test_local_resolution() {
+if_local_resolution() {
     if [[ $local_resolution == "1" ]]; then
 
         # Backup hosts file
@@ -123,19 +139,18 @@ test_local_resolution() {
         debug "host_backup_file is ${host_backup_file}"
         cp -pv /etc/hosts $host_backup_file
 
-        # Add files into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
-        for i in $(cut -d: -f1 /etc/trueuserdomains); do echo -e "127.0.0.1\t\t$i" >> /etc/hosts; done
+        # Add lines into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
+        cat /root/doms_to_add >> /etc/hosts
 
         main
 
         # Cleanup
         cp -pv $host_backup_file /etc/hosts
         debug "host_backup_file is ${host_backup_file}"
-
     fi
 }
 
-test_dns_resolution() {
+if_dns_resolution() {
     if [[ $dns_resolution == "1" ]]; then
         main
     fi
@@ -143,10 +158,10 @@ test_dns_resolution() {
 
 main (){
     debug "Now in main.  domain_list is ${domain_list}"
-    mkdir $tmp_dir;
+    if [ ! -d $tmp_dir ]; then mkdir $tmp_dir; fi
     for i in $domain_list; do
         echo $i;
-        curl $i | head -100 | lynx -stdin -dump | awk NF | head > $tmp_dir/$i;
+        curl --connect-timeout 1 $i | head -100 | lynx -stdin -dump | awk NF | head > $tmp_dir/$i;
     done;
     for i in $(\ls -A $tmp_dir/); do
         echo $i: ;
@@ -154,10 +169,12 @@ main (){
         echo;echo "============================";
     done > $summary_file
 
-
+    # Cleanup
+    echo -e "\nCleanup:"
     if [ -d $tmp_dir ]; then
-        rm -rvf $tmp_dir/*; rmdir -v $tmp_dir
+        \rm -rvf $tmp_dir/*; \rmdir -v $tmp_dir
     else echo "Error: "$tmp_dir" doesn't exist."
+    \rm -v /root/doms_to_add
     fi
 }
 
@@ -169,8 +186,8 @@ print_complete() {
 
 # Run code
 # wish I could put getopts in a function here, not sure why I can't
-test_trueuserdomains
-test_localdomains
-test_local_resolution
-test_dns_resolution
+if_trueuserdomains
+if_localdomains
+if_local_resolution
+if_dns_resolution
 print_complete
