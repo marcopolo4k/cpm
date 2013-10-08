@@ -87,23 +87,7 @@ done
 # no required variables, so don't need this:
 #if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
-## Get options, but with getopt, guess I don't need it
-# args=`getopt -l help :detl: $*`
-# for i in $args; do
-#     case $i in
-#     -d) echo "-p"
-#         ;;
-#     -e) shift;
-#         optarg=$1;
-#         echo "-q $optarg"
-#         ;;
-#     --help)
-#         echo "--help"
-#         ;;
-#     esac
-# done
-
-
+# Functions
 if_trueuserdomains() {
     debug "Testing if_trueuserdomains()..."
     if [[ $use_trueuserdomains == "1" ]]; then
@@ -146,7 +130,7 @@ if_localdomains() {
 if_local_resolution() {
     debug "\nTesting if_local_resolution()..."
     if [[ $local_resolution == "1" ]]; then
-        debug "Running if_local_resolution()"
+        debug "Running if_local_resolution()..."
 
         # Backup hosts file
         host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d).$(date +%H).$(date +%M)
@@ -196,7 +180,14 @@ main (){
 
 # All done
 print_complete() {
-    echo -e "\nSite Check Complete.  Summary at:\n"$summary_file"\n"
+    echo -e "\nSite Check Complete.\n
+    Here are the options used:\n
+    dns_resolution: ${dns_resolution} 
+    local_resolution: ${local_resolution}
+    use_trueuserdomains: ${use_trueuserdomains}
+    use_localdomains: ${use_localdomains}
+    
+    Summary at:\n"$summary_file"\n"
 }
 
 
