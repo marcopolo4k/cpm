@@ -106,6 +106,7 @@ done
 
 if_trueuserdomains() {
     if [[ $use_trueuserdomains == "1" ]]; then
+        debug "Now running if_trueuserdomains()..."
         domain_list=$(cut -d: -f1 /etc/trueuserdomains)
         debug "domain_list is ${domain_list}"
         mkdir $tmp_dir;
@@ -122,6 +123,7 @@ if_trueuserdomains() {
 }
 
 if_localdomains() {
+    debug "Now running if_localdomains()..."
     if [[ $use_localdomains == "1" ]]; then
         if [ ! -e /etc/localdomains ]; then
             echo -e "No /etc/localdomains file found.\nPlease try again"
@@ -140,7 +142,10 @@ if_localdomains() {
 }
 
 if_local_resolution() {
+    debug "\nNow running if_local_resolution()..."
     if [[ $local_resolution == "1" ]]; then
+
+        debug "Now running if_local_resolution()"
 
         # Backup hosts file
         host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d).$(date +%H).$(date +%M)
@@ -159,13 +164,14 @@ if_local_resolution() {
 }
 
 if_dns_resolution() {
+    debug "\nNow running if_dns_resolution()..."
     if [[ $dns_resolution == "1" ]]; then
         main
     fi
 }
 
 main (){
-    debug "Now in main.  domain_list is ${domain_list}"
+    debug "\nNow running main().  domain_list is ${domain_list}"
     if [ ! -d $tmp_dir ]; then mkdir $tmp_dir; fi
     for i in $domain_list; do
         echo $i;
