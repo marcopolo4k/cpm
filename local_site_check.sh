@@ -181,13 +181,13 @@ main (){
 # All done
 print_complete() {
     echo -e "\nSite Check Complete.\n
-    Here are the options used:\n
-    dns_resolution: ${dns_resolution} 
-    local_resolution: ${local_resolution}
-    use_trueuserdomains: ${use_trueuserdomains}
-    use_localdomains: ${use_localdomains}
+Here are the options that were used:
+    DNS Resolution: ${dns_resolution} 
+    Local IP's: ${local_resolution}
+    trueuserdomains: ${use_trueuserdomains}
+    localdomains: ${use_localdomains}
     
-    Summary at:\n"$summary_file"\n"
+Summary at:\n"$summary_file"\n"
 }
 
 
