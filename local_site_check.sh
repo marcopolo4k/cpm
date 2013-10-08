@@ -16,8 +16,8 @@
 tmp_dir=/root/cptmp.doms
 summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
-function debug() {
- debug="off"
+debug() {
+ debug="on"
  if [ "$debug" = "on" ]; then
   echo -e $1
  fi
@@ -64,26 +64,27 @@ debug "use_trueuserdomains is ${use_trueuserdomains}"
 debug "use_localdomains is ${use_localdomains}" 
 
 # Get options (blatently stolen code from cpmig)
+# I wasn't able to make this work inside a function.  Perhaps someone can tell me why.
 while getopts "detlh" opt; do
-	case $opt in
-		d) dns_resolution="1"; local_resolution="0";;
-		e) local_resolution="1"; dns_resolution="0";;
-		t) use_trueuserdomains="1"; use_localdomains="1";;
-		l) use_localdomains="1"; use_trueuserdomains="1";;
-		h) print_help;;
-		\?) echo "invalid option: -$OPTARG"; echo; print_help;;
-		:) echo "option -$OPTARG requires an argument."; echo; print_help;;
-	esac
+    case $opt in
+        d) dns_resolution="1"; local_resolution="0";;
+        e) local_resolution="1"; dns_resolution="0";;
+        t) use_trueuserdomains="1"; use_localdomains="1";;
+        l) use_localdomains="1"; use_trueuserdomains="1";;
+        h) print_help;;
+        \?) echo "invalid option: -$OPTARG"; echo; print_help;;
+        :) echo "option -$OPTARG requires an argument."; echo; print_help;;
+    esac
     debug "\nafter getting opts:"
-	debug "dns_resolution is ${dns_resolution}"
-	debug "local_resolution is ${local_resolution}"
-	debug "use_trueuserdomains is ${use_trueuserdomains}"
-	debug "use_localdomains is ${use_localdomains}" 
+    debug "dns_resolution is ${dns_resolution}"
+    debug "local_resolution is ${local_resolution}"
+    debug "use_trueuserdomains is ${use_trueuserdomains}"
+    debug "use_localdomains is ${use_localdomains}" 
 done
 # no required variables, so don't need this:
 #if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
-## Get options, but with getopt
+## Get options, but with getopt, guess I don't need it
 # args=`getopt -l help :detl: $*`
 # for i in $args; do
 #     case $i in
@@ -98,6 +99,47 @@ done
 #         ;;
 #     esac
 # done
+
+
+test_trueuserdomains() {
+    if [[ $use_trueuserdomains == "1" ]]; then
+        domain_list=$(cut -d: -f1 /etc/trueuserdomains)
+        debug "domain_list is ${domain_list}"
+    fi
+}
+
+test_localdomains() {
+    if [[ $use_localdomains == "1" ]]; then
+        domain_list=$(cat /etc/localdomains)
+        debug "domain_list is ${domain_list}"
+    fi
+}
+
+test_local_resolution() {
+    if [[ $local_resolution == "1" ]]; then
+
+        # Backup hosts file
+        host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d).$(date +%H).$(date +%M)
+        debug "host_backup_file is ${host_backup_file}"
+        cp -pv /etc/hosts $host_backup_file
+
+        # Add files into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
+        for i in $(cut -d: -f1 /etc/trueuserdomains); do echo -e "127.0.0.1\t\t$i" >> /etc/hosts; done
+
+        main
+
+        # Cleanup
+        cp -pv $host_backup_file /etc/hosts
+        debug "host_backup_file is ${host_backup_file}"
+
+    fi
+}
+
+test_dns_resolution() {
+    if [[ $dns_resolution == "1" ]]; then
+        main
+    fi
+}
 
 main (){
     debug "Now in main.  domain_list is ${domain_list}"
@@ -119,40 +161,16 @@ main (){
     fi
 }
 
-if [[ $use_trueuserdomains == "1" ]]; then
-    domain_list=$(cut -d: -f1 /etc/trueuserdomains)
-    debug "domain_list is ${domain_list}"
-fi
-
-if [[ $use_localdomains == "1" ]]; then
-    domain_list=$(cat /etc/localdomains)
-    debug "domain_list is ${domain_list}"
-fi
-
-if [[ $local_resolution == "1" ]]; then
-
-    # Backup hosts file
-    host_backup_file=/etc/hosts.cppremig.bk.$(date +%Y%m%d).$(date +%H).$(date +%M)
-    debug "host_backup_file is ${host_backup_file}"
-    cp -pv /etc/hosts $host_backup_file
-
-    # Add files into /etc/hosts to ensure we only look at the locally hosted versions of the websites:
-    for i in $(cut -d: -f1 /etc/trueuserdomains); do echo -e "127.0.0.1\t\t$i" >> /etc/hosts; done
-
-    main
-
-    # Cleanup
-    cp -pv $host_backup_file /etc/hosts
-    debug "host_backup_file is ${host_backup_file}"
-
-fi
-
-
-if [[ $dns_resolution == "1" ]]; then
-    main
-fi
-
-
-
 # All done
-echo -e "\nSite Check Complete.  Summary at:\n"$summary_file"\n"
+print_complete() {
+    echo -e "\nSite Check Complete.  Summary at:\n"$summary_file"\n"
+}
+
+
+# Run code
+# wish I could put getopts in a function here, not sure why I can't
+test_trueuserdomains
+test_localdomains
+test_local_resolution
+test_dns_resolution
+print_complete
