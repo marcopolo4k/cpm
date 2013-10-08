@@ -10,7 +10,10 @@
 # This script checks if locally-hosted websites are responding via Apache, and creates a summary_file at:
 # /root/site_summary.HOST_IP_ADDRESS.cP.DATE_TAG
 
-# Version: 0.2
+# Version: 0.2.5
+# ToDo:
+# handle multiple options at same time
+# allow a timeout variable as option
 
 # Feel free to customize the following fields:
 tmp_dir=/root/cptmp.doms
@@ -106,8 +109,12 @@ if_trueuserdomains() {
         domain_list=$(cut -d: -f1 /etc/trueuserdomains)
         debug "domain_list is ${domain_list}"
         mkdir $tmp_dir;
-        for dom in $(cut -d: -f1 /etc/trueuserdomains); do
-            dom_ip=127.0.0.1
+        #for dom in $(cut -d: -f1 /etc/trueuserdomains); do
+        for u in $(cat /etc/trueuserdomains | \cut -d: -f2 | \tr -d ' '); do
+            if [ "$dver" ]; then
+                dom_ip=$(head -1 /usr/local/directadmin/data/users/$u/user_ip.list)
+            else dom_ip=127.0.0.1
+            fi
             echo -e "$dom_ip\t\t$dom" >> /root/doms_to_add
         done
     fi
