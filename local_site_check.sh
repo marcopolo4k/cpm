@@ -105,6 +105,7 @@ done
 
 
 if_trueuserdomains() {
+    debug "Now running if_trueuserdomains()..."
     if [[ $use_trueuserdomains == "1" ]]; then
         debug "Now running if_trueuserdomains()..."
         domain_list=$(cut -d: -f1 /etc/trueuserdomains)
