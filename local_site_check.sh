@@ -14,6 +14,8 @@
 # ToDo:
 # handle multiple options at same time
 # allow a timeout variable as option
+# currently, two control panels can only use 127.0.0.1, or dns resolution.  Need to use the local IP:
+#  plesk, ensim
 
 # Feel free to customize the following fields:
 tmp_dir=/root/cptmp.doms
