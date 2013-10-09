@@ -2,6 +2,8 @@
 use strict;
 my $debug=1;
 
+#Todo: check for time, include time from tweak settings
+
 # Open log file
 open my $file, '/var/log/chkservd.log' or die "couldn't open file $!";
 
