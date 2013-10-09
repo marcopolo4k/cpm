@@ -178,8 +178,8 @@ main (){
     if [ -d $tmp_dir ]; then
         \rm -rvf $tmp_dir/*; \rmdir -v $tmp_dir
     else echo "Error: "$tmp_dir" doesn't exist."
-    \rm -v /root/doms_to_add
     fi
+    \rm -v /root/doms_to_add
 }
 
 # All done
