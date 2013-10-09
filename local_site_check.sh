@@ -90,6 +90,7 @@ done
 #if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
 # Functions
+# The first two set the $domain_list
 if_trueuserdomains() {
     debug "Testing if_trueuserdomains()..."
     if [[ $use_trueuserdomains == "1" ]]; then
@@ -129,6 +130,7 @@ if_localdomains() {
     fi
 }
 
+# Both of these call main()
 if_local_resolution() {
     debug "\nTesting if_local_resolution()..."
     if [[ $local_resolution == "1" ]]; then
