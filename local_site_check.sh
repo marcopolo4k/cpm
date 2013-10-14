@@ -42,6 +42,7 @@ print_help(){
 	echo '-e use local resolution only (place 127.0.0.1 in /[E]tc/hosts for [E]ach domain) (this is default)'
 	echo '-t use /etc/[T]rueuserdomains (this is default for non-cPanel servers)'
 	echo '-l use /etc/[L]ocaldomains (can only be used, and is default on cPanel servers)'
+	echo '-o <directory name>, specify output directory'
 	echo '-h print this help screen'
 	echo; echo; exit 1
 }
@@ -82,6 +83,7 @@ while getopts "detlh" opt; do
         e) local_resolution="1"; dns_resolution="0";;
         t) use_trueuserdomains="1"; use_localdomains="1";;
         l) use_localdomains="1"; use_trueuserdomains="1";;
+        o) use_output_dir="1"; output_dir="$OPTARG";;
         h) print_help;;
         \?) echo "invalid option: -$OPTARG"; echo; print_help;;
         :) echo "option -$OPTARG requires an argument."; echo; print_help;;
@@ -94,6 +96,16 @@ while getopts "detlh" opt; do
 done
 # no required variables, so don't need this:
 #if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
+
+# Set output
+if [[ $use_output_dir != '' ]]; then
+    debug "output_dir is ${output_dir}"
+    temp_dir=$(echo $output_dir | sed 's/\/$//')
+    debug "temp_dir is ${temp_dir}"
+    summary_file=$temp_dir/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
+else
+    summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
+fi
 
 # Functions
 # The first two set the $domain_list
