@@ -19,7 +19,7 @@
 
 # Feel free to customize the following fields:
 tmp_dir=/root/cptmp.doms
-summary_file=/root/site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
+summary_file=/root/.site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 debug() {
  debug="off"
