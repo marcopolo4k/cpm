@@ -22,7 +22,7 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/.site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 debug() {
- debug="off"
+ debug="on"
  if [ "$debug" = "on" ]; then
   echo -e $1
  fi
@@ -77,13 +77,13 @@ debug "use_localdomains is ${use_localdomains}"
 
 # Get options (code from cpmig)
 # I wasn't able to make this work inside a function.  Perhaps someone can tell me why.
-while getopts "detlh" opt; do
+while getopts ":o:detlh" opt; do
     case $opt in
         d) dns_resolution="1"; local_resolution="0";;
         e) local_resolution="1"; dns_resolution="0";;
         t) use_trueuserdomains="1"; use_localdomains="1";;
         l) use_localdomains="1"; use_trueuserdomains="1";;
-        o) use_output_dir="1"; output_dir="$OPTARG";;
+        o) output_dir="$OPTARG";;
         h) print_help;;
         \?) echo "invalid option: -$OPTARG"; echo; print_help;;
         :) echo "option -$OPTARG requires an argument."; echo; print_help;;
@@ -98,7 +98,7 @@ done
 #if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
 # Set output
-if [[ $use_output_dir != '' ]]; then
+if [[ $output_dir != '' ]]; then
     debug "output_dir is ${output_dir}"
     temp_dir=$(echo $output_dir | sed 's/\/$//')
     debug "temp_dir is ${temp_dir}"
