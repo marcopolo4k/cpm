@@ -62,6 +62,12 @@ if [ "$cver" ]; then
     use_localdomains="1"
 fi
 
+# Hopefully temporary until I get the commands for these two
+if [ "$pver" -o "$ever" ]; then
+    dns_resolution="1"
+    local_resolution="0"
+fi
+
 debug "\nAfter setting defaults:"
 debug "dns_resolution is ${dns_resolution}"
 debug "local_resolution is ${local_resolution}"
