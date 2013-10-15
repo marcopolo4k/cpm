@@ -2,7 +2,7 @@
 # Original cpmig written by Phil Stark
 # precpmig, by Marco Ferrufino is a proof of concept. It will eventually be converted into cpmig
 #
-VERSION="0.0.2"
+VERSION="0.0.3"
 scripthome="/root/.cppremig"
 # 
 #############################################
@@ -30,16 +30,13 @@ print_help(){
 	echo './cpmig -s <hostname or ip>'
 	echo
 	echo 'required:' 
+    echo '-e pr[e]-cpmig. Copy files for [e]valuation only. no migration is performed'
 	echo '-s <hostname or ip>, sourceserver'
 	echo
 	echo 'optional:'
-	echo '-a <username or domain>, specify single account'
-	echo '-l <filename>,  Read accounts from list'
 	echo '-p sourceport'
 	echo '-k keep archives on both servers'
     echo '-D use DEVEL scripts on remote setup (3rdparty)'
-    echo '-S skip remote setup'
-    echo '-e pr[e]-cpmig. Copy files for [e]valuation only. no migration is performed'
     echo '-h displays this dialogue'
     echo; echo; exit 1
 }
