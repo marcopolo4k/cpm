@@ -2,7 +2,7 @@
 # Original cpmig written by Phil Stark
 # precpmig is a proof of concept. It will eventually be converted into cpmig
 #
-VERSION="0.0.1"
+VERSION="0.0.2"
 scripthome="/root/.cppremig"
 # 
 #############################################
@@ -87,6 +87,114 @@ set_logging_mode(){
             logoutput=">> $logfile "
             ;;
     esac
+}
+
+# Libkey Check
+lc_checkfor() {
+	if [ "$1" ];
+		then echo -e "$2\n$1\n$3" &> >(tee --append $logfile);
+		num_fails=$((num_fails+1))
+		else echo "Passed." &> >(tee --append $logfile)
+	fi
+}
+
+lc_print_header() {
+	echo -e "\nSearching for Libkey compromise. The '6 commands' are described here:\n
+http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem" &> >(tee --append $logfile)
+}
+
+# Libkey Check: These general checks are not the 6 commands listed on the website
+lc_general_checks() {
+	echo -e "\nFirst general checks:"  &> >(tee --append $logfile)
+	libkey_ver_check=$(\ls -la $(ldd $(which sshd) |grep libkey | cut -d" " -f3))
+	#length_check $libkey_ver_check
+	libkey_check_results=$(echo $libkey_ver_check | egrep "1.9|1.3.2|1.3.0|1.2.so.2|1.2.so.0")
+	lc_checkfor "$libkey_check_results" "libkey check failed due to version number: "
+
+	libkey_dir=$(echo $libkey_ver_check | cut -d"/" -f2)
+	libkey_ver=$(echo $libkey_ver_check |grep libkey | awk '{print $NF}')
+	thelibkey=$(echo "/"$libkey_dir"/"$libkey_ver)
+	assiciated_rpm=$(rpm -qf $thelibkey)
+
+	assiciated_rpm_check=$(echo $assiciated_rpm | grep "is not owned by any package")
+	if [ "$assiciated_rpm_check" ]; then
+		echo -e "libkey check failed due to associated RPM:\n"$assiciated_rpm &> >(tee --append $logfile)
+		lc_num_fails=$((lc_num_fails+1))
+	else
+		echo -e "RPM associated with libkey file:\n"$assiciated_rpm &> >(tee --append $logfile)
+		echo "Passed." &> >(tee --append $logfile)
+	fi
+}
+
+# Libkey Check: Here the 6 commands listed on the website 
+lc_command_1() {
+	echo -e "\nCommand 1 Test:" &> >(tee --append $logfile)
+	keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+	lc_checkfor "$keyu_pckg_chg_test" "keyutils-libs check failed. The rpm shows the following file changes: " "\n If the above changes are any of the 
+ following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
+ .M.....T
+ However, if changes are any of the following, then it's definitely suspicious:
+ S.5.L...
+ see 'man rpm' and look for 'Each of the 8 characters'" &> >(tee --append $logfile)
+}
+
+lc_command_2() {
+	echo -e "\nCommand 2 Test:" &> >(tee --append $logfile)
+	cmd_2_chk=$(\ls -la $thelibkey | egrep "so.1.9|so.1.3.2|1.2.so.2");
+	lc_checkfor "$cmd_2_chk" "Known bad package check failed. The following file is linked to libkeyutils.so.1: "
+}
+
+lc_command_3() {
+	echo -e "\nCommand 3 Test:" &> >(tee --append $logfile)
+	cmd_3_chk=$(strings $thelibkey | egrep 'connect|socket|inet_ntoa|gethostbyname')
+	lc_checkfor "$cmd_3_chk" "libkeyutils libraries contain networking tools: "
+}
+
+lc_command_4() {
+	echo -e "\nCommand 4 Test:" &> >(tee --append $logfile)
+	check_ipcs_lk=$(for i in `ipcs -mp | grep -v cpid | awk {'print $3'} | uniq`; do ps aux | grep '\b'$i'\b' | grep -v grep;done | grep -i ssh)
+	lc_checkfor "$check_ipcs_lk" "IPCS Check failed.  This is sometimes a false positive:"
+}
+
+lc_command_5() {
+	echo -e "\nCommand 5 Test is not designed to run by this automated script" &> >(tee --append $logfile)
+}
+
+lc_command_6() {
+	echo -e "\nCommand 6 Test:" &> >(tee --append $logfile)
+	cmd6fail=0
+	for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
+		sshd_library=$(rpm -qf $i);
+		if [ ! "sshd_library" ]; then
+			echo -e "\n"$i" has no associated library." &> >(tee --append $logfile); echo $sshd_library &> >(tee --append $logfile);
+			cmd6fail=$((cmd6fail+1))
+		fi;
+	done
+	if [ "$cmd6fail" -gt 0 ]; then
+		lc_num_fails=$((lc_num_fails+1))
+	else echo "Passed." &> >(tee --append $logfile)
+	fi
+}
+
+
+# Libkey Check: Print Summary and show the dates on the files
+lc_summary() {
+	if [ "$lc_num_fails" -gt 0 ]; then
+		echo -e "\nPossible change times of the compromised files:" &> >(tee --append $logfile)
+		for i in $(\ls /lib*/libkeyutils*); do
+			cmd_3_chk=$(strings $i | egrep 'connect|socket|inet_ntoa|gethostbyname');
+			if [ "$cmd_3_chk" ]; then
+				stat $i | grep -i change &> >(tee --append $logfile);
+			fi;
+		done
+		echo -e "\nTotal Number of checks failed: "$lc_num_fails" (out of 7 checks currently)\n\n
+The following is a general guide to interpret results:
+  1 check failed = probably false positive. This is usually commands 1, 4, or 6
+  2 checks failed = somewhat likely real
+  3+ checks failed = definitely real" &> >(tee --append $logfile)
+	fi
+ 
+	echo &> >(tee --append $logfile)
 }
 
 setup_remote(){
@@ -323,6 +431,18 @@ fi
 
 # print into
 print_intro
+
+# libkey check
+lc_print_header
+lc_general_checks
+lc_command_1
+lc_command_2
+lc_command_3
+lc_command_4
+lc_command_5
+lc_command_6
+lc_summary
+error_check
 
 # install sshpass
 if [ ! -f $scripthome/.sshpass/sshpass-1.05/sshpass ]; then
