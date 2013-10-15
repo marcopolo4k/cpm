@@ -236,7 +236,7 @@ setup_remote(){
 
         createscripthome_cmds="
             # Pre-cPMigration Files
-            mkdir -v $scripthome; mkdir -v $scripthome/eval_folder;
+            mkdir -v $scripthome; mkdir -v $scripthome/$eval_folder;
         "
         cpanel_specific_cmds="
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/source.cpanel.config
