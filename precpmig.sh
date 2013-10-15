@@ -210,6 +210,7 @@ setup_remote(){
     debug "eval_folder is $eval_folder"
 
     if [[ $precpmig = "1" ]]; then
+        echo -e "\n\nPre-cPMigration invoked.  This will not copy any accounts, just the evaluation files.\n\n" &> >(tee --append $logfile)
 
         cpeval_location=https://raw.github.com/cPanelSSP/cpeval2/master/cpeval2
         local_site_check_location=https://raw.github.com/cPMarco/cpm/master/local_site_check.sh
