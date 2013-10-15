@@ -216,6 +216,7 @@ setup_remote(){
         cpeval_location=https://raw.github.com/cPanelSSP/cpeval2/master/cpeval2
         local_site_check_location=https://raw.github.com/cPMarco/cpm/master/local_site_check.sh
         the_date=$(date +%Y%m%d).$(date +%H).$(date +%M)
+        eval_folder=evalfiles.$sourceserver
 
         setup_scripts_cmds="
             if [[ ! -d /scripts ]]; then mkdir /scripts ;fi;
