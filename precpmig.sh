@@ -251,7 +251,7 @@ setup_remote(){
             fi
 
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/source.eval.out
-            grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:ensim:/' > $scripthome/$eval_folder/eval.in
+            grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:Ensim:/' > $scripthome/$eval_folder/eval.in
 
             tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/$eval_folder/
         "
@@ -263,6 +263,10 @@ setup_remote(){
             mkdir -v $scripthome/$eval_folder
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/destination.eval.out
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/destination.cpanel.config
+            grep ^d: $scripthome/$eval_folder/destination.eval.out >> $scripthome/$eval_folder/eval.in
+            # not sure why this doesn't work:
+            # curl -s --insecure $cpeval_location | bash /dev/stdin '$scripthome/$eval_folder/eval.in' &> >(tee --append $logfile)
+            echo -e "\n\n" &> >(tee --append $logfile)
             echo -e "\n\nTransfer of files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
         }
 
