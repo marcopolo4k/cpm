@@ -93,9 +93,11 @@ set_logging_mode(){
 lc_checkfor() {
 	if [ "$1" ];
 		then echo -e "$2\n$1\n$3" >> $logfile
-		num_fails=$((num_fails+1))
+		lc_num_fails=$((lc_num_fails+1))
 		else echo "Passed." >> $logfile
+        debug "inside positive checkfor num fails is $lc_num_fails"
 	fi
+    debug "inside checkfor num fails is $lc_num_fails"
 }
 
 lc_print_header() {
@@ -136,7 +138,8 @@ lc_command_1() {
  .M.....T
  However, if changes are any of the following, then it's definitely suspicious:
  S.5.L...
- see 'man rpm' and look for 'Each of the 8 characters'" >> $logfile
+ see 'man rpm' and look for 'Each of the 8 characters'"
+debug "after cmd 1, lc_num_fails is $lc_num_fails" >> $logfile
 }
 
 lc_command_2() {
@@ -176,6 +179,7 @@ lc_command_6() {
 		lc_num_fails=$((lc_num_fails+1))
 	else echo "Passed." >> $logfile
 	fi
+    debug "after cmd 6, lc_num_fails is $lc_num_fails"
 }
 
 
@@ -194,7 +198,9 @@ lc_summary() {
 The following is a general guide to interpret results:
   1 check failed = probably false positive. This is usually commands 1, 4, or 6
   2 checks failed = somewhat likely real
-  3+ checks failed = definitely real" >> $logfile
+  3+ checks failed = definitely real\n\n" >> $logfile
+
+    echo -e "Destination server failed a critical error check.  See logs for more details:\n\n$logfile\n"  &> >(tee --append $logfile)
     exit 0
 	fi
  
@@ -203,12 +209,13 @@ The following is a general guide to interpret results:
 
 setup_remote(){
     control_panel=`$ssh root@$sourceserver "if [ -e /usr/local/psa/version	 ];then echo plesk; elif [ -e /usr/local/cpanel/cpanel ];then echo cpanel; elif [ -e /usr/bin/getapplversion ];then echo ensim; elif [ -e /usr/local/directadmin/directadmin ];then echo da; else echo unknown;fi;exit"` >> $logfile 2>&1
+    eval_folder=evalfiles.$sourceserver
+
     if [[ $precpmig = "1" ]]; then
 
         cpeval_location=https://raw.github.com/cPanelSSP/cpeval2/master/cpeval2
         local_site_check_location=https://raw.github.com/cPMarco/cpm/master/local_site_check.sh
         the_date=$(date +%Y%m%d).$(date +%H).$(date +%M)
-        eval_folder=evalfiles.$sourceserver
 
         setup_scripts_cmds="
             if [[ ! -d /scripts ]]; then mkdir /scripts ;fi;
@@ -252,6 +259,7 @@ setup_remote(){
         dest_post_premigfilexfer_cmds() {
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
+            mkdir -v $scripthome/$eval_folder;
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/destination.eval.out
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/destination.cpanel.config
         }
