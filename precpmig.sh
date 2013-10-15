@@ -210,6 +210,7 @@ The following is a general guide to interpret results:
 setup_remote(){
     control_panel=`$ssh root@$sourceserver "if [ -e /usr/local/psa/version	 ];then echo plesk; elif [ -e /usr/local/cpanel/cpanel ];then echo cpanel; elif [ -e /usr/bin/getapplversion ];then echo ensim; elif [ -e /usr/local/directadmin/directadmin ];then echo da; else echo unknown;fi;exit"` >> $logfile 2>&1
     eval_folder=evalfiles.$sourceserver
+    debug "eval_folder is $eval_folder"
 
     if [[ $precpmig = "1" ]]; then
 
@@ -217,6 +218,7 @@ setup_remote(){
         local_site_check_location=https://raw.github.com/cPMarco/cpm/master/local_site_check.sh
         the_date=$(date +%Y%m%d).$(date +%H).$(date +%M)
         eval_folder=evalfiles.$sourceserver
+        debug "inside precpmig, eval_folder is $eval_folder"
 
         setup_scripts_cmds="
             if [[ ! -d /scripts ]]; then mkdir /scripts ;fi;
@@ -258,6 +260,7 @@ setup_remote(){
         "
         
         dest_post_premigfilexfer_cmds() {
+            debug "inside dest_post_premigfilexfer_cmds, eval_folder is $eval_folder"
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
             mkdir -v $scripthome/$eval_folder;
