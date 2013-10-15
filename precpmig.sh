@@ -260,9 +260,10 @@ setup_remote(){
             debug "inside dest_post_premigfilexfer_cmds, eval_folder is $eval_folder"
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
-            mkdir -v $scripthome/$eval_folder;
+            mkdir -v $scripthome/$eval_folder
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/destination.eval.out
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/destination.cpanel.config
+            echo -e "\n\nTransfer of files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
         }
 
 	    if [[ $control_panel = "cpanel" ]]; then
