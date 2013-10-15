@@ -1,6 +1,6 @@
 #!/bin/bash
 # Original cpmig written by Phil Stark
-# precpmig is a proof of concept. It will eventually be converted into cpmig
+# precpmig, by Marco Ferrufino is a proof of concept. It will eventually be converted into cpmig
 #
 VERSION="0.0.2"
 scripthome="/root/.cppremig"
