@@ -251,7 +251,7 @@ setup_remote(){
             fi
 
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/source.eval.out
-            grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:/' > $scripthome/$eval_folder/eval.in
+            grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:ensim:/' > $scripthome/$eval_folder/eval.in
 
             tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/$eval_folder/
         "
