@@ -92,91 +92,86 @@ set_logging_mode(){
 setup_remote(){
     control_panel=`$ssh root@$sourceserver "if [ -e /usr/local/psa/version	 ];then echo plesk; elif [ -e /usr/local/cpanel/cpanel ];then echo cpanel; elif [ -e /usr/bin/getapplversion ];then echo ensim; elif [ -e /usr/local/directadmin/directadmin ];then echo da; else echo unknown;fi;exit"` >> $logfile 2>&1
     if [[ $precpmig = "1" ]]; then
+
         cpeval_location=https://raw.github.com/cPanelSSP/cpeval2/master/cpeval2
         local_site_check_location=https://raw.github.com/cPMarco/cpm/master/local_site_check.sh
         the_date=$(date +%Y%m%d).$(date +%H).$(date +%M)
 
-	    if [[ $control_panel = "cpanel" ]]; then
-           echo "Source is cPanel"
-           echo "The Source server is cPanel"  &> >(tee --append $logfile)
-           $ssh root@$sourceserver "
-           if [[ ! -d /scripts ]]; then
-               mkdir /scripts ;fi;
-           if [[ ! -f /scripts/pkgacct ]]; then
+        setup_scripts_cmds="
+            if [[ ! -d /scripts ]]; then mkdir /scripts ;fi;
+            if [[ ! -f /scripts/pkgacct ]]; then
                wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/pkgacct-pXa -P /scripts;
                mv /scripts/pkgacct-pXa /scripts/pkgacct;
                chmod 755 /scripts/pkgacct
-           fi;
-           if [[ ! -f /scripts/updateuserdomains-universal ]]; then
+            fi;
+            if [[ ! -f /scripts/updateuserdomains-universal ]]; then
                wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/updateuserdomains-universal -P /scripts;
                chmod 755 /scripts/updateuserdomains-universal;
-               fi;
+            fi;
             /scripts/updateuserdomains-universal;
+        "
 
+        createscripthome_cmds="
             # Pre-cPMigration Files
             mkdir -v $scripthome; mkdir -v $scripthome/evalfiles;
-
-            # Grab some html from all websites, record for later comparison.  If this completes before cppremig is done, great.  If not
-            # then no problem it can stay on the source server
-            if [ ! -e $scripthome/evalfiles/site_summary* ]; then
-                curl -s --insecure $local_site_check_location | bash /dev/stdin '-o $scripthome/evalfiles/' &
-            fi
-
-            curl -s --insecure $cpeval_location | perl > $scripthome/evalfiles/source.eval.out
-            grep '^d:' $scripthome/evalfiles/source.eval.out | sed 's/^d:/s:/' > $scripthome/evalfiles/eval.in
+        "
+        cpanel_specific_cmds="
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/evalfiles/source.cpanel.config
             cp -pv /etc/my.cnf $scripthome/evalfiles/
             cp -pv /usr/local/lib/php.ini $scripthome/evalfiles/
             cp -pv /var/cpanel/easy/apache/profile/_main.yaml $scripthome/evalfiles/
             cp -pv /etc/exim.conf $scripthome/evalfiles/
-            tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/evalfiles/
-            " >> $logfile 2>&1
+        "
 
-            #Adding a log marker, copy the files over
-            logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
-            logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
-            tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
-            rm $scripthome/cPprefiles.$the_date.tar.gz
-            curl -s --insecure $cpeval_location | perl > $scripthome/evalfiles/destination.eval.out
-            cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/evalfiles/destination.cpanel.config
-	    else
-	        echo "The Source server is not cPanel"  &> >(tee --append $logfile)
-	        echo "Setting up scripts, Updating user domains" &> >(tee --append $logfile)
-	        $ssh root@$sourceserver "
-           if [[ ! -d /scripts ]]; then
-               mkdir /scripts ;fi;
-           if [[ ! -f /scripts/pkgacct ]]; then
-               wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/pkgacct-pXa -P /scripts;
-               mv /scripts/pkgacct-pXa /scripts/pkgacct;
-               chmod 755 /scripts/pkgacct
-           fi;
-           if [[ ! -f /scripts/updateuserdomains-universal ]]; then
-               wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/updateuserdomains-universal -P /scripts;
-               chmod 755 /scripts/updateuserdomains-universal;
-               fi;
-            /scripts/updateuserdomains-universal;
-
-            # Pre-cPMigration Files
-            mkdir -v $scripthome; mkdir -v $scripthome/evalfiles;
-
+        post_setup_cmds="
             # Grab some html from all websites, record for later comparison.  If this completes before cppremig is done, great.  If not
             # then no problem it can stay on the source server
             if [ ! -e $scripthome/evalfiles/site_summary* ]; then
-                curl -s --insecure $local_site_check_location | bash /dev/stdin '-o $scripthome/evalfiles/' &
+               curl -s --insecure $local_site_check_location | bash /dev/stdin '-o $scripthome/evalfiles/' &
             fi
 
             curl -s --insecure $cpeval_location | perl > $scripthome/evalfiles/source.eval.out
-            # need to test and fix this:
             grep '^d:' $scripthome/evalfiles/source.eval.out | sed 's/^d:/s:/' > $scripthome/evalfiles/eval.in
-            tar -czvf /root/.cPprefiles.$the_date.tar.gz $scripthome/evalfiles/
-            " >> $logfile 2>&1
-            #Adding a log marker, copy the files over
-            logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
-            logcheck="$logcheck `$scp root@$sourceserver:/root/.cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
+
+            tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/evalfiles/
+        "
+        
+        dest_post_premigfilexfer_cmds() {
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
             curl -s --insecure $cpeval_location | perl > $scripthome/evalfiles/destination.eval.out
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/evalfiles/destination.cpanel.config
+        }
+
+	    if [[ $control_panel = "cpanel" ]]; then
+           echo "Source is cPanel"
+           echo "The Source server is cPanel"  &> >(tee --append $logfile)
+
+           $ssh root@$sourceserver "
+           $setup_scripts_cmds
+           $createscripthome_cmds
+           $cpanel_specific_cmds
+           $post_setup_cmds
+           " >> $logfile 2>&1
+
+           #Adding a log marker, copy the files over
+           logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
+           logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
+           dest_post_premigfilexfer_cmds
+	    else
+	       echo "The Source server is not cPanel"  &> >(tee --append $logfile)
+	       echo "Setting up scripts, Updating user domains" &> >(tee --append $logfile)
+
+	       $ssh root@$sourceserver "
+           $setup_scripts_cmds
+           $createscripthome_cmds
+           $post_setup_cmds
+           " >> $logfile 2>&1
+
+           #Adding a log marker, copy the files over
+           logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
+           logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
+           dest_post_premigfilexfer_cmds
 		fi
 	fi
 }
