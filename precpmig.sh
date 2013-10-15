@@ -208,6 +208,7 @@ setup_remote(){
         cpeval_location=https://raw.github.com/cPanelSSP/cpeval2/master/cpeval2
         local_site_check_location=https://raw.github.com/cPMarco/cpm/master/local_site_check.sh
         the_date=$(date +%Y%m%d).$(date +%H).$(date +%M)
+        eval_folder=evalfiles.$sourceserver
 
         setup_scripts_cmds="
             if [[ ! -d /scripts ]]; then mkdir /scripts ;fi;
@@ -225,34 +226,34 @@ setup_remote(){
 
         createscripthome_cmds="
             # Pre-cPMigration Files
-            mkdir -v $scripthome; mkdir -v $scripthome/evalfiles;
+            mkdir -v $scripthome; mkdir -v $scripthome/eval_folder;
         "
         cpanel_specific_cmds="
-            cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/evalfiles/source.cpanel.config
-            cp -pv /etc/my.cnf $scripthome/evalfiles/
-            cp -pv /usr/local/lib/php.ini $scripthome/evalfiles/
-            cp -pv /var/cpanel/easy/apache/profile/_main.yaml $scripthome/evalfiles/
-            cp -pv /etc/exim.conf $scripthome/evalfiles/
+            cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/source.cpanel.config
+            cp -pv /etc/my.cnf $scripthome/$eval_folder/
+            cp -pv /usr/local/lib/php.ini $scripthome/$eval_folder/
+            cp -pv /var/cpanel/easy/apache/profile/_main.yaml $scripthome/$eval_folder/
+            cp -pv /etc/exim.conf $scripthome/$eval_folder/
         "
 
         post_setup_cmds="
             # Grab some html from all websites, record for later comparison.  If this completes before cppremig is done, great.  If not
             # then no problem it can stay on the source server
-            if [ ! -e $scripthome/evalfiles/site_summary* ]; then
-               curl -s --insecure $local_site_check_location | bash /dev/stdin '-o $scripthome/evalfiles/' &
+            if [ ! -e $scripthome/$eval_folder/site_summary* ]; then
+               curl -s --insecure $local_site_check_location | bash /dev/stdin '-o $scripthome/$eval_folder/' &
             fi
 
-            curl -s --insecure $cpeval_location | perl > $scripthome/evalfiles/source.eval.out
-            grep '^d:' $scripthome/evalfiles/source.eval.out | sed 's/^d:/s:/' > $scripthome/evalfiles/eval.in
+            curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/source.eval.out
+            grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:/' > $scripthome/$eval_folder/eval.in
 
-            tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/evalfiles/
+            tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/$eval_folder/
         "
         
         dest_post_premigfilexfer_cmds() {
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
-            curl -s --insecure $cpeval_location | perl > $scripthome/evalfiles/destination.eval.out
-            cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/evalfiles/destination.cpanel.config
+            curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/destination.eval.out
+            cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/destination.cpanel.config
         }
 
 	    if [[ $control_panel = "cpanel" ]]; then
