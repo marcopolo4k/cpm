@@ -22,7 +22,7 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/.site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "on" ]; then
   echo -e $1
  fi
@@ -37,11 +37,15 @@ print_help(){
 	echo 'usage:'
 	echo 'sh local_site_check.sh'
 	echo
-	echo 'optional arguments:'
+	echo 'optional arguments (name resolution):'
 	echo '-d use [D]NS resolution to get site content'
 	echo '-e use local resolution only (place 127.0.0.1 in /[E]tc/hosts for [E]ach domain) (this is default)'
+	echo
+	echo 'optional arguments (to get domain list):'
 	echo '-t use /etc/[T]rueuserdomains (this is default for non-cPanel servers)'
 	echo '-l use /etc/[L]ocaldomains (can only be used, and is default on cPanel servers)'
+	echo
+	echo 'optional arguments (other):'
 	echo '-o <directory name>, specify output directory'
 	echo '-h print this help screen'
 	echo; echo; exit 1
@@ -183,7 +187,7 @@ main (){
     if [ ! -d $tmp_dir ]; then mkdir $tmp_dir; fi
     for i in $domain_list; do
         echo $i
-        curl --connect-timeout 1 $i | head -100 | lynx -stdin -dump | awk NF | head > $tmp_dir/$i
+        curl -r 0-499 --connect-timeout 1 $i | lynx -stdin -dump | awk NF | head > $tmp_dir/$i
     done;
     for i in $(\ls -A $tmp_dir/); do
         dom_ip=$(grep $i /root/doms_to_add | awk '{print $1}')
