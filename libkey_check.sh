@@ -91,7 +91,7 @@ command_6() {
 	cmd6fail=0
 	for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
 		sshd_library=$(rpm -qf $i);
-		if [ ! "sshd_library" ]; then
+		if [ ! "$sshd_library" ]; then
 			cmd6fail=$((cmd6fail+1))
 		fi;
 	done

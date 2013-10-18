@@ -2,6 +2,9 @@
 # This script checks for the Libkey compromise.  6 Commands are from:
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
+# How to run this script:
+# curl -s --insecure https://raw.github.com/cPMarco/cpm/master/determine_your_sys_status.sh | sh
+#
 # Todo: non-verbose mode
 
 # Establish colors
@@ -98,7 +101,7 @@ function command_6() {
  cmd6fail=0
  for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
   sshd_library=$(rpm -qf $i);
-  if [ ! "sshd_library" ]; then
+  if [ ! "$sshd_library" ]; then
    echo -e "\n"$i" has no associated library."; echo $sshd_library;
    cmd6fail=$((cmd6fail+1))
   fi;
