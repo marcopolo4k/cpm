@@ -13,8 +13,8 @@ scripthome="/root/.cppremig"
 #############################################
 
 debug() {
- debug="off"
- if [ "$debug" = "on" ]; then
+ debug="on"
+ if [ "$debug" = "off" ]; then
   echo -e $1
  fi
 }
@@ -37,6 +37,7 @@ print_help(){
 	echo '-p sourceport'
 	echo '-k keep archives on both servers'
     echo '-D use DEVEL scripts on remote setup (3rdparty)'
+	echo '-i sk[I]p libkey check'
     echo '-h displays this dialogue'
     echo; echo; exit 1
 }
@@ -416,7 +417,7 @@ after_action_report(){
 ### get options
 #############################################
 
-while getopts ":s:p:a:l:kDhSe" opt; do
+while getopts ":s:p:a:l:kDhSei" opt; do
 	case $opt in
         s) sourceserver="$OPTARG";;
         p) sourceport="$OPTARG";;
@@ -426,11 +427,14 @@ while getopts ":s:p:a:l:kDhSe" opt; do
         D) develmode="1";;
         S) skipremotesetup="1";;
         e) precpmig="1";;
+        i) skiplc="1";;
         h) print_help;;
         \?) echo "invalid option: -$OPTARG"; echo; print_help;;
         :) echo "option -$OPTARG requires an argument."; echo; print_help;;
     esac
 done
+
+debug "skiplc is $skiplc"
 
 if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
@@ -487,16 +491,19 @@ epoch=`date +%s`
 set_logging_mode
 
 # libkey check
-lc_print_header
-lc_general_checks
-lc_command_1
-lc_command_2
-lc_command_3
-lc_command_4
-lc_command_5
-lc_command_6
-lc_summary
-error_check
+debug "skiplc is $skiplc"
+if [[ $skiplc != "1" ]]; then
+    lc_print_header
+    lc_general_checks
+    lc_command_1
+    lc_command_2
+    lc_command_3
+    lc_command_4
+    lc_command_5
+    lc_command_6
+    lc_summary
+    error_check
+fi
 
 # Setup Remote Server
 if [[ $skipremotesetup == "1" ]]; then
