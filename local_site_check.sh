@@ -182,12 +182,14 @@ main (){
     debug "\nRunning main().  domain_list is ${domain_list}"
     if [ ! -d $tmp_dir ]; then mkdir $tmp_dir; fi
     for i in $domain_list; do
-        echo $i;
-        curl --connect-timeout 1 $i | head -100 | lynx -stdin -dump | awk NF | head > $tmp_dir/$i;
+        echo $i
+        curl --connect-timeout 1 $i | head -100 | lynx -stdin -dump | awk NF | head > $tmp_dir/$i
     done;
     for i in $(\ls -A $tmp_dir/); do
-        echo $i: ;
-        cat $tmp_dir/$i ;
+        dom_ip=$(grep $i /root/doms_to_add | awk '{print $1}')
+        hname=$(hostname)
+        echo $i" on "$hname" using IP "$dom_ip
+        cat $tmp_dir/$i
         echo;echo "============================";
     done > $summary_file
 
