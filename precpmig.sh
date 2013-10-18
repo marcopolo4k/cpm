@@ -259,21 +259,29 @@ setup_remote(){
         
         dest_post_premigfilexfer_cmds() {
             debug "inside dest_post_premigfilexfer_cmds, eval_folder is $eval_folder"
+            if [ -e $scripthome/cPprefiles.$the_date.tar.gz ]; then
+                echo -e "\nFile transfer complete, now unpacking locally\n" &> >(tee --append $logfile)
+            else echo -e "\nError with file transfer, see logs\n" &> >(tee --append $logfile)
+            fi
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
-            mkdir -v $scripthome/$eval_folder
+            mkdir -v $scripthome/$eval_folder 2>>$logfile
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/destination.eval.out
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/destination.cpanel.config
             grep ^d: $scripthome/$eval_folder/destination.eval.out >> $scripthome/$eval_folder/eval.in
-            # not sure why this doesn't work:
-            # curl -s --insecure $cpeval_location | bash /dev/stdin '$scripthome/$eval_folder/eval.in' &> >(tee --append $logfile)
+
+            echo -e "Running cpeval on the input file: $scripthome/$eval_folder/eval.in\n\n" &> >(tee --append $logfile)
+            curl -s --insecure $cpeval_location | perl /dev/stdin $scripthome/$eval_folder/eval.in &> >(tee --append $logfile)
             echo -e "\n\n" &> >(tee --append $logfile)
-            echo -e "\n\nTransfer of files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
+            echo -e "\nYou can also use:\ndiff --suppress-common-lines $scripthome/$eval_folder/source.eval.out $scripthome/$eval_folder/destination.eval.out | less\n\n" &> >(tee --append $logfile)
+            echo -e "\n\nTransfer of pre-migration, evaluation files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
+
         }
 
 	    if [[ $control_panel = "cpanel" ]]; then
            echo "Source is cPanel"
            echo "The Source server is cPanel"  &> >(tee --append $logfile)
+           echo -e "\nCollecting files on source server (should take > 10s)\n" &> >(tee --append $logfile)
 
            $ssh root@$sourceserver "
            $setup_scripts_cmds
@@ -508,4 +516,4 @@ warnusers=""
 ### Process loop
 #############################################
 
-after_action_report
+#after_action_report
