@@ -68,7 +68,7 @@ is_rpm_owned() {
 
 # Here the 6 commands listed on the website 
 command_1() {
-	cmd_1_chk=$(rpm -V keyutils-libs)
+	cmd_1_chk=$(rpm -V keyutils-libs | egrep -v "\.[M\.]\.\.\.\.\.[T\.]\.")
 }
 
 command_2() {

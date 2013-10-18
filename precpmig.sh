@@ -130,7 +130,7 @@ lc_general_checks() {
 # Libkey Check: Here the 6 commands listed on the website 
 lc_command_1() {
 	echo -e "\nCommand 1 Test:" >> $logfile
-	keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+	keyu_pckg_chg_test=$(rpm -V keyutils-libs | egrep -v "\.[M\.]\.\.\.\.\.[T\.]\.")
 	lc_checkfor "$keyu_pckg_chg_test" "keyutils-libs check failed. The rpm shows the following file changes: " "\n If the above changes are any of the 
  following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
  .M.....T
@@ -434,8 +434,6 @@ while getopts ":s:p:a:l:kDhSei" opt; do
     esac
 done
 
-debug "skiplc is $skiplc"
-
 if [[ $# -eq 0 || -z $sourceserver ]]; then print_help; fi  # check for existence of required var
 
 
@@ -491,8 +489,9 @@ epoch=`date +%s`
 set_logging_mode
 
 # libkey check
-debug "skiplc is $skiplc"
-if [[ $skiplc != "1" ]]; then
+if [[ $skiplc == "1" ]]; then
+    echo "ONE SECURITY CHECK SKIPPED" &> >(tee --append $logfile)
+else
     lc_print_header
     lc_general_checks
     lc_command_1

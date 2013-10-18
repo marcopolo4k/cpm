@@ -65,7 +65,7 @@ function general_checks() {
 # Here the 6 commands listed on the website 
 function command_1() {
  echo -e "\nCommand 1 Test:"
- keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+ keyu_pckg_chg_test=$(rpm -V keyutils-libs | egrep -v "\.[M\.]\.\.\.\.\.[T\.]\.")
  checkfor "$keyu_pckg_chg_test" "keyutils-libs check failed. The rpm shows the following file changes: " "\n If the above changes are any of the 
 following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
  .M.....T
