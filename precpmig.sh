@@ -194,8 +194,8 @@ lc_summary() {
 		done
 		echo -e "\nTotal Number of checks failed: "$lc_num_fails" (out of 7 checks currently)\n\n
 The following is a general guide to interpret results:
-  1 check failed = probably false positive. This is usually commands 1, 4, or 6
-  2 checks failed = somewhat likely real
+  1 check failed = possibly false positive. This is usually command 4 or 6
+  2 checks failed = very likely real
   3+ checks failed = definitely real\n\n" >> $logfile
 
     echo -e "Destination server failed a critical error check.  See logs for more details:\n\n$logfile\n"  &> >(tee --append $logfile)
