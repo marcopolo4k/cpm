@@ -13,7 +13,7 @@ scripthome="/root/.cppremig"
 #############################################
 
 debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "off" ]; then
   echo -e $1
  fi
@@ -219,16 +219,47 @@ setup_remote(){
         eval_folder=evalfiles.$sourceserver
         debug "inside precpmig, eval_folder is $eval_folder"
 
-        setup_scripts_cmds="
-            if [[ ! -d /scripts ]]; then mkdir /scripts ;fi;
-            if [[ ! -f /scripts/pkgacct ]]; then
-               wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/pkgacct-pXa -P /scripts;
-               mv /scripts/pkgacct-pXa /scripts/pkgacct;
-               chmod 755 /scripts/pkgacct
-            fi;
-            if [[ ! -f /scripts/updateuserdomains-universal ]]; then
-               wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/updateuserdomains-universal -P /scripts;
-               chmod 755 /scripts/updateuserdomains-universal;
+        setup_scripts_plesk_cmds="
+	        if [[ ! -d /scripts ]]; then
+	            mkdir /scripts ;fi;
+	        if [[ ! -f /scripts/pkgacct ]]; then
+	            wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/pkgacct-pXa -P /scripts;
+	            mv /scripts/pkgacct-pXa /scripts/pkgacct;
+	            chmod 755 /scripts/pkgacct
+	        fi;
+	        if [[ ! -f /scripts/updateuserdomains-universal ]]; then
+	            wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/updateuserdomains-universal -P /scripts;
+	            chmod 755 /scripts/updateuserdomains-universal;
+	        fi;
+	        /scripts/updateuserdomains-universal;
+        "
+
+        setup_scripts_ensim_cmds="
+            if [[ ! -d /scripts ]]; then 
+                mkdir /scripts ;fi; 
+	        if [[ ! -f /scripts/pkgacct ]]; then 
+	            wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/pkgacct-enXim -P /scripts;
+	            mv /scripts/pkgacct-enXim /scripts/pkgacct;
+	            chmod 755 /scripts/pkgacct
+	        fi;
+	        if [[ ! -f /scripts/updateuserdomains-universal ]]; then
+	            wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/updateuserdomains-universal -P /scripts;
+	            chmod 755 /scripts/updateuserdomains-universal;
+	        fi;
+	        /scripts/updateuserdomains-universal;
+        "
+
+        setup_scripts_da_cmds="
+	        if [[ ! -d /scripts ]]; then 
+	            mkdir /scripts ;fi; 
+	        if [[ ! -f /scripts/pkgacct ]]; then 
+	        wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/pkgacct-dXa -P /scripts;
+	        mv /scripts/pkgacct-dXa /scripts/pkgacct;
+	        chmod 755 /scripts/pkgacct
+	            fi;
+	            if [[ ! -f /scripts/updateuserdomains-universal ]]; then
+	        wget http://httpupdate.cpanel.net/cpanelsync/transfers_$pkgacctbranch/pkgacct/updateuserdomains-universal -P /scripts;
+	        chmod 755 /scripts/updateuserdomains-universal;
             fi;
             /scripts/updateuserdomains-universal;
         "
@@ -237,6 +268,7 @@ setup_remote(){
             # Pre-cPMigration Files
             mkdir -v $scripthome; mkdir -v $scripthome/$eval_folder;
         "
+
         cpanel_specific_cmds="
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/source.cpanel.config
             cp -pv /etc/my.cnf $scripthome/$eval_folder/
@@ -276,7 +308,6 @@ setup_remote(){
             echo -e "\n\n" &> >(tee --append $logfile)
             echo -e "\nYou can also use:\ndiff --suppress-common-lines $scripthome/$eval_folder/source.eval.out $scripthome/$eval_folder/destination.eval.out | less\n\n" &> >(tee --append $logfile)
             echo -e "\n\nTransfer of pre-migration, evaluation files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
-
         }
 
 	    if [[ $control_panel = "cpanel" ]]; then
@@ -295,12 +326,13 @@ setup_remote(){
            logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
            logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
            dest_post_premigfilexfer_cmds
-	    else
-	       echo "The Source server is not cPanel"  &> >(tee --append $logfile)
+
+	    elif [[ $control_panel = "plesk" ]]; then
+	       echo "The Source server is Plesk"  &> >(tee --append $logfile)
 	       echo "Setting up scripts, Updating user domains" &> >(tee --append $logfile)
 
 	       $ssh root@$sourceserver "
-           $setup_scripts_cmds
+           $setup_scripts_plesk_cmds
            $createscripthome_cmds
            $post_setup_cmds
            " >> $logfile 2>&1
@@ -309,6 +341,38 @@ setup_remote(){
            logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
            logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
            dest_post_premigfilexfer_cmds
+
+	    elif [[ $control_panel = "ensim" ]]; then
+	       echo "The Source server is Ensim"  &> >(tee --append $logfile)
+	       echo "Setting up scripts, Updating user domains" &> >(tee --append $logfile)
+
+	       $ssh root@$sourceserver "
+           $setup_scripts_ensim_cmds
+           $createscripthome_cmds
+           $post_setup_cmds
+           " >> $logfile 2>&1
+
+           #Adding a log marker, copy the files over
+           logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
+           logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
+           dest_post_premigfilexfer_cmds
+
+	    elif [[ $control_panel = "da" ]]; then
+	       echo "The Source server is DA"  &> >(tee --append $logfile)
+	       echo "Setting up scripts, Updating user domains" &> >(tee --append $logfile)
+
+	       $ssh root@$sourceserver "
+           $setup_scripts_da_cmds
+           $createscripthome_cmds
+           $post_setup_cmds
+           " >> $logfile 2>&1
+
+           #Adding a log marker, copy the files over
+           logcheck="$logcheck `echo \"Transferring pre-migration files\" &> >(tee --append $logfile)`"
+           logcheck="$logcheck `$scp root@$sourceserver:$scripthome/cPprefiles.$the_date.tar.gz $scripthome/cPprefiles.$the_date.tar.gz &> >(tee --append $logfile)`"
+           dest_post_premigfilexfer_cmds
+
+		else echo -e "\nError in Panel Identification - None found\n" &> >(tee --append $logfile)
 		fi
 	fi
 }
