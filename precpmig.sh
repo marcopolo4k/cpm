@@ -13,8 +13,8 @@ scripthome="/root/.cppremig"
 #############################################
 
 debug() {
- debug="off"
- if [ "$debug" = "off" ]; then
+ debug="on"
+ if [ "$debug" = "on" ]; then
   echo -e $1
  fi
 }
@@ -207,6 +207,7 @@ The following is a general guide to interpret results:
 
 setup_remote(){
     control_panel=`$ssh root@$sourceserver "if [ -e /usr/local/psa/version	 ];then echo plesk; elif [ -e /usr/local/cpanel/cpanel ];then echo cpanel; elif [ -e /usr/bin/getapplversion ];then echo ensim; elif [ -e /usr/local/directadmin/directadmin ];then echo da; else echo unknown;fi;exit"` >> $logfile 2>&1
+    debug "after assignment, control panel = $control_panel"  &> >(tee --append $logfile)
     eval_folder=evalfiles.$sourceserver
     debug "eval_folder is $eval_folder"
 
@@ -310,7 +311,9 @@ setup_remote(){
             echo -e "\n\nTransfer of pre-migration, evaluation files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
         }
 
+        debug "before if, control panel = $control_panel"  &> >(tee --append $logfile)
 	    if [[ $control_panel = "cpanel" ]]; then
+           debug "after if, control panel = $control_panel"  &> >(tee --append $logfile)
            echo "Source is cPanel"
            echo "The Source server is cPanel"  &> >(tee --append $logfile)
            echo -e "\nCollecting files on source server (should take > 10s)\n" &> >(tee --append $logfile)
