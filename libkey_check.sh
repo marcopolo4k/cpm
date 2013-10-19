@@ -68,7 +68,7 @@ is_rpm_owned() {
 
 # Here the 6 commands listed on the website 
 command_1() {
-	cmd_1_chk=$(rpm -V keyutils-libs)
+	cmd_1_chk=$(rpm -V keyutils-libs | egrep -v "\.[M\.]\.\.\.\.\.[T\.]\.")
 }
 
 command_2() {
@@ -91,7 +91,7 @@ command_6() {
 	cmd6fail=0
 	for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
 		sshd_library=$(rpm -qf $i);
-		if [ ! "sshd_library" ]; then
+		if [ ! "$sshd_library" ]; then
 			cmd6fail=$((cmd6fail+1))
 		fi;
 	done
@@ -170,7 +170,7 @@ print_results() {
 		cmd6fail=0
 		for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
 			sshd_library=$(rpm -qf $i);
-			if [ ! "sshd_library" ]; then
+			if [ ! "$sshd_library" ]; then
 				echo -e "\n"$i" has no associated library."; echo $sshd_library;
 				cmd6fail=$((cmd6fail+1))
 			fi;
@@ -197,8 +197,8 @@ summary_of_fail() {
 		stat $thelibkey | grep -i change
 		echo -e "\nTotal Number of checks failed: "$num_fails" (out of 7 checks currently)\n\n
 Based on what I've seen so far, the following might be a general guide to interpret results:
-1 check failed = probably false positive. This is usually commands 1, 4, or 6
-2 checks failed = somewhat likely real
+1 check failed = possibly false positive. This is usually command 4 or 6
+2 checks failed = very likely real
 3+ checks failed = definitely real\n"
 	fi
 	echo "Single security check complete"

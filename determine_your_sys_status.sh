@@ -2,6 +2,9 @@
 # This script checks for the Libkey compromise.  6 Commands are from:
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
+# How to run this script:
+# curl -s --insecure https://raw.github.com/cPMarco/cpm/master/determine_your_sys_status.sh | sh
+#
 # Todo: non-verbose mode
 
 # Establish colors
@@ -62,7 +65,7 @@ function general_checks() {
 # Here the 6 commands listed on the website 
 function command_1() {
  echo -e "\nCommand 1 Test:"
- keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+ keyu_pckg_chg_test=$(rpm -V keyutils-libs | egrep -v "\.[M\.]\.\.\.\.\.[T\.]\.")
  checkfor "$keyu_pckg_chg_test" "keyutils-libs check failed. The rpm shows the following file changes: " "\n If the above changes are any of the 
 following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
  .M.....T
@@ -98,7 +101,7 @@ function command_6() {
  cmd6fail=0
  for i in $(ldd /usr/sbin/sshd | cut -d" " -f3); do
   sshd_library=$(rpm -qf $i);
-  if [ ! "sshd_library" ]; then
+  if [ ! "$sshd_library" ]; then
    echo -e "\n"$i" has no associated library."; echo $sshd_library;
    cmd6fail=$((cmd6fail+1))
   fi;
@@ -122,8 +125,8 @@ function summary() {
   done
   echo -e "\nTotal Number of checks failed: "$num_fails" (out of 7 checks currently)\n\n
 Based on what I've seen so far, the following might be a general guide to interpret results:
-1 check failed = probably false positive. This is usually commands 1, 4, or 6
-2 checks failed = somewhat likely real
+1 check failed = possibly false positive. This is usually command 4 or 6
+2 checks failed = very likely real
 3+ checks failed = definitely real"
  fi
  

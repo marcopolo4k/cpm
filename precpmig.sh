@@ -13,8 +13,8 @@ scripthome="/root/.cppremig"
 #############################################
 
 debug() {
- debug="off"
- if [ "$debug" = "on" ]; then
+ debug="on"
+ if [ "$debug" = "off" ]; then
   echo -e $1
  fi
 }
@@ -37,6 +37,7 @@ print_help(){
 	echo '-p sourceport'
 	echo '-k keep archives on both servers'
     echo '-D use DEVEL scripts on remote setup (3rdparty)'
+	echo '-i sk[I]p libkey check'
     echo '-h displays this dialogue'
     echo; echo; exit 1
 }
@@ -129,7 +130,7 @@ lc_general_checks() {
 # Libkey Check: Here the 6 commands listed on the website 
 lc_command_1() {
 	echo -e "\nCommand 1 Test:" >> $logfile
-	keyu_pckg_chg_test=$(rpm -V keyutils-libs)
+	keyu_pckg_chg_test=$(rpm -V keyutils-libs | egrep -v "\.[M\.]\.\.\.\.\.[T\.]\.")
 	lc_checkfor "$keyu_pckg_chg_test" "keyutils-libs check failed. The rpm shows the following file changes: " "\n If the above changes are any of the 
  following, then maybe it's ok (probable false positive - you could ask the sysadmin what actions may have caused these):
  .M.....T
@@ -193,8 +194,8 @@ lc_summary() {
 		done
 		echo -e "\nTotal Number of checks failed: "$lc_num_fails" (out of 7 checks currently)\n\n
 The following is a general guide to interpret results:
-  1 check failed = probably false positive. This is usually commands 1, 4, or 6
-  2 checks failed = somewhat likely real
+  1 check failed = possibly false positive. This is usually command 4 or 6
+  2 checks failed = very likely real
   3+ checks failed = definitely real\n\n" >> $logfile
 
     echo -e "Destination server failed a critical error check.  See logs for more details:\n\n$logfile\n"  &> >(tee --append $logfile)
@@ -259,21 +260,29 @@ setup_remote(){
         
         dest_post_premigfilexfer_cmds() {
             debug "inside dest_post_premigfilexfer_cmds, eval_folder is $eval_folder"
+            if [ -e $scripthome/cPprefiles.$the_date.tar.gz ]; then
+                echo -e "\nFile transfer complete, now unpacking locally\n" &> >(tee --append $logfile)
+            else echo -e "\nError with file transfer, see logs\n" &> >(tee --append $logfile)
+            fi
             tar -C / -xzf $scripthome/cPprefiles.$the_date.tar.gz
             rm $scripthome/cPprefiles.$the_date.tar.gz
-            mkdir -v $scripthome/$eval_folder
+            mkdir -v $scripthome/$eval_folder 2>>$logfile
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/destination.eval.out
             cat /var/cpanel/cpanel.config | sort | awk NF > $scripthome/$eval_folder/destination.cpanel.config
             grep ^d: $scripthome/$eval_folder/destination.eval.out >> $scripthome/$eval_folder/eval.in
-            # not sure why this doesn't work:
-            # curl -s --insecure $cpeval_location | bash /dev/stdin '$scripthome/$eval_folder/eval.in' &> >(tee --append $logfile)
+
+            echo -e "Running cpeval on the input file: $scripthome/$eval_folder/eval.in\n\n" &> >(tee --append $logfile)
+            curl -s --insecure $cpeval_location | perl /dev/stdin $scripthome/$eval_folder/eval.in &> >(tee --append $logfile)
             echo -e "\n\n" &> >(tee --append $logfile)
-            echo -e "\n\nTransfer of files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
+            echo -e "\nYou can also use:\ndiff --suppress-common-lines $scripthome/$eval_folder/source.eval.out $scripthome/$eval_folder/destination.eval.out | less\n\n" &> >(tee --append $logfile)
+            echo -e "\n\nTransfer of pre-migration, evaluation files complete. See output in:\n$scripthome/$eval_folder\n\n" &> >(tee --append $logfile)
+
         }
 
 	    if [[ $control_panel = "cpanel" ]]; then
            echo "Source is cPanel"
            echo "The Source server is cPanel"  &> >(tee --append $logfile)
+           echo -e "\nCollecting files on source server (should take > 10s)\n" &> >(tee --append $logfile)
 
            $ssh root@$sourceserver "
            $setup_scripts_cmds
@@ -408,7 +417,7 @@ after_action_report(){
 ### get options
 #############################################
 
-while getopts ":s:p:a:l:kDhSe" opt; do
+while getopts ":s:p:a:l:kDhSei" opt; do
 	case $opt in
         s) sourceserver="$OPTARG";;
         p) sourceport="$OPTARG";;
@@ -418,6 +427,7 @@ while getopts ":s:p:a:l:kDhSe" opt; do
         D) develmode="1";;
         S) skipremotesetup="1";;
         e) precpmig="1";;
+        i) skiplc="1";;
         h) print_help;;
         \?) echo "invalid option: -$OPTARG"; echo; print_help;;
         :) echo "option -$OPTARG requires an argument."; echo; print_help;;
@@ -479,16 +489,20 @@ epoch=`date +%s`
 set_logging_mode
 
 # libkey check
-lc_print_header
-lc_general_checks
-lc_command_1
-lc_command_2
-lc_command_3
-lc_command_4
-lc_command_5
-lc_command_6
-lc_summary
-error_check
+if [[ $skiplc == "1" ]]; then
+    echo "ONE SECURITY CHECK SKIPPED" &> >(tee --append $logfile)
+else
+    lc_print_header
+    lc_general_checks
+    lc_command_1
+    lc_command_2
+    lc_command_3
+    lc_command_4
+    lc_command_5
+    lc_command_6
+    lc_summary
+    error_check
+fi
 
 # Setup Remote Server
 if [[ $skipremotesetup == "1" ]]; then
@@ -508,4 +522,4 @@ warnusers=""
 ### Process loop
 #############################################
 
-after_action_report
+#after_action_report
