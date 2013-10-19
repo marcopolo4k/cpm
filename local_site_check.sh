@@ -22,7 +22,7 @@ tmp_dir=/root/cptmp.doms
 summary_file=/root/.site_summary.$(hostname -i).cP.$(date +%Y%m%d).$(date +%H).$(date +%M)
 
 debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "on" ]; then
   echo -e $1
  fi
