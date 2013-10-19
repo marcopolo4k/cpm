@@ -85,8 +85,8 @@ while getopts ":o:detlh" opt; do
     case $opt in
         d) dns_resolution="1"; local_resolution="0";;
         e) local_resolution="1"; dns_resolution="0";;
-        t) use_trueuserdomains="1"; use_localdomains="1";;
-        l) use_localdomains="1"; use_trueuserdomains="1";;
+        t) use_trueuserdomains="1"; use_localdomains="0";;
+        l) use_localdomains="1"; use_trueuserdomains="0";;
         o) output_dir="$OPTARG";;
         h) print_help;;
         \?) echo "invalid option: -$OPTARG"; echo; print_help;;
