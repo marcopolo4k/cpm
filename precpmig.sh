@@ -13,7 +13,7 @@ scripthome="/root/.cppremig"
 #############################################
 
 debug() {
- debug="on"
+ debug="off"
  if [ "$debug" = "on" ]; then
   echo -e $1
  fi
