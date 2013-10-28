@@ -54,7 +54,7 @@ fi;
 # Does this server actually controls it's own Reverse DNS?
 alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
 rvs_is_local=$(ifm | grep $(dig +short $(dig $(echo $hip | awk -F . '{print $4"."$3"."$2"."$1}').in-addr.arpa. | grep SOA | awk '{print $5}')) 2>/dev/null )
-checkfor "$rvs_is_local" "This server actually controls it's own Reverse DNS:" "echo $hip | awk -F . '{print \$4\".\"\$3\".\"\$2\".\"\$1}').in-addr.arpa. | grep SOA"
+checkfor "$rvs_is_local" "This server actually controls it's own Reverse DNS:" "dig \$(echo $hip | awk -F . '{print \$4\".\"\$3\".\"\$2\".\"\$1}').in-addr.arpa. | grep SOA"
 
 echo -ne $hn": "$h"\n";
 /usr/local/cpanel/cpanel -V;
