@@ -6,45 +6,83 @@
 # http://staffwiki.cpanel.net/LinuxSupport/EximSpamOneLiners
 # for a summary of the code, the main code block is at the bottom
 # 
-#todo: check if the temp file already exists & give option to use that one
-#todo: ask user if they want to use existing or not
+# To run: curl -s https://raw.github.com/cPMarco/cpm/master/spam_check.sh > spam_check.sh; sh spam_check.sh
+# 
 #todo: check that there's some mail in the queue vs printing empty
 #todo: move this to techscripts
 
 function debug() {
- debug="off"
- if [ "$debug" = "on" ]; then
-  echo $1
- fi
+    debug="off"
+    if [ "$debug" = "on" ]; then
+        echo $1
+    fi
 }
 # example:
 # debug "variable_name is ${variable_name}"
 
+function get_output_decision () {
+    use_current=0;
+    backup_current=0;
+    remove_current=0;
+    echo
+    read -p "Output file ($temp_dir/cptemp_eximbp) already exists. Please enter a number 1-3
+    1) Run diagnosis on the existing output file
+    2) Move to backup ($temp_dir/cptemp_eximbp.1), and create a new output file
+    3) Delete the existing output file, and create a new one (default): " file_choice
+    file_choice=${file_choice:-3}
+    case $file_choice in
+        1) use_current=1;
+        ;;
+        2) backup_current=1;
+        ;;
+        3) remove_current=1;
+           \rm -v $temp_dir/cptemp_eximbp
+        ;;
+        *)
+        echo -e "\nPlease enter a valid choice: 1 to 3."
+        get_output_decision
+        ;;
+    esac  
+}
+
 temp_dir=/root
 function get_temp_file_dir () {
- read -p "
- Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
-  debug "input_dir is ${input_dir}"
- input_dir=${input_dir:-/root}
-  debug "input_dir is ${input_dir}"
- temp_dir=$(echo $input_dir | sed 's/\/$//')
-  debug "temp_dir is ${temp_dir}"
- if [ -e $temp_dir ]; then
-  echo -e "Thank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. Remember to delete it when you're done."
-   debug "temp_dir is ${temp_dir}"
- else
-  echo "There was a problem, or that directory does not exist. Please try again."
-  get_temp_file_dir
- fi
-  debug "temp_dir is ${temp_dir}"
+    read -p "
+    Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
+    debug "input_dir is ${input_dir}"
+    input_dir=${input_dir:-/root}
+    debug "input_dir is ${input_dir}"
+    temp_dir=$(echo $input_dir | sed 's/\/$//')
+    debug "temp_dir is ${temp_dir}"
+    if [ -e $temp_dir ]; then
+        if [ -e $temp_dir/cptemp_eximbp ]; then
+            get_output_decision 
+        fi
+    else
+        echo "There was a problem, or that directory does not exist. Please try again."
+        get_temp_file_dir
+    fi
+
+    echo -e "Thank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. This script will not delete this temp file upon completion."
+    debug "temp_dir is ${temp_dir}"
 }
 
 function run_eximbp () {
- echo -e "\nNow, beginning to run the command 'exim -bp'.  If this takes an excruciatingly long time, you can cancel (control-c) it, and the script should still work on the part that has already been created, which will probably show you what you need to know anyway."
- exim -bp > $temp_dir/cptemp_eximbp
+    debug "starting run_eximbp, backup_current is ${backup_current}\n use_current is ${use_current}"
+    if [ $use_current -eq 0 ]; then
+        echo -e "\nNow, beginning to run the command 'exim -bp'.  If this takes an excruciatingly long time, you can cancel (control-c) it. If the script exits, you can run it again on the existing file (option 1). Often, all that's needed is 30s worth of gathering the oldest messages in the queue."
+        if [ $backup_current -eq 1 ]; then
+            mv -v $temp_dir/cptemp_eximbp $temp_dir/cptemp_eximbp.1
+            exim -bp > $temp_dir/cptemp_eximbp
+            debug "exim -bp >> $temp_dir/cptemp_eximbp"
+        else
+            exim -bp > $temp_dir/cptemp_eximbp
+            debug "exim -bp > $temp_dir/cptemp_eximbp"
+        fi
+    fi
 }
 
-#todo: put this in an awk printf statement, report if domain is local/remote at the end:
+#todo: put this in a printf statement, report if domain is local/remote at the end:
 # Are they local?
 # for i in $doms; do echo -n $i": "; grep $i /etc/localdomains; done
 function exiqsumm_to_get_top_domains () {
