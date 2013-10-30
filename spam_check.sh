@@ -6,7 +6,7 @@
 # http://staffwiki.cpanel.net/LinuxSupport/EximSpamOneLiners
 # for a summary of the code, the main code block is at the bottom
 # 
-# To run: curl -s https://raw.github.com/cPMarco/cpm/master/spam_check.sh > spam_check.sh; sh spam_check.sh
+# To run: curl -s --insecure https://raw.github.com/cPMarco/cpm/master/spam_check.sh > spam_check.sh; sh spam_check.sh
 # 
 #todo: check that there's some mail in the queue vs printing empty
 #todo: move this to techscripts
@@ -20,6 +20,30 @@ function debug() {
 # example:
 # debug "variable_name is ${variable_name}"
 
+
+temp_dir=/root
+function get_temp_file_dir () {
+    read -p "
+    Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
+    debug "input_dir is ${input_dir}"
+    input_dir=${input_dir:-/root}
+    debug "input_dir is ${input_dir}"
+    temp_dir=$(echo $input_dir | sed 's/\/$//')
+    debug "temp_dir is ${temp_dir}"
+    if [ -e $temp_dir ]; then
+        if [ -e $temp_dir/cptemp_eximbp ]; then
+            get_output_decision 
+        fi
+    else
+        echo "There was a problem, or that directory does not exist. Please try again."
+        get_temp_file_dir
+    fi
+
+    echo -e "Thank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. This script will not delete this temp file upon completion."
+    debug "temp_dir is ${temp_dir}"
+}
+
+# If the temp output file already exists (this will go back to get_temp_file_dir when complete)
 function get_output_decision () {
     use_current=0;
     backup_current=0;
@@ -45,28 +69,6 @@ function get_output_decision () {
     esac  
 }
 
-temp_dir=/root
-function get_temp_file_dir () {
-    read -p "
-    Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
-    debug "input_dir is ${input_dir}"
-    input_dir=${input_dir:-/root}
-    debug "input_dir is ${input_dir}"
-    temp_dir=$(echo $input_dir | sed 's/\/$//')
-    debug "temp_dir is ${temp_dir}"
-    if [ -e $temp_dir ]; then
-        if [ -e $temp_dir/cptemp_eximbp ]; then
-            get_output_decision 
-        fi
-    else
-        echo "There was a problem, or that directory does not exist. Please try again."
-        get_temp_file_dir
-    fi
-
-    echo -e "Thank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. This script will not delete this temp file upon completion."
-    debug "temp_dir is ${temp_dir}"
-}
-
 function run_eximbp () {
     debug "starting run_eximbp, backup_current is ${backup_current}\n use_current is ${use_current}"
     if [ $use_current -eq 0 ]; then
@@ -86,22 +88,22 @@ function run_eximbp () {
 # Are they local?
 # for i in $doms; do echo -n $i": "; grep $i /etc/localdomains; done
 function exiqsumm_to_get_top_domains () {
- echo -e "\nDomains stopping up the queue:"; 
- cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5;
- 
- # Get domains from Exim queue
- doms=$(cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | egrep -v "\-\-\-|TOTAL|Domain" | tail -5 | awk '{print $5}')
+    echo -e "\nDomains stopping up the queue:"; 
+    cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | tail -5;
+
+    # Get domains from Exim queue
+    doms=$(cat $temp_dir/cptemp_eximbp | exiqsumm | sort -n | egrep -v "\-\-\-|TOTAL|Domain" | tail -5 | awk '{print $5}')
 }
 
 function check_if_local () {
- echo -e "\nDomains from above that are local:"
- for onedomain in $doms; do
-  islocal=$(grep $onedomain /etc/localdomains)
-  ishostname=$(hostname | grep $onedomain)
-  if [ "$islocal" -o "$ishostname" ]; then
-   echo $onedomain;
-  fi
- done
+    echo -e "\nDomains from above that are local:"
+    for onedomain in $doms; do
+        islocal=$(grep $onedomain /etc/localdomains)
+        ishostname=$(hostname | grep $onedomain)
+        if [ "$islocal" -o "$ishostname" ]; then
+            echo $onedomain;
+        fi
+    done
 }
 
 # There's an awk script in here that decodes base64 subjects
@@ -127,19 +129,19 @@ function get_subjects_of_top_domains () {
 
 # Domains sending:
 function find_addresses_sending_out () {
- declare -a sendingaddys=($(egrep "<" $temp_dir/cptemp_eximbp | awk '{print $4}' | sort | uniq -c | sort -n | sed 's/<>/no_address_in_logs/g' | tail -4));
- echo -e "\nAddresses sending out: " ${sendingaddys[@]} "\n"| sed 's/ \([0-9]*\) /\n\1 /g'
- bigsender=$(echo ${sendingaddys[@]} | awk '{print $NF}'); 
- echo -e "So the big sender is:\n"$bigsender
+    declare -a sendingaddys=($(egrep "<" $temp_dir/cptemp_eximbp | awk '{print $4}' | sort | uniq -c | sort -n | sed 's/<>/no_address_in_logs/g' | tail -4));
+    echo -e "\nAddresses sending out: " ${sendingaddys[@]} "\n"| sed 's/ \([0-9]*\) /\n\1 /g'
+    bigsender=$(echo ${sendingaddys[@]} | awk '{print $NF}'); 
+    echo -e "So the big sender is:\n"$bigsender
 }
 
 function find_addresses_sending_to_top_domains () {
- echo; 
- for onedomain_of_five in $doms; do
-     echo "Mails attempting to be sent to domain [$onedomain_of_five], from:"; 
-     cat $temp_dir/cptemp_eximbp | grep -B1 $onedomain_of_five | egrep -v "\-\-|$onedomain_of_five" | awk '{print $4}' | sort | uniq -c | sort -n | tail -5; 
-     echo; 
- done
+    echo; 
+    for onedomain_of_five in $doms; do
+        echo "Mails attempting to be sent to domain [$onedomain_of_five], from:"; 
+        cat $temp_dir/cptemp_eximbp | grep -B1 $onedomain_of_five | egrep -v "\-\-|$onedomain_of_five" | awk '{print $4}' | sort | uniq -c | sort -n | tail -5; 
+        echo; 
+    done
 }
 
 # Run all functions
