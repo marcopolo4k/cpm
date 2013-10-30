@@ -20,8 +20,11 @@ function debug() {
 # example:
 # debug "variable_name is ${variable_name}"
 
-
+use_current=0
+backup_current=0
+remove_current=0
 temp_dir=/root
+
 function get_temp_file_dir () {
     read -p "
     Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
@@ -43,11 +46,8 @@ function get_temp_file_dir () {
     debug "temp_dir is ${temp_dir}"
 }
 
-# If the temp output file already exists (this will go back to get_temp_file_dir when complete)
+# If the temp output file already exists, user must choose (this will go back to get_temp_file_dir when complete)
 function get_output_decision () {
-    use_current=0;
-    backup_current=0;
-    remove_current=0;
     echo
     read -p "Output file ($temp_dir/cptemp_eximbp) already exists. Please enter a number 1-3
     1) Run diagnosis on the existing output file
