@@ -42,7 +42,7 @@ function get_temp_file_dir () {
         get_temp_file_dir
     fi
 
-    echo -e "Thank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm'. This script will not delete this temp file upon completion."
+    echo -e "\nThank you.\nThis file can later be used again to run commands (like 'cat $temp_dir/cptemp_eximbp | exiqsumm').\nThis script will not delete this temp file upon completion."
     debug "temp_dir is ${temp_dir}"
 }
 
@@ -74,7 +74,7 @@ function run_eximbp () {
     if [ $use_current -eq 0 ]; then
         echo -e "\nNow, beginning to run the command 'exim -bp'.  If this takes an excruciatingly long time, you can cancel (control-c) it. If the script exits, you can run it again on the existing file (option 1). Often, all that's needed is 30s worth of gathering the oldest messages in the queue."
         if [ $backup_current -eq 1 ]; then
-            mv -v $temp_dir/cptemp_eximbp $temp_dir/cptemp_eximbp.1
+            echo; mv -v $temp_dir/cptemp_eximbp $temp_dir/cptemp_eximbp.1
             exim -bp > $temp_dir/cptemp_eximbp
             debug "exim -bp >> $temp_dir/cptemp_eximbp"
         else
