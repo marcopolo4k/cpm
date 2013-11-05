@@ -149,7 +149,7 @@ if_localdomains() {
             if [ -e "$udata_file" ]; then
                 dom_ip=$(\grep ^ip /var/cpanel/userdata/$(/scripts/whoowns $dom)/$dom | \cut -d: -f2 | \tr -d ' ')
             else
-                echo -e "Domain's IP not found in:\n/var/cpanel/userdata/$dom/main \n /scripts/whoowns $dom"
+                echo -e "Domain's IP not found in:\n/var/cpanel/userdata/$dom/main \nIt's probably a sub/parked/addon domain, but here's /scripts/whoowns $dom"
                 /scripts/whoowns $dom; echo
             fi
             debug "$dom_ip\t$dom"
