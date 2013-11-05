@@ -145,7 +145,13 @@ if_localdomains() {
         mkdir $tmp_dir;
         # this is cheating.  ill fix later
         for dom in $(cat /etc/localdomains); do
-            dom_ip=$(\grep ^ip /var/cpanel/userdata/$(/scripts/whoowns $dom)/$dom | \cut -d: -f2 | \tr -d ' ')
+            udata_file=/var/cpanel/userdata/$(/scripts/whoowns $dom)/$dom
+            if [ -e "$udata_file" ]; then
+                dom_ip=$(\grep ^ip /var/cpanel/userdata/$(/scripts/whoowns $dom)/$dom | \cut -d: -f2 | \tr -d ' ')
+            else
+                echo -e "User's data file not found in /var/cpanel/userdata/\n /scripts/whoowns $dom:\n"
+                /scripts/whoowns $dom
+            fi
             debug "$dom_ip\t$dom"
             echo -e "$dom_ip\t$dom" >> /root/doms_to_add
         done
