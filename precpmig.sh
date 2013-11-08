@@ -206,6 +206,13 @@ The following is a general guide to interpret results:
 }
 
 setup_remote(){
+    if [[ $develmode == "1" ]]; then
+        echo "DEVEL Mode set for setup_remote" &> >(tee --append $logfile)
+        pkgacctbranch="DEVEL"
+    else
+        pkgacctbranch="PUBLIC" &> >(tee --append $logfile)
+    fi
+
     control_panel=`$ssh root@$sourceserver "if [ -e /usr/local/psa/version	 ];then echo plesk; elif [ -e /usr/local/cpanel/cpanel ];then echo cpanel; elif [ -e /usr/bin/getapplversion ];then echo ensim; elif [ -e /usr/local/directadmin/directadmin ];then echo da; else echo unknown;fi;exit"` >> $logfile 2>&1
     debug "after assignment, control panel = $control_panel"  &> >(tee --append $logfile)
     eval_folder=evalfiles.$sourceserver
@@ -278,7 +285,7 @@ setup_remote(){
             cp -pv /etc/exim.conf $scripthome/$eval_folder/
         "
 
-        post_setup_cmds="
+        post_setup_cmds1="
             # Grab some html from all websites, record for later comparison.  If this completes before cppremig is done, great.  If not
             # then no problem it can stay on the source server
             if [ ! -e $scripthome/$eval_folder/site_summary* ]; then
@@ -286,13 +293,15 @@ setup_remote(){
             fi
 
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/source.eval.out
-            grepd_evalin=$(grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:Ensim:/') 
-            if [ -e "$grepd_evalin" ]; then
-                grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:Ensim:/' > $scripthome/$eval_folder/eval.in
-            else
-                grep '^s:' $scripthome/$eval_folder/source.eval.out > $scripthome/$eval_folder/eval.in
-            fi
+        "
 
+        post_setup_cmds2_cpanel="
+            grep '^d:' $scripthome/$eval_folder/source.eval.out | sed 's/^d:/s:Ensim:/' > $scripthome/$eval_folder/eval.in
+            tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/$eval_folder/
+        "
+
+        post_setup_cmds2_other="
+            grep '^s:' $scripthome/$eval_folder/source.eval.out > $scripthome/$eval_folder/eval.in
             tar -czvf $scripthome/cPprefiles.$the_date.tar.gz $scripthome/$eval_folder/
         "
         
@@ -327,7 +336,8 @@ setup_remote(){
            $setup_scripts_cmds
            $createscripthome_cmds
            $cpanel_specific_cmds
-           $post_setup_cmds
+           $post_setup_cmds1
+           $post_setup_cmds2_cpanel
            " >> $logfile 2>&1
 
            #Adding a log marker, copy the files over
@@ -342,7 +352,8 @@ setup_remote(){
 	       $ssh root@$sourceserver "
            $setup_scripts_plesk_cmds
            $createscripthome_cmds
-           $post_setup_cmds
+           $post_setup_cmds1
+           $post_setup_cmds2_other
            " >> $logfile 2>&1
 
            #Adding a log marker, copy the files over
@@ -357,7 +368,9 @@ setup_remote(){
 	       $ssh root@$sourceserver "
            $setup_scripts_ensim_cmds
            $createscripthome_cmds
-           $post_setup_cmds
+           $post_setup_cmds1
+           $post_setup_cmds2_other
+
            " >> $logfile 2>&1
 
            #Adding a log marker, copy the files over
@@ -372,7 +385,9 @@ setup_remote(){
 	       $ssh root@$sourceserver "
            $setup_scripts_da_cmds
            $createscripthome_cmds
-           $post_setup_cmds
+           $post_setup_cmds1
+           $post_setup_cmds2_other
+
            " >> $logfile 2>&1
 
            #Adding a log marker, copy the files over
