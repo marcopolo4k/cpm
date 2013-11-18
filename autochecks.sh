@@ -215,5 +215,5 @@ fi
 #ac3524=$(fgrep -r open_tty /usr/local/apache/)
 #checkfor "$ac3524" "see ac3524:"
 
-hasassp=$(ps aux | grep assp)
+hasassp=$(ps aux | grep ass[p])
 checkfor "$hasassp" "ASSP found:"
