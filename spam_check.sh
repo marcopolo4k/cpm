@@ -26,6 +26,7 @@ remove_current=0
 temp_dir=/root
 
 function get_temp_file_dir () {
+    clear;
     read -p "
     Choose a directory to store the temporary file cptemp_eximbp.  This will store the output of exim -bp (default /root): " input_dir
     debug "input_dir is ${input_dir}"
