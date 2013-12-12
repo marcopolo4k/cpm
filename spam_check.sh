@@ -72,7 +72,7 @@ function get_output_decision () {
 function run_eximbp () {
     debug "starting run_eximbp, backup_current is ${backup_current}\n use_current is ${use_current}"
     if [ $use_current -eq 0 ]; then
-        echo -e "\nNow, beginning to run the command 'exim -bp'.  If this takes an excruciatingly long time,\n you can cancel (control-c) it. If the script exits, you can run it again on the existing file (option 1).\n Often, all that's needed is 30s worth of gathering the oldest messages in the queue."
+        echo -e "\nNow, beginning to run the command 'exim -bp'.  If this takes an excruciatingly long time, you can cancel (control-c) it.\n If the script exits, you can run it again on the existing file (option 1).\n Often, all that's needed is 30s worth of gathering the oldest messages in the queue."
         if [ $backup_current -eq 1 ]; then
             echo; mv -v $temp_dir/cptemp_eximbp $temp_dir/cptemp_eximbp.1
             exim -bp > $temp_dir/cptemp_eximbp
