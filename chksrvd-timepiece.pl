@@ -20,6 +20,7 @@ sub debug {
 my $line;
 my $lastdate;
 my @curdate;
+my $diffofdate;
 my $lasthr;
 my $lastmin;
 my $line_has_date=0;
@@ -45,10 +46,12 @@ if ( $every_n_sec < 1 ) {
 open my $file, '/var/log/chkservd.log' or die "couldn't open file $!";
 
 # For loop reads the file
-foreach $line (readline $file) {
+#foreach $line (readline $file) {
+while ($line = <$file>) {
     #&debug($line);
     # Set the date
     if ($line =~ /\[(\d{4}(-\d{2}){2} \d{2}(:\d{2}){2} [+-]\d{4})\].*/) {
+    #if ($_ =~ /\[(\d{4}(-\d{2}){2} \d{2}(:\d{2}){2} [+-]\d{4})\].*/) {
         $line_has_date = 1;
         &debug("one is $1");
 
@@ -57,31 +60,24 @@ foreach $line (readline $file) {
         my $for_time_piece;
         my $curdate = Time::Piece->strptime($1, "%Y-%m-%d %H:%M:%S %z");
         &debug("curdate is now $curdate");
-        my $curdate_minus1 = ($curdate - ONE_DAY);
-        &debug("curdate_minus1 is $curdate_minus1");
+        #get rid of this: my $curdate_minus1 = ($curdate - ONE_DAY);
         my $curdate_hr = ($curdate->hour);
         &debug("curdate_hr is $curdate_hr");
         my $curdate_min = ($curdate->min);
         &debug("curdate_min is $curdate_min");
 
-
-        # dont need to do this
-        #@curdate = split(/:/,$lastdate);
-        #if ($curdate[0] =~ / (\w+$)/) {
-        #    $curdate[0] = $1;
-        #}
-        #&debug("hr is $curdate[0], min is $curdate[1]\n");
-
         # Calculate time difference between this & last check, in minutes & hours
         # If this is the first time run, establish the starting values
-        if ($lastdate == '') {
-            my $lastdate = $curdate;
+        # note to self: this would have worked too: $lastdate ||= $curdate;
+        if (!$lastdate) {
+            $lastdate = $curdate;
+            &debug ("after setting first occurence, lastdate is ", $lastdate, "\n");
         }
         else {
-            my $diffofdate = $curdate - $lastdate;
-            #&debug("diffofdate is $diffofdate->days");
-            &debug ("diffofdate is ", $diffofdate->minutes, " minutes\n");
-            &debug ("diffofdate is ", $diffofdate->hours, " hours\n");
+            $diffofdate = $curdate - $lastdate;
+            &debug("diffofdate is $diffofdate");
+            &debug ("diffofdate is ", $diffofdate->minutes, " minutes");
+            &debug ("diffofdate is ", $diffofdate->hours, " hours");
         }
     }
 
