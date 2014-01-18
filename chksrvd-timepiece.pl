@@ -99,7 +99,7 @@ while ($line = <$file>) {
     #}
     &debug ("duration_min is ", $duration_min);
     if($duration_min > $every_n_min) {
-        printf "[$lastdate] Last check took %.0f minutes\n", $duration_min;
+        printf "[$lastdate] %.0f minutes since last check\n", $duration_min;
     }
 
     # Set lastdate for next round
