@@ -81,7 +81,6 @@ foreach my $line(@lines) {
         # Time::Piece
         $curdate = Time::Piece->strptime($1, "%Y-%m-%d %H:%M:%S %z");
         &debug("curdate is now $curdate");
-        #get rid of this: my $curdate_minus1 = ($curdate - ONE_DAY);
 
         # Calculate time difference between this & last check
         # If this is the first time run, establish the starting values
