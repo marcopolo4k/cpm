@@ -7,11 +7,19 @@ use Time::Seconds;
 use File::ReadBackwards;
 
 #Todo:
-# make the input days calculation accurate
+# headers
+# print help?
 
 sub debug {
     my $debug_toggle = "no";
-    if(defined $debug_toggle){ if ($debug_toggle eq "yes") { if($_[1]){ print "(debug) @_\n"; } } }
+    if(defined $debug_toggle){
+        if ($debug_toggle eq "yes") {
+            # for a stupid warning
+            #if($_[1]){ 
+                print "(debug) @_\n"; 
+            #} 
+        } 
+    }
 }
 
 # Variables
@@ -24,7 +32,7 @@ my $duration_min;
 my $lasthr;
 my $lastmin;
 my $line_has_date=0;
-my $every_n_min;
+my $checks_per_day;
 chomp(my $every_n_sec=`grep chkservd_check_interval /var/cpanel/cpanel.config | cut -d= -f2`);
 my $file  = '/var/log/chkservd.log';
 
@@ -34,21 +42,23 @@ my $file  = '/var/log/chkservd.log';
 #if ( !looks_like_number $every_n_sec || $every_n_sec < 1 ) \{
 if ( $every_n_sec < 1 ) {
     &debug("every_n_sec is not an acceptable digit, using default 10");
-    $every_n_min=10;
+    $checks_per_day=10;
 } else { 
     &debug("every_n_sec is a digit, using it");
-    $every_n_min = ( (300 + $every_n_sec) / 60 );
-    &debug("every_n_min is: $every_n_min");
+    $checks_per_day = ( 24*(60/($every_n_sec/60)) );
+    &debug("checks_per_day is: $checks_per_day");
 }
 
 ## Open log file
-my $days = shift or die "Please enter number of previous days (estimate) as an argument.\n";
-# this is a guessed average 12*24*6.5 (#lines per check seem to be 5-8)
-my $limit = ($days*1872);
+# Get number of days to check
+my $days = shift or die "Please enter number of previous days (this is juat an estimate) as an argument.\n";
+# Get number of lines.  This is a guessed average (#lines per check seem to be ~5-8, so lets use 6.5)
+my $lines_to_check = ($days*$checks_per_day*6.5);
+&debug("lines_to_check is: $lines_to_check");
 
 # Tail the file (opeing the whole thing is ridonculous time-wise)
 sub reverse_lines {
-    my $lim = $limit;
+    my $lim = $lines_to_check;
     my $bw = File::ReadBackwards->new( $file ) or die "can't read $file: $!\n" ;
 
     my $line;
@@ -82,8 +92,7 @@ foreach my $line(@lines) {
         if (!$lastdate) {
             $lastdate = $curdate;
             &debug ("after setting first occurence, lastdate is ", $lastdate, "\n");
-        }
-        else {
+        } else {
             $duration = $curdate - $lastdate;
             &debug("duration is $duration");
             &debug ("duration is ", $duration->minutes, " minutes");
@@ -114,7 +123,7 @@ foreach my $line(@lines) {
 
     &debug ("duration_min is ", $duration_min);
     if(defined $duration_min){
-        if($duration_min > $every_n_min) {
+        if($duration_min > $checks_per_day) {
             printf "[$lastdate] %.0f minutes since last check\n", $duration_min;
         }
     }
