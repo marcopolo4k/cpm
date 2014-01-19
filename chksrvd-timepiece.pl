@@ -11,13 +11,7 @@ use File::ReadBackwards;
 
 sub debug {
     my $debug_toggle = "no";
-    if(defined $debug_toggle){
-        if ($debug_toggle eq "yes") {
-            if($_[1]){
-                print "(debug) @_\n";
-            }
-        }
-    }
+    if(defined $debug_toggle){ if ($debug_toggle eq "yes") { if($_[1]){ print "(debug) @_\n"; } } }
 }
 
 # Variables
@@ -48,9 +42,6 @@ if ( $every_n_sec < 1 ) {
 }
 
 ## Open log file
-# old way:
-#open my $file, '/var/log/chkservd.log' or die "couldn't open file $!";
-#my $limit = shift or die "Number of lines not specified, try 3200 (for ~one day).\n";
 my $days = shift or die "Please enter number of previous days (estimate) as an argument.\n";
 # this is a guessed average 12*24*6.5 (#lines per check seem to be 5-8)
 my $limit = ($days*1872);
