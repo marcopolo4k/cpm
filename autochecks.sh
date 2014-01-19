@@ -61,6 +61,9 @@ echo -ne $hn": "$h"\n";
 echo
 
 # Look for Cloudlinux
+#todo: fix this, which happened once:
+# lsmod|grep lve
+#dns_resolver            5463  1 cifs
 cl_check=$(lsmod|grep lve; uname -a|grep -o lve;);
 if [ "cl_check" ]; then
     echo $cl_check;

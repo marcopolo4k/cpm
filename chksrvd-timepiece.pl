@@ -14,7 +14,7 @@ sub debug {
     my $debug_toggle = "no";
     if(defined $debug_toggle){
         if ($debug_toggle eq "yes") {
-            # for a stupid warning
+            # silences a stupid warning
             #if($_[1]){ 
                 print "(debug) @_\n"; 
             #} 
@@ -29,8 +29,6 @@ my $lastdate;
 my $curdate;
 my $duration;
 my $duration_min;
-my $lasthr;
-my $lastmin;
 my $line_has_date=0;
 my $checks_per_day;
 chomp(my $every_n_sec=`grep chkservd_check_interval /var/cpanel/cpanel.config | cut -d= -f2`);
@@ -86,7 +84,7 @@ foreach my $line(@lines) {
         &debug("curdate is now $curdate");
         #get rid of this: my $curdate_minus1 = ($curdate - ONE_DAY);
 
-        # Calculate time difference between this & last check, in minutes & hours
+        # Calculate time difference between this & last check
         # If this is the first time run, establish the starting values
         # note to self: this would have worked too: $lastdate ||= $curdate;
         if (!$lastdate) {
