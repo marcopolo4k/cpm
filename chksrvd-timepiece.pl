@@ -1,7 +1,7 @@
 #!/usr/local/cpanel/3rdparty/perl/514/bin/perl
 
 use strict;
-#use warnings;
+use warnings;
 use Time::Piece;
 use Time::Seconds;
 use File::ReadBackwards;
@@ -23,7 +23,6 @@ sub debug {
 }
 
 # Variables
-my $line;
 my @lines;
 my $lastdate;
 my $curdate;
