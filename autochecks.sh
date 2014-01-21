@@ -90,6 +90,8 @@ if [ -e /var/cpanel/cluster/root/config ];
 fi;
 echo;
 
+fishydns=$(grep -i github /etc/hosts;)
+checkfor "$fishydns" "DNS entry:"
 
 hta=$(\ls / /home | grep htaccess);
 checkfor "$hta" "Global? htaccess file in home" "This is sometimes associated with hacks"
@@ -221,3 +223,4 @@ fi
 
 hasassp=$(ps aux | grep ass[p])
 checkfor "$hasassp" "ASSP found:"
+
