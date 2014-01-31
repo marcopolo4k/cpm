@@ -193,7 +193,14 @@ main (){
     if [ ! -d $tmp_dir ]; then mkdir $tmp_dir; fi
     for i in $domain_list; do
         echo $i
-        curl -r 0-499 --connect-timeout 1 $i | lynx -stdin -dump | awk NF | head > $tmp_dir/$i
+        #command -v lynx >/dev/null 2>&1 || { echo >&2 "I require lynx but it's not installed.  Aborting."; exit 1; }
+        #command -v curl >/dev/null 2>&1 || { echo >&2 "I require curl but it's not installed.  Aborting."; exit 1; }
+        lynx_exists = $(command -v lynx)
+        if [[ $lynx_exists != '' ]]; then
+            curl -r 0-499 --connect-timeout 1 $i | lynx -stdin -dump | awk NF | head > $tmp_dir/$i
+        else
+            curl -r 0-499 --connect-timeout 1 $i | awk NF | head > $tmp_dir/$i
+        fi
     done;
     for i in $(\ls -A $tmp_dir/); do
         dom_ip=$(grep $i /root/doms_to_add | awk '{print $1}')
@@ -229,6 +236,6 @@ Summary at:\n"$summary_file"\n"
 # wish I could put getopts in a function here, not sure why I can't
 if_trueuserdomains
 if_localdomains
-if_local_resolution
-if_dns_resolution
+if_local_resolution # calls main()
+if_dns_resolution # calls main()
 print_complete
