@@ -195,8 +195,8 @@ main (){
         echo $i
         #command -v lynx >/dev/null 2>&1 || { echo >&2 "I require lynx but it's not installed.  Aborting."; exit 1; }
         #command -v curl >/dev/null 2>&1 || { echo >&2 "I require curl but it's not installed.  Aborting."; exit 1; }
-        lynx_exists = $(command -v lynx)
-        if [[ $lynx_exists != '' ]]; then
+        2>/dev/null 1>&2 command -v lynx
+        if [[ $? -eq 0 ]]; then
             curl -r 0-499 --connect-timeout 1 $i | lynx -stdin -dump | awk NF | head > $tmp_dir/$i
         else
             curl -r 0-499 --connect-timeout 1 $i | awk NF | head > $tmp_dir/$i
