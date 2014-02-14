@@ -2,7 +2,7 @@
 # Original cpmig written by Phil Stark
 # precpmig, by Marco Ferrufino is a proof of concept. It will eventually be converted into cpmig
 #
-VERSION="0.0.3"
+VERSION="0.0.4"
 scripthome="/root/.cppremig"
 # 
 #############################################
