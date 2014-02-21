@@ -286,13 +286,6 @@ setup_remote(){
         "
 
         post_setup_cmds1="
-            # Grab some html from all websites, record for later comparison.  If this completes before cppremig is done, great.  If not
-            # then no problem it can stay on the source server
-            if [ ! -e $scripthome/$eval_folder/site_summary* ]; then
-               # I'll put this back in when it's mature
-               # curl -s --insecure $local_site_check_location | bash /dev/stdin '-o $scripthome/$eval_folder/' &
-            fi
-
             curl -s --insecure $cpeval_location | perl > $scripthome/$eval_folder/source.eval.out
         "
 
