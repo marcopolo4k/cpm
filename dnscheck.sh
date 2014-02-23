@@ -2,6 +2,9 @@
 # This script shows some useful DNS information. It's to be run on the problem cPanel server.
 # The one argument is the domain having problems.
 #
+# How to run:
+# curl -s https://raw.github.com/cPMarco/cpm/master/dnscheck.sh > dnscheck.sh; sh dnscheck.sh cpanel.net
+#
 # Todo: show digs locally, authdns servers, and their default dns servers
 #
 
