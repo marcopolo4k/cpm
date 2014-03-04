@@ -52,7 +52,6 @@ if [ "$hip" ];
 fi;
 
 # Does this server actually controls it's own Reverse DNS?
-alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
 rvs_is_local=$(ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq | grep $(dig +short $(dig $(echo $hip | awk -F . '{print $4"."$3"."$2"."$1}').in-addr.arpa. | grep SOA | awk '{print $5}')) 2>/dev/null )
 checkfor "$rvs_is_local" "This server actually controls it's own Reverse DNS:" "dig \$(echo $hip | awk -F . '{print \$4\".\"\$3\".\"\$2\".\"\$1}').in-addr.arpa. | grep SOA"
 
@@ -107,7 +106,6 @@ conf=$a/conf/httpd.conf;
 c='/usr/local/cpanel';
 ea='/usr/local/cpanel/logs/easy/apache';
 hn=$(hostname);
-alias lf='echo `\ls -lrt|\tail -1|awk "{print \\$9}"`';
 
 # I removed the aliases, trying to keep one location.  still ugly.
 
@@ -136,7 +134,7 @@ echo -e $red$badrepo$clroff;
 backup_log_dir='/usr/local/cpanel/logs/cpbackup';
 if [ -d "$backup_log_dir" ]; then
  cd $backup_log_dir;
- backup_interrupted=$(\ls -lrt|\tail -1|awk "{print $9}" | xargs grep EOF | tail -3;)
+ backup_interrupted=$(\ls -lrt|\tail -1|awk '{print $9}' | xargs -0 -I file echo file | tail -3;)
  checkfor "$backup_interrupted" "Backup errors that could be a HD issue (full/bad):"
  cd ~;
  else
