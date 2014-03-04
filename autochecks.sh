@@ -8,6 +8,42 @@
 # todo:
 # check for /var/cpanel/use_old_easyapache 
 
+
+c=/usr/local/cpanel; v=/var/cpanel; a=/usr/local/apache; 
+ea=$c/logs/easy/apache; conf=$a/conf/httpd.conf; ul=$v/updatelogs;
+hn=$(hostname); hip=$(dig +short $hn); 
+h=$(history | awk '/cPTKT [0-9]/ {print $5,$6,$7,$8}' | tail -1)" - "$hip;PROMPT_COMMAND='echo -ne "\033]0;${h}\007"';
+
+# Linux aliases
+alias diff='diff -y --suppress-common-lines'; alias less='\less -IR'; alias grep='grep --color'
+alias ls='\ls -F --color'; alias lsd='ls | grep \/$'; alias lsdl='ls -lrth | grep ^d'; alias lsp='ls -d -1 $PWD/**';
+alias lf='echo `\ls -lrt|\tail -1|awk "{print \\$9}"`'; alias lf2='echo `\ls -lrt|\tail -2|awk "{print \\$9}"|head -1`';
+alias perms=awk\ \'BEGIN\{dir\=DIR?DIR:ENVIRON[\"PWD\"]\;l=split\(dir\,parts,\"/\"\)\;last=\"\"\;for\(i=1\;i\<l+1\;i++\)\{d=last\"/\"parts\[i\]\;gsub\(\"//\",\"/\",d\)\;system\(\"stat\ --printf\ \\\"%a\\\t%u\\\t%g\\\t\\\"\ \\\"\"d\"\\\"\;\ echo\ -n\ \\\"\ \\\"\;ls\ -ld\ \\\"\"d\"\\\"\"\)\;last=d\}\}\'
+
+alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
+alias ips=$(ifconfig | awk '/inet/ {if ($2!~/127.0|:$/) print $2}' | awk -F: '{print "echo "$2}');
+alias localips='ips';
+alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
+alias ssl='openssl x509 -noout -text -in';
+function cpbak() { cp -v $@ $@.cpbak.$(date +%Y%m%d).$(date +%H).$(date +%M);}
+
+# cPanel aliases
+alias vhost='grep -B1 "Name $dom" $conf|head -1; perl -ne "print if /$dom/ .. /Host>$/" $conf; echo "Curl: "; curl $dom | head'
+alias ealogs=$(\ls -lrt $ea | awk -v p=$ea '{if ($5>5000) print "ls -lah "p"/"$NF}'); alias ealog=ealogs;
+alias eapre='curl https://raw.github.com/cPanelTechs/TechScripts/master/ea-precheck.sh | sh'
+alias ssl='openssl x509 -noout -text -in'; \grep --color github /etc/hosts;
+function sslshort() { openssl x509 -noout -text -in "$1" | egrep "Issuer|Subject:|^[ ]*Not"; }
+alias sfiles='grep "\"/" /root/cptestm/strace.cpsrvd | cut -d"\"" -f2 | egrep -v "000|<|---|::|.pm$|.pmc$|.so(.?)*$|.bs$|\.py$|\.pyc" | uniq | less -I'
+alias rp='$c/bin/rebuild_phpconf --current'
+
+function cpm() { curl -s --insecure https://raw.github.com/cPMarco/cpm/master/$1 | bash /dev/stdin '$2'; }
+mkdir /root/cptestm/
+
+# Save example user/domain as variables:
+#dom= ; if (echo $dom|egrep "\.") then u=$(/scripts/whoowns $dom); else tmp=$(egrep " $dom$" /etc/trueuserdomains|cut -d: -f1); u=$dom; dom=$tmp;fi; uhome=$(egrep "^$u:" /etc/passwd|cut -d":" -f6); www=$uhome/public_html/ ; echo -e "\n"$dom"\n"$u"\n"$www"\n"; fgrep -i spended /var/cpanel/users/$u; egrep "limit.*1$" /var/cpanel/users/$u; ssl=$uhome/ssl
+
+
+
 # Establish colors (White for heading, red for errors)
 white="\E[37;44m\033[7m";
 clroff="\033[0m";
@@ -216,3 +252,4 @@ fi
 #ac3524=$(fgrep -r open_tty /usr/local/apache/)
 #checkfor "$ac3524" "see ac3524:"
 
+grep proc /proc/cpuinfo; while uptime; do ps auxfww | sort -k3 -nr | head -2; echo; sleep 60; done
