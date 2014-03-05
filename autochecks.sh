@@ -2,8 +2,7 @@
 # These are some quick checks for a variety of settings and configurations
 # No configuration files are changed or saved in this script
 # One way to run this script:
-# curl -O https://raw.github.com/cPMarco/cpm/master/autochecks.sh > autochecks.sh; chmod u+x autochecks.sh
-# ./autochecks.sh
+# source /dev/stdin <<< "$(curl -sL https://raw.github.com/cPMarco/cpm/master/autochecks.sh)"
 
 # todo:
 # check for /var/cpanel/use_old_easyapache 
@@ -37,8 +36,7 @@ alias sfiles='grep "\"/" /root/cptestm/strace.cpsrvd | cut -d"\"" -f2 | egrep -v
 alias rp='$c/bin/rebuild_phpconf --current'
 
 function cpm() { curl -s --insecure https://raw.github.com/cPMarco/cpm/master/$1 | bash /dev/stdin '$2'; }
-curl -s https://raw.github.com/cPMarco/cpm/master/libkey_check.sh | sh
-mkdir /root/cptestm/ 2>/dev/null
+mkdir /root/cptestm/
 
 # No longer used:
 # Save example user/domain as variables:
@@ -101,6 +99,9 @@ echo;
 
 # Hardware checks
 curl -s https://raw.github.com/cPMarco/cpm/master/hardware_checks.sh | sh
+
+# Single Security Check
+curl -s https://raw.github.com/cPMarco/cpm/master/libkey_check.sh | sh
 
 echo -e "\nCluster Function, Status:";
 if [ -e /var/cpanel/cluster/root/config ];
@@ -246,4 +247,3 @@ fi
 #ac3524=$(fgrep -r open_tty /usr/local/apache/)
 #checkfor "$ac3524" "see ac3524:"
 
-grep proc /proc/cpuinfo; while uptime; do ps auxfww | sort -k3 -nr | head -2; echo; sleep 60; done
