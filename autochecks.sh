@@ -37,8 +37,10 @@ alias sfiles='grep "\"/" /root/cptestm/strace.cpsrvd | cut -d"\"" -f2 | egrep -v
 alias rp='$c/bin/rebuild_phpconf --current'
 
 function cpm() { curl -s --insecure https://raw.github.com/cPMarco/cpm/master/$1 | bash /dev/stdin '$2'; }
-mkdir /root/cptestm/
+curl -s https://raw.github.com/cPMarco/cpm/master/libkey_check.sh | sh
+mkdir /root/cptestm/ 2>/dev/null
 
+# No longer used:
 # Save example user/domain as variables:
 #dom= ; if (echo $dom|egrep "\.") then u=$(/scripts/whoowns $dom); else tmp=$(egrep " $dom$" /etc/trueuserdomains|cut -d: -f1); u=$dom; dom=$tmp;fi; uhome=$(egrep "^$u:" /etc/passwd|cut -d":" -f6); www=$uhome/public_html/ ; echo -e "\n"$dom"\n"$u"\n"$www"\n"; fgrep -i spended /var/cpanel/users/$u; egrep "limit.*1$" /var/cpanel/users/$u; ssl=$uhome/ssl
 
@@ -65,15 +67,7 @@ minor=$(echo $version | cut -d. -f2)
 
 
 echo -e $white"Some quick checks by cPanel Analyst:"$clroff;
-
 h=`hostname -i`;
-#todo: wish I could access those ticket variables
-#ticket_info_var=$PROMPT_COMMAND
-#echo "Ticket Info: "$ticket_info_var
-#echo $ticket_info_var
-#PROMPT_COMMAND='echo -ne "\033]0;${h}: ${PWD}\007"' ;
-
-export PS1="[\[\e[4;32m\]\u@\h \w\[\e[0m\]]# ";
 
 # is this dot really important? it breaks mysqlerr later
 hn=$(hostname) ;
@@ -161,7 +155,7 @@ echo -e $red$rooterror$clroff;
 
 #egrep -i "Illegal instruction|Undefined subroutine" /var/cpanel/updatelogs/*
 # Error downloading, see ticket 3900473
-cd /var/cpanel/updatelogs/; for i in $(ls -rt | tail -3); do egrep -i "Illegal instruction|Undefined subroutine|Error downloading" $i; done
+cd /var/cpanel/updatelogs/; for i in $(\ls -rt | \tail -3); do egrep -i "Illegal instruction|Undefined subroutine|Error downloading" $i; done
 #egrep -i "Illegal instruction|Undefined subroutine" /usr/local/cpanel/logs/easy/apache/*
 cd /usr/local/cpanel/logs/easy/apache; for i in $(ls -rt | tail -5); do egrep -i "Illegal instruction|Undefined subroutine" $i; done
 badrepo=$(egrep "alt\.ru|ksplice-up" /etc/yum.repos.d/*);
