@@ -11,9 +11,14 @@
 use strict;
 # use warnings;
 
-my $tech = shift or die "Please enter an analyst name.\n";
-#my $main_dir = '/Users/marco/Dropbox/MacDocs/Git/cpm/';
+my $tech = shift or die "Please enter an analyst name.\n
+Also, expecting this file structure:
+./2014/Tickets/ANALYST_NAME/ANY_FILE_NAME\n";
+
+# Get directory
 chomp(my $main_dir = `pwd`);
+# we can hard code this if needed, like:
+#my $main_dir = '/Users/marco/Documents/TechRecords/';
 
 my $input_year = shift;
 my $year = get_year();
