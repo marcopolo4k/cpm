@@ -22,7 +22,13 @@ alias perms=awk\ \'BEGIN\{dir\=DIR?DIR:ENVIRON[\"PWD\"]\;l=split\(dir\,parts,\"/
 alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
 alias ips=$(ifconfig | awk '/inet/ {if ($2!~/127.0|:$/) print $2}' | awk -F: '{print "echo "$2}');
 alias localips='ips';
-alias mysqlerr='date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err';
+function mysqlerr() {
+    custom_mysql_log=$(\grep '^log-error' /etc/my.cnf | cut -d= -f2);
+    if [ "$custom_mysql_log" ];
+        then date; echo $custom_mysql_log; less -I $custom_mysql_log;
+    else date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err
+    fi
+}
 alias ssl='openssl x509 -noout -text -in';
 function cpbak() { cp -v $@ $@.cpbak.$(date +%Y%m%d).$(date +%H).$(date +%M);}
 
@@ -127,18 +133,8 @@ checkfor "$hta" "Global? htaccess file in home" "This is sometimes associated wi
 # https://staffwiki.cpanel.net/LinuxSupport/OneLiners#Show_chksrvd_failures
 echo -e "\nRecent chksrvd errors:";
 /usr/local/cpanel/3rdparty/perl/514/bin/perl <(curl -s --insecure https://raw.github.com/cPanelTechs/TechScripts/master/chkservd_errors.pl) 1 | tail -15
-# echo -n "starting search at: ";  tail -3200 /var/log/chkservd.log | awk '{if ($1~/\[20/) print $1,$2,$3}' | head -1
-# every_n_min=10; tail -3200 /var/log/chkservd.log |awk -v n=$every_n_min '{if ($1~/\[20/) lastdate=$1" "$2" "$3; split($2,curdate,":"); dmin=(curdate[2]-lastmin); dhr=(curdate[1]-lasthr); if ($0!~/Restarting|nable|\*\*|imeout|ailure|terrupt/ && $0~/:-]/) print lastdate"....."; for (i=1;i<=NF;i=i+1) if ($i~/Restarting|nable|\*\*|imeout|ailure|terrupt|100%|9[89]%|second/) if ($1~/\[20/) print $1,$2,$3,$(i-1),$i,$(i+1); else print lastdate,$(i-1),$i,$(i+1); if($1~/\[20/ && (lastmin!=0 || lasthr!=0) && (dmin>n || (dhr==1 && (dmin>-(60-n))) || dhr>1 )) print $1,$2,$3" check took longer than "n" minutes. (hr:min): "dhr":"dmin; if ($1~/\[20/) {lastmin=curdate[2]; lasthr=curdate[1]} }' | { head -3; echo -e "..."; tail;}
 echo "Current time: "; date
 
-# this section is repeated in rc.remote.  #todo: fix that.
-a='/usr/local/apache';
-conf=$a/conf/httpd.conf;
-c='/usr/local/cpanel';
-ea='/usr/local/cpanel/logs/easy/apache';
-hn=$(hostname);
-
-# I removed the aliases, trying to keep one location.  still ugly.
 
 # Temporary checks
 echo;
@@ -165,6 +161,7 @@ echo -e $red$badrepo$clroff;
 backup_log_dir='/usr/local/cpanel/logs/cpbackup';
 if [ -d "$backup_log_dir" ]; then
  cd $backup_log_dir;
+ # This can't go in hardware b/c it's only for cP servers
  #backup_interrupted=$(\ls -lrt|\tail -1|awk '{print $9}' | xargs -0 -I file echo file | tail -3;)
  backup_interrupted=$(\ls -lrt|\tail -1|awk '{print $9}' | xargs \grep EOF | \tail -3;)
  checkfor "$backup_interrupted" "Backup errors that could be a HD issue (full/bad):"
@@ -209,14 +206,6 @@ if [ $minor -lt 36 ]; then
   fi;
  done
 fi
-
-# Maybe ill put this back later, but perl problems seem to be going away
-# echo -e "Perl checks for all versions of cPanel:"
-# perl -V:installsitearch
-# perl -V:installsitelib
-# perl -V:installvendorarch
-# perl -V:installvendorlib
-# perl -v | head -2 | awk NF; which perl; echo
 
 # FB 63311
 num_exclude_lines=$(grep -i exclude /etc/yum.conf|egrep -vi "#.*exclude" | wc -l)
