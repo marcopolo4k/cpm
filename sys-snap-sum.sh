@@ -18,7 +18,12 @@ function check_directory () {
     if ! [ "$default_dir" ] ; then
         clear
         echo "
-This script is designed to summarize Sys-Snap output.  
+This script is designed to summarize Sys-Snap output (currently tested with the 
+bash version, not perl). Sys-Snap should already be installed and running in 
+order for this program to have any data to analyze.  See more info about 
+Sys-Snap here:
+https://github.com/cPanelTechs/SysSnap
+https://staffwiki.cpanel.net/LinuxSupport/SystemMonitorScript
 
          ***** [ WARNING ] ******
 You are not in the default directory (/root/system-snapshot/[0-9]*).
