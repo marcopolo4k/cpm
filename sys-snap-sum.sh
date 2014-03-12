@@ -1,21 +1,16 @@
 #!/bin/bash
-
+#
 # Crude Summary of System-Snapshot logs
-# tl;dr
+# by Marco Ferrufino
+# 
 # These are all piped to less
 # Use 'q' to exit less, and then CNTRL-C to cancel out of program
 # 
+# To use (for example in folder 13):
+# cd /root/system-snapshot/13
+# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/sys-snap-sum.sh)
 #
-#
-# More detailed how to use:
-#
-# root@cent58-x64 [~]# cd /root/system-snapshot/
-# 00/      02/      04/      06/      08/      10/      12/      14/      16/      18/      20/      22/      current  
-# 01/      03/      05/      07/      09/      11/      13/      15/      17/      19/      21/      23/      
-# root@cent58-x64 [~]# cd /root/system-snapshot/13/
-# root@cent58-x64 [~/system-snapshot/13]# pwd
-# /root/system-snapshot/13
-# root@cent58-x64 [~/system-snapshot/13]# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/sys-snap-sum.sh)
+# These are one-liners, and can be mostly copy/pasted individually
 
 
 function check_directory () {
@@ -24,8 +19,10 @@ function check_directory () {
         clear
         echo "
 This script is designed to summarize Sys-Snap output.  
+
 You are not in the default directory (/root/system-snapshot/[0-9]*).
 Please change to the default directory, and run again for proper output.
+
 See more information at:
 http://wiki address forthcomming...
 
