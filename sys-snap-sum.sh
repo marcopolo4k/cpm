@@ -15,11 +15,8 @@
 # root@cent58-x64 [~]# cd /root/system-snapshot/13/
 # root@cent58-x64 [~/system-snapshot/13]# pwd
 # /root/system-snapshot/13
-# root@cent58-x64 [~/system-snapshot/13]# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/system_summary.sh)
-# 
-# Then, click the number or letter to access the less output.  Exit less with 'q'.  Then, you can select a different screen.
-# Repeat.
-# The 'CPU' screen is ps output, organized by CPU%.  It's like looking at top, but from every file in your current directory
+# root@cent58-x64 [~/system-snapshot/13]# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/sys-snap-sum.sh)
+
 
 function check_directory () {
     default_dir=$(\pwd | \grep '^\/root\/system-snapshot\/[0-9]*$')
@@ -41,26 +38,26 @@ Otherwise, press [Enter] key to continue..."
 function main () {
     clear
     echo "
-    [1-CPU] [2-AllSections] [3-I/OWait] [4-Netstat] [5-Sockets] [6-NumberUserProcesses] [7-SystemMemory] [8-MemTopProcs] [9-MySQL] [0-ApacheUp/Dwn]
+[1-CPU] [2-AllSections] [3-I/OWait] [4-Netstat] [5-Sockets] [6-NumberUserProcesses] [7-SystemMemory] [8-MemTopProcs] [9-MySQL] [0-ApacheUp/Dwn]
 
-    Choose. Above and below are the same menu choices (lmk which style you prefer).
-    After you choose, output will be displayed using 'less', so use 'q' to exit, bringing you back.
-    Use 'CNTRL-C' to exit the program.
+Choose. Above and below are the same menu choices (lmk which style you prefer).
+After you choose, output will be displayed using 'less', so use 'q' to exit, bringing you back.
+Use 'CNTRL-C' to exit the program.
 
 
-    1) CPU (c)
-    2) AllSections (l)
-    3) I/O Wait (i)
-    4) Active Internet Connections (t)
-    5) Network Sockets (o)
-    6) Number of User Processes (u)
-    7) System Memory (s)
-    8) Memory Top Processes (e) 
-    9) MySQL (m)
-    0) Apache Up/Down (a)
+1) CPU (c)
+2) AllSections (l)
+3) I/O Wait (i)
+4) Active Internet Connections (t)
+5) Network Sockets (o)
+6) Number of User Processes (u)
+7) System Memory (s)
+8) Memory Top Processes (e) 
+9) MySQL (m)
+0) Apache Up/Down (a)
 
-    Less Commonly Used:
-    Which Service (w)
+Less Commonly Used:
+Which Service (w)
 
 
     "
