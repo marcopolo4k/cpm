@@ -11,7 +11,7 @@
 c=/usr/local/cpanel; v=/var/cpanel; a=/usr/local/apache; 
 ea=$c/logs/easy/apache; conf=$a/conf/httpd.conf; ul=$v/updatelogs;
 hn=$(hostname); hip=$(dig +short $hn); 
-h=$(history | awk '/cPTKT [0-9]/ {print $5,$6,$7,$8}' | tail -1)" - "$hip;PROMPT_COMMAND='echo -ne "\033]0;${h}\007"';
+#h=$(history | awk '/cPTKT [0-9]/ {print $5,$6,$7,$8}' | tail -1)" - "$hip;PROMPT_COMMAND='echo -ne "\033]0;${h}\007"';
 
 # Linux aliases
 alias diff='diff -y --suppress-common-lines'; alias less='\less -IR'; alias grep='grep --color'
