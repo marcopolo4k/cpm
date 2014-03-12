@@ -20,8 +20,10 @@ function check_directory () {
         echo "
 This script is designed to summarize Sys-Snap output.  
 
+         ***** [ WARNING ] ******
 You are not in the default directory (/root/system-snapshot/[0-9]*).
-Please change to the default directory, and run again for proper output.
+If this is not intentional, then please change to the default directory,
+and run again for proper output.
 
 See more information at:
 http://wiki address forthcomming...
