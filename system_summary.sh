@@ -1,8 +1,25 @@
 #!/bin/bash
 
 # Crude Summary of System-Snapshot logs
+# tl;dr
 # These are all piped to less
 # Use 'q' to exit less, and then CNTRL-C to cancel out of program
+# 
+#
+#
+# More detailed how to use:
+#
+# root@cent58-x64 [~]# cd /root/system-snapshot/
+# 00/      02/      04/      06/      08/      10/      12/      14/      16/      18/      20/      22/      current  
+# 01/      03/      05/      07/      09/      11/      13/      15/      17/      19/      21/      23/      
+# root@cent58-x64 [~]# cd /root/system-snapshot/13/
+# root@cent58-x64 [~/system-snapshot/13]# pwd
+# /root/system-snapshot/13
+# root@cent58-x64 [~/system-snapshot/13]# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/system_summary.sh)
+# 
+# Then, click the number or letter to access the less output.  Exit less with 'q'.  Then, you can select a different screen.
+# Repeat.
+# The 'CPU' screen is ps output, organized by CPU%.  It's like looking at top, but from every file in your current directory
 
 
 function main () {
