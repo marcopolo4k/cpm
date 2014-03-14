@@ -25,8 +25,8 @@ alias localips='ips';
 function mysqlerr() {
     custom_mysql_log=$(\grep '^log-error' /etc/my.cnf | cut -d= -f2);
     if [ "$custom_mysql_log" ];
-        then date; echo $custom_mysql_log; less -I $custom_mysql_log;
-    else date; echo /var/lib/mysql/$hn.err; less -I /var/lib/mysql/$hn.err
+        then date; mylog=$custom_mysql_log; echo $custom_mysql_log; less -I $custom_mysql_log;
+    else date; mylog=/var/lib/mysql/$hn.err; echo $mylog; less -I $mylog;
     fi
 }
 alias ssl='openssl x509 -noout -text -in';
