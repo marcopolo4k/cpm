@@ -39,6 +39,42 @@ Otherwise, press [Enter] key to continue..."
     fi
 }
 
+function print_total_chart () {
+    bar_chart=$( 
+        wc -l $i | 
+        awk -v max=$max '{
+            size=(max/120);
+            #printf max" "size" "$2 " " $1 " "; 
+            printf $2 " " $1 " "; 
+            for(i=1; i<=($1/size); ++i) {
+                printf "#"
+            } 
+        }' | 
+        #awk '{ print $1,$2,$3,$4,$5 }'
+        awk '{ print $1,$2,$3 }'
+    ); 
+    #printf "%-4s %-4s %-4s %-4s [%4s] \n" $bar_chart; 
+    printf "%-4s %-4s [%4s] \n" $bar_chart; 
+}
+
+function print_sub_chart () {
+    bar_chart=$( 
+        echo $1 $2 |
+        awk -v max=$max '{
+            size=(max/120);
+            #printf max" "size" " $1 " "; 
+            printf $1 " ";
+            for(i=1; i<=($1/size); ++i) {
+                printf ".";
+            }
+        }' | 
+        #awk '{ print $1,$2,$3,$4,$5 }'
+        awk '{ print $1,$2,$3 }'
+    ); 
+    #printf "%-4s %-4s %-4s %-4s %-4s %-4s %-4s [%4s] \n" $bar_chart; 
+    printf "%-4s [%4s] \n" $bar_chart; 
+}
+
 function main () {
     clear
     echo "
@@ -62,6 +98,7 @@ Use 'CNTRL-C' to exit the program.
 
 Less Commonly Used:
 Which Service (w)
+Alternate Display of All Section Summary (d)
 
 
     "
@@ -75,8 +112,28 @@ Which Service (w)
     ;;
 
     "2" | "l" )
-    for i in $(\ls -rt); do \ls -lah $i; echo -n "Processes Lines: "; awk '/^USER/,/^Active/' $i | wc -l; echo -n "Netstat Lines: "; awk '/^Active Internet/,/^Active UNIX/' $i | wc -l; echo -n "Apache Lines: "; awk '/Apache Server Status/,NR==eof' $i | wc -l; echo -n "Socket Lines: ";  awk '/^Active UNIX/,/^$/' $i | wc -l; echo -n "MySQL Lines: "; awk '/\| Id[ ]*\| User/,/---+$/' $i | wc -l; echo "Total Lines: "; max=$(wc -l ./*.log | awk '{if ($0!~/total/) print $1}' | sort | tail -1); bar_chart=$( wc -l $i | awk -v max=$max '{ size=1; while (max>50) { max=int(max/2); size++; }; printf $2 " " $1 " "; for(i=1; i<=($1/size); ++i) {printf "#"} }' | awk '{print $1,$2,$3}'); printf "%-4s %-4s [%4s] \n" $bar_chart; done | 
-    awk 'BEGIN{print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n(So, look for the spikes) \n\n";}{if (NF>0) print}' | less
+    for i in $(\ls -rt); do 
+        max=$(\wc -l ./*.log | \awk '{if ($0!~/total/) print $1}' | \sort -n | \tail -1); 
+        \ls -lah $i; 
+        printf "%-17s" "Processes Lines: ";
+        print_sub_chart $(awk '/^USER/,/^Active/' $i | wc -l;) $i;
+        printf "%-17s" "Netstat Lines: "; 
+        print_sub_chart $(awk '/^Active Internet/,/^Active UNIX/' $i | wc -l); 
+        printf "%-17s" "Apache Lines: "; 
+        print_sub_chart $(awk '/Apache Server Status/,NR==eof' $i | wc -l); 
+        printf "%-17s" "Socket Lines: ";  
+        print_sub_chart $(awk '/^Active UNIX/,/^$/' $i | wc -l);
+        printf "%-17s" "MySQL Lines: "; 
+        print_sub_chart $(awk '/\| Id[ ]*\| User/,/^[ ]*Apache/' $i | wc -l);
+        echo "Total Lines: "; 
+        print_total_chart;
+    done | 
+    awk 'BEGIN{
+        print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n(tl;dr: look for the spikes) \n\n";
+    }{
+        if (NF>0) print
+    }' |
+    less
     ;;
 
     "3" | "i" )
@@ -96,7 +153,7 @@ Which Service (w)
 
     "6" | "u" )
     for i in $(\ls -rt); do echo; echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"; \ls -lah $i; echo "Number of processes by user in $i: "; awk '/^USER/,/^Active/' $i | sort -k3 -r | awk '{print $1}' | sort | uniq -c | sort -nr | head -5; done |
-    awk 'BEGIN{print "\nThe following is output from the ps command, ordered by highest %CPU usage.\n\n";}{if (NF>0) print}' | less
+    awk 'BEGIN{print "\nThe following is a count of user processes by each linux user, from the ps command.\n\n";}{if (NF>0) print}' | less
     ;;
 
     "7" | "s" )
@@ -122,6 +179,11 @@ Which Service (w)
     "w" )
     for i in $(\ls -rt); do echo; echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"; \ls -lah $i; awk '/^Active Internet/,/^Active UNIX/' $i | awk -F / '{if (NF > 1) print $NF}' | sort | uniq -c | sort -nr | head -3; done |
     awk 'BEGIN{print "\nThe following is another listing of services from netstat.\n\n";}{if (NF>0) print}' | less
+    ;;
+
+    "d" )
+    for i in $(\ls -rt); do \ls -lah $i; echo -n "Processes Lines: "; awk '/^USER/,/^Active/' $i | wc -l; echo -n "Netstat Lines: "; awk '/^Active Internet/,/^Active UNIX/' $i | wc -l; echo -n "Apache Lines: "; awk '/Apache Server Status/,NR==eof' $i | wc -l; echo -n "Socket Lines: ";  awk '/^Active UNIX/,/^$/' $i | wc -l; echo -n "MySQL Lines: "; awk '/\| Id[ ]*\| User/,/---+$/' $i | wc -l; echo "Total Lines: "; max=$(wc -l ./*.log | awk '{if ($0!~/total/) print $1}' | sort | tail -1); bar_chart=$( wc -l $i | awk -v max=$max '{ size=1; while (max>50) { max=int(max/2); size++; }; printf $2 " " $1 " "; for(i=1; i<=($1/size); ++i) {printf "#"} }' | awk '{print $1,$2,$3}'); printf "%-4s %-4s [%4s] \n" $bar_chart; done |
+    awk 'BEGIN{print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n(So, look for the spikes) \n\n";}{if (NF>0) print}' | less
     ;;
 
 # Add info for later.
