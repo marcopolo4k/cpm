@@ -1,11 +1,11 @@
 #!/bin/bash
-# Version 2: only print at the end
+# Version 2.1: only print at the end
 # 
 # This script checks for the Libkey compromise.  6 Commands are from:
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
 # How to run this script:
-# curl -s --insecure https://raw.github.com/cPMarco/cpm/master/libkey_check.sh | sh
+# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/libkey_check.sh) -v
 #
 
 # Only print debugging messages if, well, debugging
