@@ -131,7 +131,7 @@ Alternate Display of All Section Summary (d)
         print_total_chart;
     done | 
     awk 'BEGIN{
-        print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n(tl;dr: look for the spikes) \n\n";
+        print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n\n(tl;dr: look for the spikes) \n\n";
     }{
         if (NF>0) print
     }' |
@@ -185,7 +185,7 @@ Alternate Display of All Section Summary (d)
 
     "d" )
     for i in $(\ls -rt); do \ls -lah $i; echo -n "Processes Lines: "; awk '/^USER/,/^Active/' $i | wc -l; echo -n "Netstat Lines: "; awk '/^Active Internet/,/^Active UNIX/' $i | wc -l; echo -n "Apache Lines: "; awk '/Apache Server Status/,NR==eof' $i | wc -l; echo -n "Socket Lines: ";  awk '/^Active UNIX/,/^$/' $i | wc -l; echo -n "MySQL Lines: "; awk '/\| Id[ ]*\| User/,/---+$/' $i | wc -l; echo "Total Lines: "; max=$(wc -l ./*.log | awk '{if ($0!~/total/) print $1}' | sort | tail -1); bar_chart=$( wc -l $i | awk -v max=$max '{ size=1; while (max>50) { max=int(max/2); size++; }; printf $2 " " $1 " "; for(i=1; i<=($1/size); ++i) {printf "#"} }' | awk '{print $1,$2,$3}'); printf "%-4s %-4s [%4s] \n" $bar_chart; done |
-    awk 'BEGIN{print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n(So, look for the spikes) \n\n";}{if (NF>0) print}' | less
+    awk 'BEGIN{print "\nThe following is a count of lines from each section of Sys-Snap output.\nTotal Lines is a count of all lines in each file, followed by hashes representing the number.\nIf the number of lines increases, this indicates an increase of activity in that section or file.\n\n(tl;dr look for the spikes) \n\n";}{if (NF>0) print}' | less
     ;;
 
 # Add info for later.
