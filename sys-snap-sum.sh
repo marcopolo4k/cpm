@@ -44,7 +44,8 @@ Otherwise, press [Enter] key to continue..."
 function print_total_chart () {
     bar_chart=$( 
         wc -l $i | 
-        awk -v size=$size '{
+        awk -v max=$max '{
+            size=(max/120);
             #printf max" "size" "$2 " " $1 " "; 
             printf $2 " " $1 " "; 
             for(i=1; i<=($1/size); ++i) {
@@ -61,7 +62,8 @@ function print_total_chart () {
 function print_sub_chart () {
     bar_chart=$( 
         echo $1 $2 |
-        awk -v size=$size '{
+        awk -v max=$max '{
+            size=(max/120);
             #printf max" "size" " $1 " "; 
             printf $1 " ";
             for(i=1; i<=($1/size); ++i) {
@@ -113,7 +115,6 @@ Alternate Display of All Section Summary (d)
 
     "2" | "l" )
     max=$(\wc -l ./*.log | \awk '{if ($0!~/total/) print $1}' | \sort -n | \tail -1); 
-    size=$(max/120);
     for i in $(\ls -rt); do 
         \ls -lah $i; 
         printf "%-17s" "Processes Lines: ";
