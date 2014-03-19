@@ -30,7 +30,7 @@ function mysqlerr() {
     fi
 }
 alias ssl='openssl x509 -noout -text -in';
-function cpbak() { cp -v $@ $@.cpbak.$(date +%Y%m%d).$(date +%H).$(date +%M);}
+function cpbak() { cp -pv $@ $@.cpbak.$(date +%Y%m%d).$(date +%H).$(date +%M);}
 
 # cPanel aliases
 alias vhost='grep -B1 "Name $dom" $conf|head -1; perl -ne "print if /$dom/ .. /Host>$/" $conf; echo "Curl: "; curl $dom | head'
