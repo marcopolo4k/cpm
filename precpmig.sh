@@ -282,6 +282,7 @@ setup_remote(){
             cp -pv /etc/my.cnf $scripthome/$eval_folder/
             cp -pv /usr/local/lib/php.ini $scripthome/$eval_folder/
             cp -pv /var/cpanel/easy/apache/profile/_main.yaml $scripthome/$eval_folder/
+            cp -pv /var/cpanel/easy/apache/prefs.yaml $scripthome/$eval_folder/
             cp -pv /etc/exim.conf $scripthome/$eval_folder/
         "
 
