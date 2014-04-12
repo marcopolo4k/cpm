@@ -27,7 +27,7 @@ print_intro(){
 
 print_help(){
 	echo 'usage:'
-	echo './cpmig -s <hostname or ip>'
+	echo './precpmig.sh -e -s <hostname or ip>'
 	echo
 	echo 'required:' 
     echo '-e pr[e]-cpmig. Copy files for [e]valuation only. no migration is performed'
