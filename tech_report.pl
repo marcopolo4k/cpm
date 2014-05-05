@@ -2,7 +2,7 @@
 #
 # How to use this script:
 #
-# perl <(curl -s --insecure https://raw.github.com/cPMarco/cpm/master/tech_report.pl) ANALYST_NAME YEAR
+# perl <(curl -s --insecure https://raw.githubusercontent.com/cPMarco/cpm/master/tech_report.pl) ANALYST_NAME YEAR
 #
 # Run this from the directory the year folders are in.  Expecting:
 # ./2014/Tickets/ANALYST_NAME/ANY_FILE_NAME

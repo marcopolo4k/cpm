@@ -4,11 +4,11 @@
 #
 # Moved to:
 # https://github.com/cPMarco/cpm/blob/master/libkey_check.sh
-echo -e "New script location:\nsh <(curl -s --insecure https://raw.github.com/cPMarco/cpm/master/libkey_check.sh) -v";
+echo -e "New script location:\nsh <(curl -s --insecure https://raw.githubusercontent.com/cPMarco/cpm/master/libkey_check.sh) -v";
 
 
 ## How to run this script:
-## curl -s --insecure https://raw.github.com/cPMarco/cpm/master/determine_your_sys_status.sh | sh
+## curl -s --insecure https://raw.githubusercontent.com/cPMarco/cpm/master/determine_your_sys_status.sh | sh
 ##
 ## Todo: non-verbose mode
 #

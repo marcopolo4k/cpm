@@ -5,7 +5,7 @@
 # http://docs.cpanel.net/twiki/bin/view/AllDocumentation/CompSystem
 #
 # How to run this script:
-# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/libkey_check.sh) -v
+# sh <(curl -s https://raw.githubusercontent.com/cPMarco/cpm/master/libkey_check.sh) -v
 #
 
 # Only print debugging messages if, well, debugging

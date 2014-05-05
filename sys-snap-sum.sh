@@ -8,7 +8,7 @@
 # 
 # To use (for example in folder 13):
 # cd /root/system-snapshot/13
-# sh <(curl -s https://raw.github.com/cPMarco/cpm/master/sys-snap-sum.sh)
+# sh <(curl -s https://raw.githubusercontent.com/cPMarco/cpm/master/sys-snap-sum.sh)
 #
 # These are one-liners, and can be mostly copy/pasted individually
 #

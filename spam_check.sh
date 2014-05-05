@@ -7,5 +7,5 @@
 # for a summary of the code, the main code block is at the bottom
 # 
 # To run:
-# curl -s --insecure https://raw.github.com/cPanelTechs/TechScripts/master/spam_check.sh > spam_check.sh; sh spam_check.sh
-echo -e "New script location:\ncurl -s --insecure https://raw.github.com/cPanelTechs/TechScripts/master/spam_check.sh > spam_check.sh; sh spam_check.sh";
+# curl -s --insecure https://raw.githubusercontent.com/cPanelTechs/TechScripts/master/spam_check.sh > spam_check.sh; sh spam_check.sh
+echo -e "New script location:\ncurl -s --insecure https://raw.githubusercontent.com/cPanelTechs/TechScripts/master/spam_check.sh > spam_check.sh; sh spam_check.sh";
