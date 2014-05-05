@@ -2,7 +2,7 @@
 # These are some quick checks for a variety of settings and configurations
 # No configuration files are changed or saved in this script
 # One way to run this script:
-# source /dev/stdin <<< "$(curl -sL https://raw.github.com/cPMarco/cpm/master/autochecks.sh)"
+# source /dev/stdin <<< "$(curl -sL https://raw.githubusercontent.com/cPMarco/cpm/master/autochecks.sh)"
 
 # todo:
 # check for /var/cpanel/use_old_easyapache 
@@ -35,13 +35,13 @@ function cpbak() { cp -pv $@ $@.cpbak.$(date +%Y%m%d).$(date +%H).$(date +%M);}
 # cPanel aliases
 alias vhost='grep -B1 "Name $dom" $conf|head -1; perl -ne "print if /$dom/ .. /Host>$/" $conf; echo "Curl: "; curl $dom | head'
 alias ealogs=$(\ls -lrt $ea | awk -v p=$ea '{if ($5>5000) print "ls -lah "p"/"$NF}'); alias ealog=ealogs;
-alias eapre='curl https://raw.github.com/cPanelTechs/TechScripts/master/ea-precheck.sh | sh'
+alias eapre='curl https://raw.githubusercontent.com/cPanelTechs/TechScripts/master/ea-precheck.sh | sh'
 alias ssl='openssl x509 -noout -text -in'; \grep --color github /etc/hosts;
 function sslshort() { openssl x509 -noout -text -in "$1" | egrep "Issuer|Subject:|^[ ]*Not"; }
 alias sfiles='grep "\"/" /root/cptestm/strace.cpsrvd | cut -d"\"" -f2 | egrep -v "000|<|---|::|.pm$|.pmc$|.so(.?)*$|.bs$|\.py$|\.pyc" | uniq | less -I'
 alias rp='$c/bin/rebuild_phpconf --current'
 
-function cpm() { curl -s --insecure https://raw.github.com/cPMarco/cpm/master/$1 | bash /dev/stdin '$2'; }
+function cpm() { curl -s --insecure https://raw.githubusercontent.com/cPMarco/cpm/master/$1 | bash /dev/stdin '$2'; }
 mkdir /root/cptestm/
 
 # No longer used:
@@ -104,10 +104,10 @@ fi
 echo;
 
 # Hardware checks
-curl -s https://raw.github.com/cPMarco/cpm/master/hardware_checks.sh | sh
+curl -s https://raw.githubusercontent.com/cPMarco/cpm/master/hardware_checks.sh | sh
 
 # Single Security Check
-curl -s https://raw.github.com/cPMarco/cpm/master/libkey_check.sh | sh
+curl -s https://raw.githubusercontent.com/cPMarco/cpm/master/libkey_check.sh | sh
 
 echo -e "\nCluster Function, Status:";
 if [ -e /var/cpanel/cluster/root/config ];
@@ -132,7 +132,7 @@ checkfor "$hta" "Global? htaccess file in home" "This is sometimes associated wi
 # Checkservd log
 # https://staffwiki.cpanel.net/LinuxSupport/OneLiners#Show_chksrvd_failures
 echo -e "\nRecent chksrvd errors:";
-/usr/local/cpanel/3rdparty/perl/514/bin/perl <(curl -s --insecure https://raw.github.com/cPanelTechs/TechScripts/master/chkservd_errors.pl) 1 | tail -15
+/usr/local/cpanel/3rdparty/perl/514/bin/perl <(curl -s --insecure https://raw.githubusercontent.com/cPanelTechs/TechScripts/master/chkservd_errors.pl) 1 | tail -15
 echo "Current time: "; date
 
 
@@ -196,7 +196,7 @@ checkfor "$fb63493" "Postfix processes are running (See FB 63493):"
 if [ $minor -lt 36 ]; then
  echo -e "This system has not been upgraded to 11.36 yet, so running some perl & yum.conf checks:\n"
 
- curl https://raw.github.com/cPMarco/cpm/master/check_system_perl.sh | sh
+ curl https://raw.githubusercontent.com/cPMarco/cpm/master/check_system_perl.sh | sh
 
  # FB 63294
  for ex_in_list in apache bind-chroot courier dovecot exim filesystem httpd mod_ssl mydns mysql nsd perl php proftpd pure-ftpd ruby spamassassin squirrelmail; do
