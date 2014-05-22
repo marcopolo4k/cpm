@@ -21,7 +21,7 @@ CREATE TABLE `audit` (
 
 
 CREATE TRIGGER `test_trigger1` AFTER DELETE
-    ON `user1_db1`.`test_table`
+    ON `user1_db1`.`blog`
     FOR EACH ROW BEGIN
     END;
 
