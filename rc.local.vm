@@ -1,5 +1,6 @@
 # For .bash_profile
-# This should be kept uptodate with rc.remote (master)
+# This should be kept uptodate on github
+# https://raw.githubusercontent.com/cPMarco/cpm/master/rc.local.vm
 
 c=/usr/local/cpanel; v=/var/cpanel; a=/usr/local/apache; 
 ea=$c/logs/easy/apache; conf=$a/conf/httpd.conf; ul=$v/updatelogs;
