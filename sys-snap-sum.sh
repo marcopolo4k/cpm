@@ -12,7 +12,7 @@
 #
 # These are one-liners, and can be mostly copy/pasted individually
 #
-# Version 0.0.1
+# Version 0.0.2
 
 
 function check_directory () {
@@ -41,40 +41,57 @@ Otherwise, press [Enter] key to continue..."
     fi
 }
 
-function print_total_hashes () {
-    bar_chart=$( 
-        wc -l $i | 
-        awk -v max=$max '{
-            size=(max/120);
-            #printf max" "size" "$2 " " $1 " "; 
-            printf $2 " " $1 " "; 
-            for(i=1; i<=($1/size); ++i) {
-                printf "#"
-            } 
-        }' | 
-        #awk '{ print $1,$2,$3,$4,$5 }'
-        awk '{ print $1,$2,$3 }'
-    ); 
-    #printf "%-4s %-4s %-4s %-4s [%4s] \n" $bar_chart; 
-    printf "%-4s %-4s [%4s] \n" $bar_chart; 
+function get_io_score () {
+    log_file=$1
+    io_score=0;
+    for io_val in $(\awk '/^procs -/,/^USER/' $log_file | \awk '{ printf "%s", $16" " }' | \egrep -o "[0-9][0-9 ]*[0-9]"); do 
+        io_score=$[io_score+io_val]; 
+    done;
+}
+
+function get_io_max () {
+    io_score=0;
+    io_max=0;
+    for i in $(\ls); do
+        get_io_score $i; 
+        if [ "$io_score" -gt "$io_max" ]; then 
+            io_max=$io_score; 
+        fi; 
+    done
 }
 
 function print_sub_dots () {
-    bar_chart=$( 
+    count_and_dots=$( 
         echo $1 $2 |
         awk -v max=$max '{
             size=(max/120);
-            #printf max" "size" " $1 " "; 
             printf $1 " ";
             for(i=1; i<=($1/size); ++i) {
                 printf ".";
             }
         }' | 
-        #awk '{ print $1,$2,$3,$4,$5 }'
         awk '{ print $1,$2,$3 }'
     ); 
-    #printf "%-4s %-4s %-4s %-4s %-4s %-4s %-4s [%4s] \n" $bar_chart; 
-    printf "%-4s [%4s] \n" $bar_chart; 
+    printf "%-4s [%4s] \n" $count_and_dots; 
+}
+
+function print_total_hashes () {
+    name=$i;
+    wc_score=$(wc -l $i | awk '{print $1}');
+    tot_score=$[wc_score+io_score];
+    bars=$(
+        # this size magic can probably be improved
+        size=$[max/120];
+        lines=$(wc -l $i | awk '{print $1}');
+        score=$[lines+io_score];
+        tot=$[score/size];
+        COUNTER=0
+        while [ $COUNTER -lt $tot ]; do
+            echo -n "#";
+            let COUNTER=COUNTER+1 
+        done
+    )
+    printf "%-4s %-4s [%4s] \n" $name $tot_score $bars; 
 }
 
 function main () {
@@ -115,7 +132,9 @@ Alternate Display of All Section Summary (y)
     ;;
 
     "2" | "l" )
-    max=$(\wc -l ./*.log | \awk '{if ($0!~/total/) print $1}' | \sort -n | \tail -1); 
+    get_io_max;
+    wc_max=$(\wc -l ./*.log | \awk '{if ($0!~/total/) print $1}' | \sort -n | \tail -1); 
+    max=$[io_max+wc_max];
     for i in $(\ls -rt); do 
         \ls -lah $i; 
         printf "%-17s" "Processes Lines: ";
@@ -128,6 +147,8 @@ Alternate Display of All Section Summary (y)
         print_sub_dots $(awk '/^Active UNIX/,/^$/' $i | wc -l);
         printf "%-17s" "MySQL Lines: "; 
         print_sub_dots $(awk '/\| Id[ ]*\| User/,/^[ ]*Apache/' $i | wc -l);
+        printf "%-17s" "I/O Score: "; 
+        get_io_score $i; print_sub_dots $io_score $i # $io_max;
         echo "Total Lines: "; 
         print_total_hashes;
     done | 
@@ -211,7 +232,7 @@ Alternate Display of All Section Summary (y)
 }
 
 #############################
-# Main Code
+# Main Screen Loop
 ###############
 
 check_directory
