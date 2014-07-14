@@ -4,7 +4,7 @@
 # by Marco Ferrufino
 # 
 # Moved to:
-# https://github.com/cPMarco/cpm/blob/master/libkey_check.sh
+# https://github.com/cPMarco/SysSnapSum
 #
-echo -e "Moved to:\nhttps://github.com/cPMarco/SysSnapSum#syssnapsum\n
+echo -e "Moved to:\nhttps://github.com/cPMarco/SysSnapSum\n
 New way to run:\nsh <(curl -s https://raw.githubusercontent.com/cPMarco/SysSnapSum/master/sys-snap-sum.sh)";
