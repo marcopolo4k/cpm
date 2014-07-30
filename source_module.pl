@@ -31,7 +31,7 @@ foreach (@module_locations) {
 #print "(debug) inside GFH, argv[1] is: $ARGV[1]\n";
         if($_ =~ m/sub $ARGV[1]/) {
             push @found, $_; 
-            print "$mod_full_path\n";
+            print "\nvim $mod_full_path\n";
             print "@found\n";
         }   
     }   
