@@ -22,7 +22,7 @@ while(<$fh>) {
         push @file_modules, $full_path;
     }   
 }
-print "(debug) file_modules $_\n" for @file_modules;
+#print "(debug) file_modules $_\n" for @file_modules;
 my @modules;
 if ( !@file_modules ) { 
     print "Nothing found in the file provided, now searching \@INC...\n";
