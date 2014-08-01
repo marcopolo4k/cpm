@@ -46,7 +46,7 @@ foreach (@modules) {
             print "@found\n";
         }   
     }   
-    close(GFH);
+    close($mod_fh);
 }
 
 sub get_basedir {
