@@ -6,8 +6,8 @@ my $filename = $ARGV[0];
 my $function_name = $ARGV[1];
 my @file_modules;
 
-open(FH, $filename) or die "Can't open $filename";
-while(<FH>) {
+open(my $fh, '<', $filename) or die "Can't open $filename";
+while(<$fh>) {
     if($_ =~ m/(use|require|include) ((\w*::)*\w+)/) {
         my $mod_with_colons = $2; 
         next if ($mod_with_colons =~ /(strict|warn|POSIX)/);
@@ -38,8 +38,8 @@ if ( !@modules ) {
 foreach (@modules) {
     my @found;
     my $mod_full_path = $_ ;
-    open(GFH, $mod_full_path) or die "Can't open $_";
-    while(<GFH>) {
+    open(my $mod_fh, '<', $mod_full_path) or die "Can't open $_";
+    while(<$mod_fh>) {
         if($_ =~ m/sub $function_name/) {
             push @found, $_; 
             print "\nFound:\nvim $mod_full_path\n";
