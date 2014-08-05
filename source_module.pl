@@ -11,8 +11,8 @@ open(my $fh, '<', $filename) or die "Can't open $filename";
 
 # Populate modules:
 while(<$fh>) {
-    #if($_ =~ m/^[ ]*(use|require|include) ((\w*::)*\w+)/) {
-    if($_ =~ m/(use|require|include)[ ]+((\w*::)*\w+)/) {
+    # TODO: this will match "use Good::Module # here's a comment with the word use"
+    if($_ =~ m/(\buse\b|\brequire\b|include\b)[ ]+((\w*::)*\w+)/ && $_ !~ m/#.*(\buse\b|\brequire\b|include\b)/) {
         my $mod_with_colons = $2; 
         next if ($mod_with_colons =~ /(strict|warn|POSIX)/);
         my $base = get_basedir();
@@ -31,7 +31,7 @@ if (!keys %found) {
     print "trying file...\n";
     @modules = ($filename);
     populate_found();
-    print "Oh, it's in the file you were just looking at.\n" if keys %found;
+    print "Oh, it's in the same file you input:\n" if keys %found;
 }
 if (!keys %found) {
     print "trying \@INC...\n";
