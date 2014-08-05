@@ -29,7 +29,6 @@ populate_found();
 if (!keys %found) {
     print "trying file...\n";
     @modules = ($filename);
-    print "$_\n" for @modules;
     populate_found();
     print "Oh, it's in the file you were just looking at.\n" if keys %found;
 }
