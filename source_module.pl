@@ -4,10 +4,12 @@ use warnings;
 
 my $filename = $ARGV[0];
 my $function_name = $ARGV[1];
-my @file_modules;
+my @modules;
 my %found;
 
 open(my $fh, '<', $filename) or die "Can't open $filename";
+
+# Populate modules:
 while(<$fh>) {
     if($_ =~ m/^[ ]*(use|require|include) ((\w*::)*\w+)/) {
         my $mod_with_colons = $2; 
@@ -19,26 +21,39 @@ while(<$fh>) {
             next;
         }   
         my $full_path = "$base/$mod_with_slashes.pm";
-        push @file_modules, $full_path;
+        push @modules, $full_path;
     }   
-}
-#print "(debug) file_modules $_\n" for @file_modules;
-my @modules;
-if ( !@file_modules ) { 
-    print "Nothing found in the file provided, now searching \@INC...\n";
-    @modules = @INC; 
-}
-else {
-    @modules = @file_modules;
-}
-
-if ( !@modules ) { 
-    print "Nothing found anywhere :(\n";
 }
 
 populate_found();
-#print_if_empty();
+if (!keys %found) {
+    print "trying file...\n";
+    @modules = ($filename);
+    print "$_\n" for @modules;
+    populate_found();
+    print "Oh, it's in the file you were just looking at.\n" if keys %found;
+}
+if (!keys %found) {
+    print "trying \@INC...\n";
+    @modules = @INC;
+    populate_found();
+}
+if (!keys %found) {
+    print "\nNothing found :(\n\n";
+}
+
 print_results();
+
+
+sub get_basedir {
+    my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib");
+    my @ret;
+    foreach (@bases) {
+        if (-d $_) { push @ret, $_ };
+    }
+    my $last = pop(@ret);
+    return $last;
+}
 
 sub populate_found {
     foreach (@modules) {
@@ -58,14 +73,4 @@ sub print_results {
         my $sub_declaration = $_; 
         print "\nFound:\nvim $found{$sub_declaration}\n$sub_declaration\n";
     }
-}
-
-sub get_basedir {
-    my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib");
-    my @ret;
-    foreach (@bases) {
-        if (-d $_) { push @ret, $_ };
-    }
-    my $last = pop(@ret);
-    return $last;
 }
