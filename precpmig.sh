@@ -1,8 +1,10 @@
 #!/bin/bash
 # Original cpmig written by Phil Stark
-# precpmig, by Marco Ferrufino is a proof of concept. It will eventually be converted into cpmig
+# precpmig by Marco Ferrufino. Supposed to go into cpmig, but maybe it'll stay on it's own for a while.
 #
-VERSION="0.0.5"
+# Development versions odd
+# Release versions even
+VERSION="0.1.0"
 scripthome="/root/.cppremig"
 # 
 #############################################
@@ -89,10 +91,10 @@ set_logging_mode(){
 
 # Libkey Check
 lc_checkfor() {
-	if [ "$1" ];
-		then echo -e "$2\n$1\n$3" >> $logfile
+	if [ "$1" ]; then 
+        echo -e "$2\n$1\n$3" >> $logfile
 		lc_num_fails=$((lc_num_fails+1))
-		else echo "Passed." >> $logfile
+    else echo "Passed." >> $logfile
         debug "inside positive checkfor num fails is $lc_num_fails"
 	fi
     debug "inside checkfor num fails is $lc_num_fails"
@@ -126,6 +128,8 @@ lc_general_checks() {
 		echo "Passed." >> $logfile
 	fi
 }
+
+
 
 # Libkey Check: Here the 6 commands listed on the website 
 lc_command_1() {
@@ -180,7 +184,6 @@ lc_command_6() {
     debug "after cmd 6, lc_num_fails is $lc_num_fails"
 }
 
-
 # Libkey Check: Print Summary and show the dates on the files
 lc_summary() {
     debug "lc_num_fails is $lc_num_fails"
@@ -199,6 +202,28 @@ The following is a general guide to interpret results:
   3+ checks failed = definitely real\n\n" >> $logfile
 
     echo -e "Destination server failed a critical error check.  See logs for more details:\n\n$logfile\n"  &> >(tee --append $logfile)
+    exit 0
+	fi
+ 
+	echo >> $logfile
+}
+
+# Ebury Checks: Taken from SSP
+ec_file() {
+    file='/home/ ./root'
+	if [ -e $file ]; then 
+        echo -e "Found file: $file)" >> $logfile
+        ec_num_fails=$((ec_num_fails+1))
+    else echo "E1 Passed." >> $logfile
+	fi
+}
+
+# Ebury Check: Print Summary and show the dates on the files
+ec_summary() {
+    debug "ec_num_fails is $ec_num_fails"
+	if [ "$ec_num_fails" -gt 0 ]; then
+		echo -e "\nTotal Number of checks failed: "$ec_num_fails" (out of x checks currently)\n\n" >> $logfile
+        echo -e "Destination server failed a critical error check.  See logs for more details:\n\n$logfile\n"  &> >(tee --append $logfile)
     exit 0
 	fi
  
@@ -583,6 +608,8 @@ else
     lc_command_5
     lc_command_6
     lc_summary
+    ec_file
+    ec_summary
     error_check
 fi
 
