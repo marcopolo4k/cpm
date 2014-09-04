@@ -5,7 +5,7 @@ use File::Find;
 
 my $filename = $ARGV[0];
 my $function_name = $ARGV[1];
-my $specific_env = $ARGV[2];
+my $specific_env = $ARGV[2] // 'or_else_its_empty';
 my @modules;
 my %found;
 
@@ -86,7 +86,7 @@ sub grep_thru {
     my @dirs = @_ ;
 
     ## main processing done here
-    my @found_files = ();
+    our @found_files = ();
     #orig:
     #my $pattern = qr/$function_name/;
 
