@@ -1,9 +1,11 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use File::Find;
 
 my $filename = $ARGV[0];
 my $function_name = $ARGV[1];
+my $specific_env = $ARGV[2];
 my @modules;
 my %found;
 
@@ -37,6 +39,10 @@ if (!keys %found) {
     print "trying \@INC...\n";
     @modules = @INC;
     populate_found();
+}
+if (!keys %found && $specific_env eq "ts") {
+    print "trying teststuite locations...\n";
+    grep_thru("/opt/testsuite/lib");
 }
 if (!keys %found) {
     print "\nNothing found :(\n\n";
@@ -72,5 +78,38 @@ sub print_results {
     foreach ( keys %found ) { 
         my $sub_declaration = $_; 
         print "\nFound:\nvim $found{$sub_declaration}\n$sub_declaration\n";
+    }
+    print "\n";
+}
+
+sub grep_thru {
+    my @dirs = @_ ;
+
+    ## main processing done here
+    my @found_files = ();
+    #orig:
+    #my $pattern = qr/$function_name/;
+
+    find( \&wanted, @dirs );        ## fullpath name in $File::Find::name
+
+    sub wanted
+    {
+        next if $File::Find::name eq '.' or $File::Find::name eq '..';    
+        open my $file, '<', $File::Find::name or die "Error openning file: $!\n";
+        while( defined(my $line = <$file>) )
+        {        
+            if($line =~ /sub $function_name/)
+            {
+                # TODO: this generates "not stay shared" error. I can get around it by making
+                # the sub anonymous, but proly better to use return values
+                push @found_files, $File::Find::name;    
+                last;            
+            }        
+        }
+        close ($file);    
+    }
+
+    foreach (@found_files) {
+        $found{$_} = $_; 
     }
 }
