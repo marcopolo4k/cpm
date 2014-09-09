@@ -57,7 +57,7 @@ END;
 
 
 delimiter //
-CREATE DEFINER=`root`@`%` PROCEDURE `test_procedure1`()
+CREATE DEFINER=`user1`@`localhost` PROCEDURE `test_procedure1`()
 BEGIN
  SELECT * FROM blog;
 END//
