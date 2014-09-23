@@ -12,10 +12,11 @@ my %trueuserdata;
 
 sub if_trueuserdomains {
     my $filename = "/etc/trueuserdomains";
-    open my $fh,"<",$filename or die "failed to open file: $!";
+    open my $fh,"<",$filename or die "Could not open file: $!";
     %trueuserdata=map{chomp;split ": "} <$fh>;
 
     for my $dom (keys %trueuserdata) {
+        print "\n============ $dom ================\n";
         #print "$dom\n";
         system ("curl -s $dom --resolve '$dom:80:$ip'");
     }
