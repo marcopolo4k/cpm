@@ -13,7 +13,7 @@ open(my $fh, '<', $filename) or die "Can't open $filename";
 
 # Populate modules:
 while(<$fh>) {
-    # TODO: this will match "use Good::Module # here's a comment with the word use"
+    # TODO: this will eliminate "use Good::Module # here's a comment with the word use"
     if($_ =~ m/(\buse\b|\brequire\b|include\b)[ ]+((\w*::)*\w+)/ && $_ !~ m/#.*(\buse\b|\brequire\b|include\b)/) {
         my $mod_with_colons = $2; 
         next if ($mod_with_colons =~ /(strict|warn|POSIX)/);
@@ -63,15 +63,27 @@ sub get_basedir {
 
 sub populate_found {
     foreach (@modules) {
-        my $mod_full_path = $_ ;
-        open(my $mod_fh, '<', $mod_full_path) or die "Can't open $_";
-        while(<$mod_fh>) {
-            if($_ =~ m/sub $function_name/) {
-                $found{$_} = $mod_full_path; 
+        if (-f $_) {
+            populate_found_with_a_file($_);
+        }   
+        elsif (-d $_) {
+            my @files = glob "$_/*.pm";
+            foreach my $file (@files) {
+                populate_found_with_a_file($file);
             }   
         }   
-        close($mod_fh);
     }   
+}
+
+sub populate_found_with_a_file {
+            my $mod_full_path = shift;
+            open(my $mod_fh, '<', $mod_full_path) or die "Can't open $mod_full_path";
+            while(<$mod_fh>) {
+                if($_ =~ m/sub $function_name/) {
+                    $found{$_} = $mod_full_path; 
+                }   
+            }   
+            close($mod_fh);
 }
 
 sub print_results {
