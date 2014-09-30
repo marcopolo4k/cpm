@@ -110,7 +110,7 @@ sub populate_found_with_a_file {
                 my $line = $_ ;
                 if($line =~ m/sub $function_name/) {
                     my $line_num = $.;
-                    my $unique_name = "line ".$line_num." of ".$mod_full_path;
+                    my $unique_name = "vim +".$line_num." ".$mod_full_path;
                     $found{$unique_name} = $mod_full_path;
                 }   
             }   
@@ -120,7 +120,7 @@ sub populate_found_with_a_file {
 sub print_results {
     foreach ( keys %found ) { 
         my $sub_declaration = $_; 
-        print "\nFound:\nvim $found{$sub_declaration}\n$sub_declaration\n";
+        print "\nFound:\n$sub_declaration\n";
     }
     print "\n";
     my $found = {};
