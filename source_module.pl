@@ -46,9 +46,10 @@ if (!keys %found && $specific_env eq "ts") {
     populate_found();
 }
 
-# Specific environment: Test Suite
+# Specific environment: cPanel
+# wow, this takes forever.  can't use it in this form
 if (!keys %found && $specific_env eq "cp") {
-    print "trying teststuite locations...\n";
+    print "trying cpanel locations...\n";
     @modules = grep_thru("/usr/local/cpanel");
     populate_found();
 }
