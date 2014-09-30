@@ -46,6 +46,13 @@ if (!keys %found && $specific_env eq "ts") {
     populate_found();
 }
 
+# Specific environment: Test Suite
+if (!keys %found && $specific_env eq "cp") {
+    print "trying teststuite locations...\n";
+    @modules = grep_thru("/usr/local/cpanel");
+    populate_found();
+}
+
 print_results();
 
 # @INC (defintely has to be in here, but it'll take 6 sec currently)
