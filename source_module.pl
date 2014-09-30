@@ -1,12 +1,28 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use Getopt::Long;
+use Pod::Usage;
+
+pod2usage() if !@ARGV;
 
 my $filename = $ARGV[0];
 my $function_name = $ARGV[1];
 my $specific_env = $ARGV[2] // 'or_else_its_empty';
+my $help;
 my @modules;
 my %found;
+my $verbose_level = 2;
+
+GetOptions ("file=s"   => \$filename,
+            "function=s"   => \$function_name,
+            "env=s"   => \$specific_env,
+            "help"   => \$help
+)
+or die("Error in command line arguments\n");
+
+# Display help screen if -help option specified
+pod2usage(-verbose => 2) if $help;
 
 open(my $fh, '<', $filename) or die "Can't open $filename";
 
@@ -98,6 +114,9 @@ sub populate_found {
                 populate_found_with_a_file($file);
             }   
         }   
+        #elsif () {
+            #print "Not searching: ".$one_module."\n";
+        #}
     }   
 }
 
@@ -112,14 +131,14 @@ sub populate_found_with_a_file {
                     my $line_num = $.;
                     my $unique_name = "vim +".$line_num." ".$mod_full_path;
                     $found{$unique_name} = $mod_full_path;
-                }   
-            }   
+                }
+            }
             close($mod_fh);
 }
 
 sub print_results {
     foreach ( keys %found ) { 
-        my $sub_declaration = $_; 
+        my $sub_declaration = $_;
         print "\nFound:\n$sub_declaration\n";
     }
     print "\n";
@@ -150,3 +169,56 @@ sub get_more {
     return @files ;
 }
 
+#pod2usage( { -message => $message_text ,
+#             -exitval => $exit_status  ,  
+#             -verbose => 2,  
+#             -output  => $filehandle } );
+#pod2usage($verbose_level);
+
+=pod
+
+=head1 NAME
+
+source_module.pl [options] [parameters]
+
+=head1 DESCRIPTION
+
+This script finds the source modules for a function
+
+=head1 USAGE
+
+perl source_module.pl -file=<file_name_to_begin_with> -function=<function_to_search_for> -env=<environment_option>
+
+It also accepts the parameters bare, as long as they're in that order
+
+=head1 ARGUMENTS
+
+=head2 Required
+
+=over 4
+
+=item B<-file>
+
+Name of file to begin searching for the subroutine
+
+=item B<-function>
+
+Name of function to search for
+
+=back
+
+=head2 Optional
+
+ --help            Display available and required options
+
+=over 4
+
+=item B<-env>
+
+Specific environment:
+cp = cPanel
+ts = TestSuite
+
+=back
+
+=cut
