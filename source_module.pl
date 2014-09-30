@@ -5,7 +5,6 @@ use warnings;
 my $filename = $ARGV[0];
 my $function_name = $ARGV[1];
 my $specific_env = $ARGV[2] // 'or_else_its_empty';
-my $print_pms_not_subs = $ARGV[3] // 'or_else_its_empty';
 my @modules;
 my %found;
 
@@ -50,7 +49,7 @@ if (!keys %found && $specific_env eq "ts") {
 # wow, this takes forever.  can't use it in this form
 if (!keys %found && $specific_env eq "cp") {
     print "trying cpanel locations...\n";
-    @modules = grep_thru("/usr/local/cpanel");
+    @modules = grep_thru("/usr/local/cpanel/Cpanel");
     populate_found();
 }
 
