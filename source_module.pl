@@ -46,25 +46,24 @@ if (!keys %found && $specific_env eq "ts") {
     populate_found();
 }
 
-# @INC (defintely has to be in here, but it'll take 6 sec currently)
-#if (!keys %found) {
-    print "trying \@INC...\n";
-    @modules = @INC;
-    foreach my $blah (@modules) {
-        if ( -d $blah ) { 
-            my @l2a = get_more($blah);
-            push (@modules, @l2a);
-        }
-    }
-    populate_found();
-#}
-
-if (!keys %found) {
-    print "\nNothing found :(\n\n";
-}
-
 print_results();
 
+# @INC (defintely has to be in here, but it'll take 6 sec currently)
+print "trying \@INC...\n";
+@modules = @INC;
+foreach my $blah (@modules) {
+    if ( -d $blah ) { 
+        my @l2a = get_more($blah);
+        push (@modules, @l2a);
+    }
+}
+populate_found();
+print_results();
+
+#TODO
+#if (!keys %found) {
+#    print "\nNothing found :(\n\n";
+#}
 
 sub get_basedir {
     my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib");
@@ -103,8 +102,9 @@ sub populate_found_with_a_file {
             while (<$mod_fh>) {
                 my $line = $_ ;
                 if($line =~ m/sub $function_name/) {
-                    # key is name, value is the full path
-                    $found{$line} = $mod_full_path;
+                    my $line_num = $.;
+                    my $unique_name = "line ".$line_num." of ".$mod_full_path;
+                    $found{$unique_name} = $mod_full_path;
                 }   
             }   
             close($mod_fh);
@@ -116,6 +116,7 @@ sub print_results {
         print "\nFound:\nvim $found{$sub_declaration}\n$sub_declaration\n";
     }
     print "\n";
+    my $found = {};
 }
 
 # grep through the input directory, finding @modules to use in populate_found
