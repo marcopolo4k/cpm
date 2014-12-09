@@ -90,7 +90,9 @@ print_results();
 #}
 
 sub get_basedir {
-    my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib");
+    # Cheating here, speeding the search with my own commonly used paths, and accounting for stuff like:
+    # use lib abs_path( dirname(__FILE__) . '/lib' );
+    my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib", "./lib");
     my @ret;
     foreach (@bases) {
         if (-d $_) { push @ret, $_ };
