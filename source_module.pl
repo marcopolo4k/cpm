@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 use Pod::Usage;
+use File::Basename qw{dirname}; 
 
 pod2usage() if !@ARGV;
 
@@ -92,7 +93,8 @@ print_results();
 sub get_basedir {
     # Cheating here, speeding the search with my own commonly used paths, and accounting for stuff like:
     # use lib abs_path( dirname(__FILE__) . '/lib' );
-    my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib", "./lib");
+    my $dirname = dirname($filename); 
+    my @bases = ("/usr/local/cpanel", "/opt/testsuite/lib", "$dirname/lib");
     my @ret;
     foreach (@bases) {
         if (-d $_) { push @ret, $_ };
