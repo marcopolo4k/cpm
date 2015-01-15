@@ -24,10 +24,10 @@ function check_new_backups() {
 
 # check if legacy or new backups are enabled.  if each one is, then show how many users are skipped
 function check_legacy_backups() {
- legacy_enabled=$(grep BACKUPENABLE /etc/cpbackup.conf | awk '{print $2'})
- legacy_users_enabled=$(grep BACKUPACCTS /etc/cpbackup.conf | awk '{print $2'})
+ legacy_enabled=$(grep BACKUPENABLE /etc/cpbackup.conf 2>/dev/null | awk '{print $2'})
+ legacy_users_enabled=$(grep BACKUPACCTS /etc/cpbackup.conf 2>/dev/null | awk '{print $2'})
  legacy_cron=$(crontab -l | grep cpbackup | awk '{print $1,$2,$3,$4,$5}')
- if [ $legacy_enabled = "yes" -a $legacy_users_enabled = "yes" ]; then legacy_status='\033[1;32m'Enabled'\033[0m'
+ if [ "$legacy_enabled" = "yes" -a "$legacy_users_enabled" = "yes" ]; then legacy_status='\033[1;32m'Enabled'\033[0m'
  else legacy_status='\033[1;31m'Disabled'\033[0m'
  fi
  echo -e "Legacy Backups = $legacy_status\t(cron time: $legacy_cron)\t\t/etc/cpbackup.conf"
@@ -50,7 +50,7 @@ function check_new_ftp_backups() {
  echo -e "\nNew FTP Backups = $ftp_backup_status\t(as of v2.0, this script only checks for new ftp backups, not legacy)"
 
  # Normal arrays
- declare -a ftp_server_files=($(\ls /var/cpanel/backups/*backup_destination));
+ declare -a ftp_server_files=($(\ls /var/cpanel/backups/*backup_destination 2>/dev/null));
  declare -a ftp_server_names=($(for i in ${ftp_server_files[@]}; do echo $i | cut -d/ -f5 | rev | cut -d_ -f4,5,6,7,8 | rev; done));
  # Array hack is storing 'Disabled' status in $srvr_SERVER_NAME
  for i in ${ftp_server_files[@]}; do hput srvr_$(echo $i | cut -d/ -f5 | rev | cut -d_ -f4,5,6,7,8 | rev) $(\grep disabled $i | awk '{print $2}'); done
@@ -89,16 +89,16 @@ function exceptions_heading() {
 }
 
 function list_legacy_exceptions() {
-legacy_users=$(grep "LEGACY_BACKUP=1" /var/cpanel/users/* | wc -l);
-if [ $legacy_enabled == "yes" ]; then
- oldxs=$(egrep "LEGACY_BACKUP=0" /var/cpanel/users/* | wc -l);
+legacy_users=$(grep "LEGACY_BACKUP=1" /var/cpanel/users/* | wc -l 2>/dev/null);
+if [ "$legacy_enabled" == "yes" ]; then
+ oldxs=$(egrep "LEGACY_BACKUP=0" /var/cpanel/users/* | wc -l 2>/dev/null);
  skip_file_ct=$(wc -l /etc/cpbackup-userskip.conf 2>/dev/null)
- if [ $oldxs -gt 0 -o "$skip_file_ct" ]; then
+ if [ "$oldxs" -gt 0 -o "$skip_file_ct" ]; then
   echo -e "Legacy Backups:";
  fi
- if [ $oldxs -gt 0 ]; then echo -e "Number of real Legacy backup users disabled: \033[1;31m$oldxs\033[0m\n"; fi;
+ if [ "$oldxs" -gt 0 ]; then echo -e "Number of real Legacy backup users disabled: \033[1;31m$oldxs\033[0m\n"; fi;
  if [ -n "$skip_file_ct" ]; then echo -e "Extra Information: This skip file should no longer be used\n"$skip_file_ct"\n"; fi
-elif [ $legacy_users -gt 0 -a $legacy_status == "Disabled" ]; then
+elif [ "$legacy_users" -gt 0 -a "$legacy_status" == "Disabled" ]; then
  echo -e "\nExtra Information: Legacy Backups are disabled as a whole, but there are $legacy_users users ready to use them."
 echo
 fi
@@ -130,7 +130,7 @@ fi
 }
 
 function count_local_legacy_backups() {
-legacy_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /etc/cpbackup.conf)
+legacy_backup_dir=$(awk '/BACKUPDIR/ {print $2}' /etc/cpbackup.conf 2>/dev/null)
 echo -e "\nLegacy backups in $legacy_backup_dir/cpbackup: "
 for freq in daily weekly monthly; do 
  echo -n $freq": "; 
