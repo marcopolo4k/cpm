@@ -63,7 +63,7 @@ alias rp='$c/bin/rebuild_phpconf --current'
 
 # LOCAL VM Aliases
 # make sure dev is eth0, sometimes it's 1.  The IP has been same for a while
-routes='route add 10.4.0.1/32 dev eth0; route add default gw 10.4.0.1 eth0'
+alias routes='route add 10.4.0.1/32 dev eth0; route add default gw 10.4.0.1 eth0'
 
 ########################
 # PROMPT COMMAND AND PS1
