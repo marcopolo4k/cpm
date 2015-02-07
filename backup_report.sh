@@ -74,7 +74,7 @@ if [ -e $backlogdir ]; then
  for i in `\ls`; do
   echo -n $i": "; grep "Started" $i; echo -n "Ended ";
   \ls -lrth | grep $i | awk '{print $6" "$7" "$8}';
-  echo -ne " Number of users backed up:\t";  grep "user :" $i | wc -l;
+  echo -ne " Number users backed up:..........";  grep "user :" $i | wc -l;
  done;
 fi;
 }
