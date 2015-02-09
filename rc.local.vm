@@ -69,7 +69,8 @@ alias routes='route add 10.4.0.1/32 dev eth0; route add default gw 10.4.0.1 eth0
 # PROMPT COMMAND AND PS1
 # QA:
 cpver=$(cat /usr/local/cpanel/version);h=$(hostname -i);
-PROMPT_COMMAND='echo -ne "\033]0;QA ${h} - ${cpver}\007"'; export PS1="\u ${h}/${cpver} [\w]# ";
+arch=$( echo Cent$(cat /etc/*-release | head -1 | awk '{print $3}')$(uname -m) )
+PROMPT_COMMAND='echo -ne "\033]0;QA ${h} - ${cpver}\007"'; export PS1="\u ${h}/${cpver}/${arch} [\w]# ";
 
 # LOCAL VM's
 #cpver=$(cat /usr/local/cpanel/version);cpvsl=$(cat /var/cpanel/updatelogs/summary.log | egrep -o '([[:digit:]]{2}\.){2}' | head -1 | cut -d. -f1,2); cpvs=${cpvsl:0:5};h=$(hostname -i);PROMPT_COMMAND='echo -ne "\033]0;LOCAL VM ${cpver} - ${h}\007"'; export PS1="\u ${h}/${cpvs}->${cpver} [\w]# ";
