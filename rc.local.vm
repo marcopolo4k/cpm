@@ -30,7 +30,7 @@ function cpbak() { cp -v $@ $@.cpbak.$(date +20140703).$(date +13).$(date +33);}
 # QA aliases
 alias tiers='for x in branch-build.dev qa-build next httpupdate; do echo -e "\n$ curl --connect-timeout 2 -sm4 http://${x}.cpanel.net/cpanelsync/TIERS | sort -n" && curl --connect-timeout 2 -sm4 http://${x}.cpanel.net/cpanelsync/TIERS | sort -n; done'
 alias ver='cat $c/version'
-## for dev box
+## for dev sandbox
 ## git from George (but really, Eades)
 #parse_git_branch()
 #{
@@ -45,6 +45,11 @@ alias ver='cat $c/version'
 #cd /usr/local/cpanel
 #git pull
 #set_ps1
+#
+## Selenium Heads
+#sel1="10.5.2.118"
+#sel2="10.4.130.4"
+#sel3="10.4.130.5"
 
 # cPanel aliases
 alias vhost='grep -B1 "Name $dom" $conf|head -1; perl -ne "print if /$dom/ .. /Host>$/" $conf; echo "Curl: "; curl $dom | head'
