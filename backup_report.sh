@@ -147,14 +147,14 @@ function show_recent_errors() {
         \egrep -i "failed|error|load to go down|Unable" $backlogdir/$i | cut -c -180 | sort | uniq -c ;
     done | tail;
     # Errors from cPanel error log
-    echo -e "\n/usr/local/cpanel/logs/error_log:"
-    egrep "(warn|die|panic) \[backup" /usr/local/cpanel/logs/error_log | awk '{printf $1"] "; for (i=4;i<=20;i=i+1) {printf $i" "}; print ""}' | uniq -c | tail -3
+    echo -e "\n/usr/local/cpanel/logs/error_log: (numbers removed for brevity)"
+    egrep "(warn|die|panic) \[backup" /usr/local/cpanel/logs/error_log | awk '{printf $1"] "; for (i=4;i<=20;i=i+1) {if ($i!~/[0-9]/) printf $i" "}; print ""}' | uniq -c | tail -7
 
     #any_ftp_backups=$(\grep 'disabled: 0' /var/cpanel/backups/*backup_destination 2>/dev/null)
     if [ -n "$any_ftp_backups" ]; then
         # Errors from FTP backups
-        echo -e "\n/usr/local/cpanel/logs/cpbackup_transporter.log:"
-        egrep '] warn|] err' /usr/local/cpanel/logs/cpbackup_transporter.log | tail -5
+        echo -e "\n/usr/local/cpanel/logs/cpbackup_transporter.log: (numbers removed for brevity)"
+        egrep '] warn|] err|] die|] panic' /usr/local/cpanel/logs/cpbackup_transporter.log | awk '{printf $1"] "; for (i=4;i<=20;i=i+1) {if ($i!~/[0-9]/) printf $i" "}; print ""}' | sort | uniq -c | sort -n | tail -5
     fi
 }
 
