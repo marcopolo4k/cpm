@@ -31,7 +31,7 @@ open(my $fh, '<', $filename) or die "Can't open $filename";
 # Populate modules:
 while(<$fh>) {
     # TODO: this will eliminate "use Good::Module # here's a comment with the word use"
-    if($_ =~ m/(\buse\b|\brequire\b|include\b)[ ]+((\w*::)*\w+)/ && $_ !~ m/#.*(\buse\b|\brequire\b|include\b)/) {
+    if($_ =~ m/(\buse\b|\brequire\b|\binclude\b)[ ]+((\w*::)*\w+)/ && $_ !~ m/#.*(\buse\b|\brequire\b|\binclude\b)/) {
         my $mod_with_colons = $2; 
         next if ($mod_with_colons =~ /(strict|warn|POSIX)/);
         my $base = get_basedir();
@@ -59,7 +59,7 @@ if (!keys %found) {
 # Specific environment: Test Suite
 if (!keys %found && $specific_env eq "ts") {
     print "trying teststuite locations...\n";
-    @modules = grep_thru("/opt/testsuite/lib");
+    @modules = grep_thru("/usr/local/cpanel/t/qa/lib");
     populate_found();
 }
 
