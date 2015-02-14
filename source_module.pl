@@ -37,7 +37,7 @@ while(<$fh>) {
         my $base = get_basedir();
         ( my $mod_with_slashes = $mod_with_colons ) =~ s/::/\//g ;
         if ( ! -f "$base/$mod_with_slashes.pm" ) { 
-            print "$mod_with_colons not found: $base/$mod_with_slashes.pm\n";
+            print "(info) $mod_with_colons not found: $base/$mod_with_slashes.pm\n";
             next;
         }   
         my $full_path = "$base/$mod_with_slashes.pm";
@@ -56,30 +56,33 @@ if (!keys %found) {
     print "Oh, it's in the same file you input:\n" if keys %found;
 }
 
-# Specific environment: Test Suite
-if (!keys %found && $specific_env eq "ts") {
-    print "trying teststuite locations...\n";
-    @modules = grep_thru("/usr/local/cpanel/t/qa/lib");
-    populate_found();
-}
+# Specific environments
+if ($specific_env) {
+    # Test Suite
+    if (!keys %found && $specific_env eq "qa") {
+        print "trying teststuite locations...\n";
+        @modules = grep_thru("/usr/local/cpanel/t/qa/lib");
+        populate_found();
+    }
 
-# Specific environment: cPanel
-# wow, this takes forever.  can't use it in this form
-if (!keys %found && $specific_env eq "cp") {
-    print "trying cpanel locations...\n";
-    @modules = grep_thru("/usr/local/cpanel/Cpanel");
-    populate_found();
-}
+    # cPanel
+    # debug: wow, this takes forever.  can't use it in this form
+    if (!keys %found && $specific_env eq "cp") {
+        print "trying cpanel locations...\n";
+        @modules = grep_thru("/usr/local/cpanel/Cpanel");
+        populate_found();
+    }
+};
 
 print_results();
 
 # @INC (defintely has to be in here, but it'll take 6 sec currently)
 print "trying \@INC...\n";
 @modules = @INC;
-foreach my $blah (@modules) {
-    if ( -d $blah ) { 
-        my @l2a = get_more($blah);
-        push (@modules, @l2a);
+foreach my $maybe_dir (@modules) {
+    if ( -d $maybe_dir ) { 
+        my @more_stuff = get_more($maybe_dir);
+        push (@modules, @more_stuff);
     }
 }
 populate_found();
@@ -129,6 +132,7 @@ sub populate_found_with_a_file {
             my $mod_full_path = shift;
             # most important debug statement:
             #print "(debug) mod_full_path is $mod_full_path\n";
+            return if ( $mod_full_path =~ m/tags$/ );
             open(my $mod_fh, '<', $mod_full_path) or die "Can't open $mod_full_path";
             while (<$mod_fh>) {
                 my $line = $_ ;
@@ -156,10 +160,10 @@ sub grep_thru {
     our @found_files = ();
 
     # this should go in a sub?
-    foreach my $blah (@dirs) {
-        if ( -d $blah ) { 
-            my @l2a = get_more($blah);
-            push (@dirs, @l2a);
+    foreach my $maybe_dir (@dirs) {
+        if ( -d $maybe_dir ) { 
+            my @more_stuff = get_more($maybe_dir);
+            push (@dirs, @more_stuff);
         }
     }
 
@@ -222,7 +226,7 @@ Name of function to search for
 
 Specific environment:
 cp = cPanel
-ts = TestSuite
+qa = QA Test Libraries
 
 =back
 
