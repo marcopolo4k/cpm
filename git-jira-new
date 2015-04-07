@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $remote = 'wombats';
+
+if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
+    help();
+    exit;
+}
+
+my $branch_i_want = shift;
+$branch_i_want =~ s!(^/)?($remote/)?!!;
+
+my $short_name = shift;
+if ( !defined $short_name ) {
+    $short_name = $branch_i_want;
+    $short_name =~ s!^.*/!!;
+}
+
+# create the branch
+system ("git fetch $remote");
+system ("echo git checkout --track -b $short_name $remote/$branch_i_want");
+print "Proceed?\n";
+$/ = "\n"; # if I want to keep this, use readline
+my $ans = <STDIN>;
+exit if ($ans =~ /n|N/);
+system ("git checkout --track -b $short_name $remote/$branch_i_want");
+
+# set upstream
+system ("echo git branch --set-upstream-to=$remote/$branch_i_want $short_name");
+print "Proceed?\n";
+$/ = "\n"; # if I want to keep this, use readline
+my $ans2 = <STDIN>;
+exit if ($ans =~ /n|N/);
+system ("git branch --set-upstream-to=$remote/$branch_i_want $short_name");
+
+
+sub help {
+    print "\nPlease enter one or two arguments. Example of two:\n";
+    print "git jira-new bugfix/MW-827-simplify-wait_for_backups-by-using MW-827-simplify-wait_for_backups\n\n";
+}
