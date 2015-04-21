@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
+    help();
+    exit;
+}
+
+# Setting defaults
+my $dir = 't/qa';
+my $full_dir = '/usr/local/cpanel/t/qa';
+#my $remote = '';
+my $remote = 'wombats/';
+my $branch;
+my $test_short;
+my $test_long;
+
+if (@ARGV == 1) {
+    if ($ARGV[0] =~ /:/) {
+        my @args = split /:/, $ARGV[0];
+        $test_long = $ARGV[1];
+        my @dirs = split /\//, $test_long;
+        $test_short = $dirs[-1];
+        # unfinished
+    } else {
+        help();
+    }
+} elsif (@ARGV == 2){
+    $branch = $ARGV[0];
+    my @dirs = split /\//, $ARGV[1];
+    $test_short = $dirs[-1];
+}
+
+# Ask user to verify
+print "Will run:\nvimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)\n";
+print "Proceed?\n";
+$/ = "\n"; # if I want to keep this, use readline
+my $ans = <STDIN>;
+exit if ($ans =~ /n|N/);
+
+# Run command
+my @bash_args = ("bash", "-c", "vimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)");
+system (@bash_args);
+# also would work:
+#system ("bash -c \"vimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)\"");
+#`bash -c vimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)`;
+
+
+sub help {
+    print "\nPlease use one of these formats:\n";
+    print "git backport wombats_11.50 SBCL_Backups.test\n";
+    print "git backport wombats_11.50 /usr/local/cpanel/t/qa/SBCL_Backups.test\n";
+}

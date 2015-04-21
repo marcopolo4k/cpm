@@ -9,6 +9,8 @@ if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
     exit;
 }
 
+# Get input - branch name, and maybe a custom name
+# TODO: accept just the jira number (if more than one branch -r result, then ask user to enter full path)
 my $branch_i_want = shift;
 $branch_i_want =~ s!(^/)?($remote/)?!!;
 
@@ -27,16 +29,9 @@ my $ans = <STDIN>;
 exit if ($ans =~ /n|N/);
 system ("git checkout --track -b $short_name $remote/$branch_i_want");
 
-# set upstream
-system ("echo git branch --set-upstream-to=$remote/$branch_i_want $short_name");
-print "Proceed?\n";
-$/ = "\n"; # if I want to keep this, use readline
-my $ans2 = <STDIN>;
-exit if ($ans =~ /n|N/);
-system ("git branch --set-upstream-to=$remote/$branch_i_want $short_name");
-
 
 sub help {
     print "\nPlease enter one or two arguments. Example of two:\n";
-    print "git jira-new bugfix/MW-827-simplify-wait_for_backups-by-using MW-827-simplify-wait_for_backups\n\n";
+    print "git jira-new bugfix/MW-827-simplify-wait_for_backups-by-using MW-827-simplify-wait_for_backups\n";
+    print "\nNote that setting upstream is not needed: ~/.gitconfig use [push] 'default = upstream' instead of simple\n\n";
 }
