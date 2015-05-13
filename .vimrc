@@ -1,14 +1,18 @@
 ".vimrc 
 syntax on 
-set autoindent 
-set smartindent 
+
 set shiftwidth=4 
 set tabstop=4 
-set expandtab 
 set paste
 set nu
 set incsearch
 set hlsearch
+
+" order is important, keep these below the above
+set autoindent 
+set smarttab
+set expandtab 
+
 " Press Space to turn off highlighting and clear any message already displayed.
 :nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 set tags=./tags,tags,/usr/local/cpanel/t/qa/lib/tags
@@ -20,6 +24,8 @@ set ic
 set smartcase
 
 filetype on
+autocmd FileType make set nosmarttab
+autocmd FileType make set noexpandtab
 autocmd FileType tsv set noexpandtab
 autocmd FileType csv set noexpandtab
 

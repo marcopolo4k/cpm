@@ -81,5 +81,5 @@ PROMPT_COMMAND='echo -ne "\033]0;QA ${hostip} - ${cpver}\007"'; export PS1="\u $
 ##cpver=$(cat /usr/local/cpanel/version);cpvsl=$(hostname|rev|cut -d"-" -f1|rev); cpvs=${cpvsl:0:4};h=$(hostname -i);PROMPT_COMMAND='echo -ne "\033]0;LOCAL VM ${cpver} - ${h}\007"'; export PS1="\u ${h}/${cpvs}->${cpver} [\w]# ";
 
 # LOCAL VMWare prompt - VMWare screws that(^) up somehow, and in local connections, I usually have to:
-# PROMPT_COMMAND=''; export PS1="${h}/${cpver]# "
+# PROMPT_COMMAND=''; export PS1="${hostip}/${cpver}# "
 ########################
