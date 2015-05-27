@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Getopt::Long;
+Getopt::Long::Configure('pass_through');
+use File::Basename;
+use Switch;
+
+if ( @ARGV < 1 or 4 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
+    help();
+    exit;
+}
+
+# Setting defaults
+my $dir;
+my $full_dir = '/usr/local/cpanel/t/qa';
+my $remote = 'wombats';
+my $branch;
+my $test_short;
+my $test_long;
+
+GetOptions ("r|remote=s"   => \$remote,
+)
+or die("Error in command line arguments\n");
+
+if (@ARGV == 1) { # this path is unfinished
+    if ($ARGV[0] =~ /:/) {
+        my @args = split /:/, $ARGV[0];
+        set_dir_and_file($args[1]);  
+        # unfinished
+    } else {
+        help();
+    }
+} elsif (@ARGV == 2){
+    $branch = $ARGV[0];
+    set_dir_and_file($ARGV[1]);  
+}
+
+$remote = $remote . '/';
+
+# Ask user to verify
+print "Will run:\nvimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)\n";
+print "Proceed?\n";
+$/ = "\n"; # I should be using readline
+my $ans = <STDIN>;
+exit if ($ans =~ /n|N/);
+
+# Run command
+my @bash_args = ("bash", "-c", "vimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)");
+system (@bash_args);
+# also would work:
+#system ("bash -c \"vimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)\"");
+#`bash -c vimdiff $full_dir/$test_short <(git show ${remote}$branch:$dir/$test_short)`;
+
+
+sub help {
+    print "\ngit backportfrom <branch> <filename_path> [-r remote]\n";
+    print "\nExamples:\n";
+    print "git backportfrom wombats_11.50 SBCL_Backups.test\n";
+    print "git backportfrom wombats_11.50 /usr/local/cpanel/t/qa/SBCL_Backups.test\n";
+    print "git backportfrom -r upstream 11.52 SBCL_Backups.test\n";
+}
+
+sub set_dir_and_file {
+    my ($path_input) = @_;
+    $test_short = basename($path_input);
+    my $dir_input = dirname($path_input);
+
+    switch($dir_input) {
+        case /usr\/local\/cpanel\/t\/qa/ { $dir = 't/qa' }
+        case /^[\/]*t\/qa/ { $dir = 't/qa' }
+        case '.' { $dir = 't/qa' } # default
+        else { 
+            print "[warn] This script wasn't tested for input paths other than t/qa.\n";
+            $dir = $dir_input;
+            $full_dir = $dir;
+        }
+    }
+}
