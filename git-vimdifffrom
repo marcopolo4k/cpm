@@ -55,11 +55,11 @@ system (@bash_args);
 
 
 sub help {
-    print "\ngit backportfrom <branch> <filename_path> [-r remote]\n";
+    print "\ngit vimdifffrom <branch> <filename_path> [-r remote]\n";
     print "\nExamples:\n";
-    print "git backportfrom wombats_11.50 SBCL_Backups.test\n";
-    print "git backportfrom wombats_11.50 /usr/local/cpanel/t/qa/SBCL_Backups.test\n";
-    print "git backportfrom -r upstream 11.52 SBCL_Backups.test\n";
+    print "git vimdifffrom wombats_11.50 SBCL_Backups.test\n";
+    print "git vimdifffrom wombats_11.50 /usr/local/cpanel/t/qa/SBCL_Backups.test\n";
+    print "git vimdifffrom -r upstream 11.52 SBCL_Backups.test\n";
 }
 
 sub set_dir_and_file {
