@@ -1,0 +1,11 @@
+# Linux aliases, variables, and functions
+
+export HISTTIMEFORMAT="%d/%m/%y %T "
+
+alias diff='diff -y --suppress-common-lines'; alias less='\less -IR'; alias grep='grep --color'; 
+alias ls='\ls -F --color'; alias lsd='ls | grep \/$'; alias lsdl='ls -lrth | grep ^d'; alias lsp='ls -d -1 $PWD/**'; alias here='\find $(pwd) -maxdepth 1';
+alias lf='echo `\ls -lrt|\tail -1|awk "{print \\$9}"`'; alias lf2='echo `\ls -lrt|\tail -2|awk "{print \\$9}"|head -1`';
+alias perms=awk\ \'BEGIN\{dir\=DIR?DIR:ENVIRON[\"PWD\"]\;l=split\(dir\,parts,\"/\"\)\;last=\"\"\;for\(i=1\;i\<l+1\;i++\)\{d=last\"/\"parts\[i\]\;gsub\(\"//\",\"/\",d\)\;system\(\"stat\ --printf\ \\\"Thu\\\t%u\\\t%g\\\t\\\"\ \\\"\"d\"\\\"\;\ echo\ -n\ \\\"\ \\\"\;ls\ -ld\ \\\"\"d\"\\\"\"\)\;last=d\}\}\'
+alias localips='ips';
+#function efind() { find "$1" -regextype egrep -regex "$2" ; } ;
+function cpbak() { cp -v $@ $@.cpbak.$(date +20140703).$(date +13).$(date +33);}

@@ -1,0 +1,21 @@
+# LOCAL VM Aliases
+# make sure dev is eth0, sometimes it's 1.  The IP has been same for a while
+alias routes='route add 10.4.0.1/32 dev eth0; route add default gw 10.4.0.1 eth0'
+
+########################
+# PROMPT COMMAND AND PS1
+# QA:
+hostip=$(hostname -i);
+cpver=$(cat /usr/local/cpanel/version);
+arch1=$( perl -lane 'for (@F){$n = $1 if ($_=~/(\d+\.?\d{0,2})/)}; print "Cent$n"; exit;' /etc/*-release )
+arch2=$( uname -m )
+PROMPT_COMMAND='echo -ne "\033]0;QA ${hostip} - ${cpver}\007"'; export PS1="\u ${hostip}/${cpver}/${arch1}${arch2} [\w]# ";
+
+# LOCAL VM's
+#cpver=$(cat /usr/local/cpanel/version);cpvsl=$(cat /var/cpanel/updatelogs/summary.log | egrep -o '([[:digit:]]{2}\.){2}' | head -1 | cut -d. -f1,2); cpvs=${cpvsl:0:5};h=$(hostname -i);PROMPT_COMMAND='echo -ne "\033]0;LOCAL VM ${cpver} - ${h}\007"'; export PS1="\u ${h}/${cpvs}->${cpver} [\w]# ";
+## ^ If orig version is not in the history file, but it's in the hostname, then use the following:
+##cpver=$(cat /usr/local/cpanel/version);cpvsl=$(hostname|rev|cut -d"-" -f1|rev); cpvs=${cpvsl:0:4};h=$(hostname -i);PROMPT_COMMAND='echo -ne "\033]0;LOCAL VM ${cpver} - ${h}\007"'; export PS1="\u ${h}/${cpvs}->${cpver} [\w]# ";
+
+# LOCAL VMWare prompt - VMWare screws that(^) up somehow, and in local connections, I usually have to:
+# PROMPT_COMMAND=''; export PS1="${hostip}/${cpver}# "
+########################
