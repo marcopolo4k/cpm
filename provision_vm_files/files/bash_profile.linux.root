@@ -1,5 +1,0 @@
-# Linux aliases, variables, and functions
-export HISTTIMEFORMAT="%d/%m/%y %T "
-# requires root
-alias ifm='ifconfig |egrep -o "venet...|lo|eth[^ ]*|ppp|:(.{1,3}\.){3}.{1,3}"|grep -v 255|uniq';
-alias ips=$(ifconfig | awk '/inet/ {if ($2!~/127.0|:$/) print $2}' | awk -F: '{print "echo "$2}');
