@@ -1,6 +1,6 @@
 ~/.ssh/animal
-bash_profile.intdev
-bash_profile.linux.root
-bash_profile.linux.user
-bash_profile.qa
+bash_profile.01.intdev
+bash_profile.01.linux.root
+bash_profile.02.linux.user
+bash_profile.04.qa
 .vimrc

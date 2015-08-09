@@ -19,7 +19,12 @@ set statusline+=%F\ %P
 :nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 " center screen after search
 :nnoremap n nzz
-set tags=./tags,tags,/usr/local/cpanel/t/qa/lib/tags
+:nnoremap N Nzz
+:nnoremap * *zz
+:nnoremap # #zz
+:nnoremap g* g*zz
+:nnoremap g# g#zz
+set tags=./tags,tags,/Users/marco/dev/projects/idev-selenium/tags
 
 let perl_include_pod = 1
 

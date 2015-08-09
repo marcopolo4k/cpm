@@ -9,10 +9,15 @@ use Getopt::Long;
 # 2. get the file in memory - a var
 # 3. compare what I'm about to put with what's in the file.
 # 4. overwrite(? i guess i have to) the common parts, leaving the original text in there.
-# ^ no, just use a bash_custom file
+# ^ no, just use a bash_auto file?
 
 my $system = $ARGV[0];
 my $user = $ARGV[1] // 'root';
+
+if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) { 
+    help();
+    exit;
+}
 
 my $help;
 
@@ -27,23 +32,26 @@ chomp(my @files = `cat system.plans/${user}\@$system`);
 my $dir_for_files = 'provision_files';
 make_tmp_dir();
 
+# TODO: use CPANEL by default if system is an IP address without a system file
 my $sys_ip = '';
-if ( $system =~ /\d/ ) {
-    print "(debug) in ip section, system: [$system]\n"; 
+if ( $system =~ /(\d{1,3}\.){3}\d{1,3}/ ) {
     $sys_ip = $system;
-    `echo "hostip=$sys_ip" >> $dir_for_files/.bash_profile`;
+    `echo "hostip=$sys_ip" >> $dir_for_files/.bash_custom`;
 }
 
 my $use_ssh_key = '';
+my $use_port = '';
 foreach my $file (sort @files) {
     if ( $file =~ /\.ssh/ ) {
         if ( $file =~ /(.*)\.pub$/ ) {
             $file = $1;
         }
         $use_ssh_key = "-i $file";
+    } elsif ( $file =~ /port:(\d*)/) {
+        $use_port = "-P $1";
     } elsif ( $file =~ /bash_profile/) {
-        `echo '\n# $file' >> $dir_for_files/.bash_profile`;
-        `cat files/$file >> $dir_for_files/.bash_profile`;
+        `echo '\n# $file' >> $dir_for_files/.bash_custom`;
+        `cat files/$file >> $dir_for_files/.bash_custom`;
     } else {
         `cp files/$file $dir_for_files/`;
     }
@@ -53,7 +61,8 @@ foreach my $file (sort @files) {
 
 `tar -cvf totransfer.tar $dir_for_files`;
 `rm -rf $dir_for_files`;
-`scp $use_ssh_key totransfer.tar ${user}\@$system:~/transferred_by_provision_script.tar`;
+`scp $use_ssh_key $use_port totransfer.tar ${user}\@$system:~/transferred_by_provision_script.tar`;
+`scp $use_ssh_key $use_port expand.pl ${user}\@$system:~/provision_expand.pl`;
 
 
 
@@ -64,3 +73,9 @@ sub make_tmp_dir {
     `mkdir $dir_for_files`;
 }
 
+sub help {
+    print "\nPlease enter one or two arguments:\n";
+    print "provision.pl <system_name|ip_address> [username]\n\n";
+    print "/system.plans - list of systems' plans\n";
+    print "/files - list of files to include in those plans\n\n";
+}
