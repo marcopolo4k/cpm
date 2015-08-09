@@ -2,16 +2,23 @@
 use strict;
 use warnings;
 
-if ( @ARGV != 1 ) { die "Please enter the Jira number as the command argument"; };
+# using this just to check out local branches from their jira number (reason for removal of -r)?
+
+if ( @ARGV != 1 ) { die "Please enter the Jira number as the command argument\n"; };
 
 my $jira_num = shift;
 
-my $branch = `git branch -r | grep MW-$jira_num | head -1`;
- print "(debug) branch: $branch\n";
+system("git fetch");
+my $branch = `git branch | grep MW-$jira_num | head -1 | awk '{print \$NF}'`;
+# print "(debug) branch: [$branch]\n";
+
+if ( !defined($branch) || $branch eq '' ){
+    die "Branch not found. Please enter the Jira number as the command argument" 
+}
 
 my ($short_name) = $branch =~ m!(MW-[^/]*?$)!;
- print "(debug) short_name: $short_name\n";
- print "(debug) branch: $branch\n";
+# print "(debug) short_name: [$short_name]\n";
+# print "(debug) branch: [$branch]\n";
 
 system ("git fetch wombats");
 system ("echo git checkout --track -b $short_name $branch");

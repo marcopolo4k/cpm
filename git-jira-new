@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+# after you've created a new branch from jira, this sets up the new branch locally
+
 my $remote = 'wombats';
 
 if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
@@ -21,13 +23,14 @@ if ( !defined $short_name ) {
 }
 
 # create the branch
-system ("git fetch $remote");
-system ("echo git checkout --track -b $short_name $remote/$branch_i_want");
+# system ("git fetch $remote"); # this probably isn't needed if I'm fetching origin
+system ("git fetch origin");
+system ("echo git checkout --track -b $short_name origin/$branch_i_want");
 print "Proceed?\n";
 $/ = "\n"; # if I want to keep this, use readline
 my $ans = <STDIN>;
 exit if ($ans =~ /n|N/);
-system ("git checkout --track -b $short_name $remote/$branch_i_want");
+system ("git checkout --track -b $short_name origin/$branch_i_want");
 
 
 sub help {

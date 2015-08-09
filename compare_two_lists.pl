@@ -29,17 +29,34 @@ for (@list2) {
 # establish first group to compare 2nd against
 my %first = map { $_ => 1 } @list1_pruned;
 
-# # In Common
-# print "\nItems in both $in2 and $in1:\n";
-# my @incommon = grep {match_line($_)} @list2_pruned;
-# print " $_\n" for @incommon;
-
-# Differences
-print "\n\nItems in $in2, missing from $in1:\n";
-my @missing = grep {!match_line($_)} @list2_pruned;
-print " $_\n" for @missing;
-
+print_in_common($in1, $in2, @list2_pruned);
+print_differences($in1, $in2, @list2_pruned);
+print_differences_2($in1, $in2, @list2_pruned);
 print "\n";
+
+sub print_in_common {
+    my ($in1, $in2, @list2_pruned) = @_;
+    my @incommon = grep {match_line($_)} @list2_pruned;
+    print "\nItems in both $in2 and $in1 (" . scalar(@incommon) . "):\n";
+    print " $_\n" for @incommon;
+}
+
+# not sure about this one yet
+sub print_differences {
+    my ($in1, $in2, @list2_pruned) = @_;
+    my @missing = grep {!match_line($_)} @list2_pruned;
+    print "\n\nItems in $in2, missing from $in1 (" . scalar(@missing) . "):\n";
+    print " $_\n" for @missing;
+}
+
+# this is all broken
+sub print_differences_2 {
+    my ($in1, $in2, @list1_pruned) = @_;
+    print @list1_pruned;
+    my @missing = grep {!match_line($_)} @list1_pruned;
+    print "\n\nItems in $in1, missing from $in2 (" . scalar(@missing) . "):\n";
+    print " $_\n" for @missing;
+}
 
 sub match_line {
     my ($line) = @_;
