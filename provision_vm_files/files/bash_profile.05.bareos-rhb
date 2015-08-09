@@ -1,0 +1,8 @@
+## For a RedHat-based bare operating system
+########################
+# PROMPT COMMAND AND PS1
+# QA:
+arch1=$( perl -lane 'for (@F){$n = $1 if ($_=~/(\d+\.?\d{0,2})/)}; print "Cent$n"; exit;' /etc/*-release )
+arch2=$( uname -m )
+PROMPT_COMMAND='echo -ne "\033]0;QA ${hostip}\007"'; export PS1="\u ${hostip}/${arch1}${arch2} [\w]# ";
+########################

@@ -1,0 +1,24 @@
+## cPanel VM's
+c=/usr/local/cpanel; v=/var/cpanel; a=/usr/local/apache; 
+ea=$c/logs/easy/apache; conf=$a/conf/httpd.conf; ul=$v/updatelogs;
+hn=$(hostname); hip=$(dig +short $hn);
+
+# cPanel aliases
+alias vhost='grep -B1 "Name $dom" $conf|head -1; perl -ne "print if /$dom/ .. /Host>$/" $conf; echo "Curl: "; curl $dom | head'
+alias ealogs=$(\ls -lrt $ea | awk -v p=$ea '{if ($5>5000) print "ls -lah "p"/"$NF}'); alias ealog=ealogs;
+alias eapre='curl https://raw.githubusercontent.com/cPanelTechs/TechScripts/master/ea-precheck.sh | sh'
+alias ssl='openssl x509 -noout -text -in'
+function sslshort() { openssl x509 -noout -text -in "$1" | egrep "Issuer|Subject:|^[ ]*Not"; }
+alias sfiles='grep "(\"/" /root/cptestm/strace.cpsrvd | cut -d"\"" -f2 | egrep -v "000|<|---|::|.pm$|.pmc$|.so(.?)*$|.bs$|\.py$|\.pyc|^.$" | uniq | less -I'
+alias sfile2='grep -o "[^ ]*(\"/[^ ]*" /root/cptestm/strace.cpsrvd | egrep -v "000|<|---|::|\.pm|\.pmc|\.so(.?)|\.bs|\.py$|\.pyc|^.$" | uniq | less'
+alias rp='$c/bin/rebuild_phpconf --current'
+
+########################
+# PROMPT COMMAND AND PS1
+# QA:
+hostip=$(hostname -i);
+cpver=$(cat /usr/local/cpanel/version);
+arch1=$( perl -lane 'for (@F){$n = $1 if ($_=~/(\d+\.?\d{0,2})/)}; print "Cent$n"; exit;' /etc/*-release )
+arch2=$( uname -m )
+PROMPT_COMMAND='echo -ne "\033]0;QA ${hostip} - ${cpver}\007"'; export PS1="\u ${hostip}/${cpver}/${arch1}${arch2} [\w]# ";
+########################
