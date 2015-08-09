@@ -1,4 +1,4 @@
-## User
+# User
 # Linux aliases, variables, and functions
 
 export HISTTIMEFORMAT="%d/%m/%y %T "

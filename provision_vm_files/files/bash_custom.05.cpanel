@@ -1,4 +1,4 @@
-## cPanel VM's
+# cPanel VM's
 c=/usr/local/cpanel; v=/var/cpanel; a=/usr/local/apache; 
 ea=$c/logs/easy/apache; conf=$a/conf/httpd.conf; ul=$v/updatelogs;
 hn=$(hostname); hip=$(dig +short $hn);
@@ -18,7 +18,7 @@ alias rp='$c/bin/rebuild_phpconf --current'
 # QA:
 hostip=$(hostname -i);
 cpver=$(cat /usr/local/cpanel/version);
-arch1=$( perl -lane 'for (@F){$n = $1 if ($_=~/(\d+\.?\d{0,2})/)}; print "Cent$n"; exit;' /etc/*-release )
+arch1=$( perl -lane 'for (@F){$n = $1 if ($_=~/(\d+\.?\d{0,2})/)}; print "Cent$n"; exit;' /etc/redhat-release )
 arch2=$( uname -m )
 PROMPT_COMMAND='echo -ne "\033]0;QA ${hostip} - ${cpver}\007"'; export PS1="\u ${hostip}/${cpver}/${arch1}${arch2} [\w]# ";
 ########################

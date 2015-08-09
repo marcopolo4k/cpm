@@ -1,4 +1,4 @@
-## QA aliases
+# QA aliases
 alias tiers='for x in branch-build.dev qa-build next httpupdate; do echo -e "\n$ curl --connect-timeout 2 -sm4 http://${x}.cpanel.net/cpanelsync/TIERS | sort -n" && curl --connect-timeout 2 -sm4 http://${x}.cpanel.net/cpanelsync/TIERS | sort -n; done'
 alias ver='cat $c/version'
 ## for dev sandbox

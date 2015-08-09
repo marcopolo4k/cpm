@@ -1,4 +1,4 @@
-## service specific aliases
+# service specific aliases
 function mysqlerr() {
     custom_mysql_log=$(\grep '^log-error' /etc/my.cnf | cut -d= -f2);
     if [ "$custom_mysql_log" ];

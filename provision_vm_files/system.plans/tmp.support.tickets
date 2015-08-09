@@ -1,4 +1,4 @@
-# bash_profile specific to store VM
+# bash_custom specific to store VM
 g='/home/store/git'
 l='/home/store/git/commonlib'
 s='/home/store/git/cpanel-store'

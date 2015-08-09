@@ -3,74 +3,80 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-# goal: put files on a new vm
-# problem: files might already exist. so currently im putting the existing file in a local folder??  bad solution.  i need to:
-# 1. make a backup of the file
-# 2. get the file in memory - a var
-# 3. compare what I'm about to put with what's in the file.
-# 4. overwrite(? i guess i have to) the common parts, leaving the original text in there.
-# ^ no, just use a bash_auto file?
-
 my $system = $ARGV[0];
 my $user = $ARGV[1] // 'root';
-
-if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) { 
+if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
     help();
     exit;
 }
-
 my $help;
-
-GetOptions ("system=s"   => \$system,
-            "user=s"   => \$user,
-            "help"   => \$help
-)
-or die("Error in command line arguments\n");
-
-chomp(my @files = `cat system.plans/${user}\@$system`);
+GetOptions(
+    "system=s" => \$system,
+    "user=s"   => \$user,
+    "help"     => \$help
+) or die("Error in command line arguments\n");
 
 my $dir_for_files = 'provision_files';
 make_tmp_dir();
 
-# TODO: use CPANEL by default if system is an IP address without a system file
 my $sys_ip = '';
-if ( $system =~ /(\d{1,3}\.){3}\d{1,3}/ ) {
-    $sys_ip = $system;
-    `echo "hostip=$sys_ip" >> $dir_for_files/.bash_custom`;
-}
+set_sysip_prompt() if ( $system =~ /(\d{1,3}\.){3}\d{1,3}/ );
 
+chomp( my @files = `cat system.plans/${user}\@$system` );
 my $use_ssh_key = '';
-my $use_port = '';
-foreach my $file (sort @files) {
+my $use_port    = '';
+foreach my $file ( sort @files ) {
     if ( $file =~ /\.ssh/ ) {
+        system( "cp ${file}.pub $dir_for_files/ssh_key ");
         if ( $file =~ /(.*)\.pub$/ ) {
             $file = $1;
         }
         $use_ssh_key = "-i $file";
-    } elsif ( $file =~ /port:(\d*)/) {
+    }
+    elsif ( $file =~ /port:(\d*)/ ) {
         $use_port = "-P $1";
-    } elsif ( $file =~ /bash_profile/) {
-        `echo '\n# $file' >> $dir_for_files/.bash_custom`;
-        `cat files/$file >> $dir_for_files/.bash_custom`;
-    } else {
-        `cp files/$file $dir_for_files/`;
+    }
+    elsif ( $file =~ /bash_custom/ ) {
+        system( "echo '\n# $file' >> $dir_for_files/.bash_custom" );
+        system( "cat files/$file >> $dir_for_files/.bash_custom" );
+    }
+    elsif ( $file =~ /(.*):SNR:(.*):(.*)/ ) { # so can't use colons in the regex
+        my ( $filename, $search, $replace ) = ( $1, $2, $3 );
+        system( "cp files/$filename $dir_for_files/" );
+        replace_text_in_file( $filename, $search, $replace );
+    }
+    else { # non-default files (that won't end up in ~) above here
+        system( "cp files/$file $dir_for_files/" );
     }
 }
 
-
-
-`tar -cvf totransfer.tar $dir_for_files`;
-`rm -rf $dir_for_files`;
+system( 'tar', '-cvf', 'totransfer.tar', $dir_for_files );
 `scp $use_ssh_key $use_port totransfer.tar ${user}\@$system:~/transferred_by_provision_script.tar`;
 `scp $use_ssh_key $use_port expand.pl ${user}\@$system:~/provision_expand.pl`;
 
 
-
+# subroutines
 sub make_tmp_dir {
-    if ( -d $dir_for_files ) {
-        `mv $dir_for_files $dir_for_files.bak`;
+    if ( -d $dir_for_files ) { # just in case of oops
+        system( 'mv', $dir_for_files, "${dir_for_files}.bak" );
     }
-    `mkdir $dir_for_files`;
+    system( 'mkdir', $dir_for_files );
+}
+
+sub set_sysip_prompt {
+    # TODO: use CPANEL by default if system is an IP address without a system file
+    $sys_ip = $system;
+    open( my $fh, '>>', "$dir_for_files/.bash_custom" ) or die "Couldn't open file $!";
+    print $fh "hostip=$sys_ip\n";
+}
+
+sub replace_text_in_file {
+    my ( $filename, $search, $replace ) = @_;
+    use Path::Tiny qw(path);
+    my $file = path( "$dir_for_files/$filename" );
+    my $data = $file->slurp_utf8;
+    $data =~ s/$search/$replace/g;
+    $file->spew_utf8( $data );
 }
 
 sub help {
@@ -79,3 +85,7 @@ sub help {
     print "/system.plans - list of systems' plans\n";
     print "/files - list of files to include in those plans\n\n";
 }
+
+# cleanup
+system( 'rm', '-rf', $dir_for_files );
+system( 'rm', '-rf', 'totransfer.tar' );
