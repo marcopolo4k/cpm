@@ -1,6 +1,7 @@
 # IntDev VM's
 # perl INC path update
 export PERL5LIB=$PERL5LIB:$HOME/lib:$HOME/commonlib:$HOME/cpanel:$HOME/ccp-client-lib:$HOME/git/idev-critic/lib
+
 _myfails() {
     local cur=${COMP_WORDS[COMP_CWORD]}
     local prev=${COMP_WORDS[COMP_CWORD-1]}
@@ -13,5 +14,4 @@ _myfails() {
         COMPREPLY=($(compgen -W "$(myfails)" -- "$cur"))
     fi  
 }
- 
 complete -F _myfails myfails

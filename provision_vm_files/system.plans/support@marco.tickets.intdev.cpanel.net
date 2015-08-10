@@ -2,4 +2,4 @@
 bash_custom.02.linux.user
 bash_custom.04.qa
 bash_custom.01.intdev
-.vimrc
+.vimrc:SNR:set tags.*:set tags=./tags,tags

@@ -3,4 +3,4 @@ bash_custom.01.intdev
 bash_custom.01.linux.root
 bash_custom.02.linux.user
 bash_custom.04.qa
-.vimrc
+.vimrc:SNR:set tags.*:set tags=./tags,tags

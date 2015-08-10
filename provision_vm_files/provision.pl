@@ -19,7 +19,6 @@ GetOptions(
 my $dir_for_files = 'provision_files';
 make_tmp_dir();
 
-my $sys_ip = '';
 set_sysip_prompt() if ( $system =~ /(\d{1,3}\.){3}\d{1,3}/ );
 
 chomp( my @files = `cat system.plans/${user}\@$system` );
@@ -43,9 +42,9 @@ foreach my $file ( sort @files ) {
     elsif ( $file =~ /(.*):SNR:(.*):(.*)/ ) { # so can't use colons in the regex
         my ( $filename, $search, $replace ) = ( $1, $2, $3 );
         system( "cp files/$filename $dir_for_files/" );
-        replace_text_in_file( $filename, $search, $replace );
+        replace_text_in_file( $dir_for_files, $filename, $search, $replace );
     }
-    else { # non-default files (that won't end up in ~) above here
+    else { # default files going to ~
         system( "cp files/$file $dir_for_files/" );
     }
 }
@@ -65,15 +64,15 @@ sub make_tmp_dir {
 
 sub set_sysip_prompt {
     # TODO: use CPANEL by default if system is an IP address without a system file
-    $sys_ip = $system;
+    my $sys_ip = $system;
     open( my $fh, '>>', "$dir_for_files/.bash_custom" ) or die "Couldn't open file $!";
     print $fh "hostip=$sys_ip\n";
 }
 
 sub replace_text_in_file {
-    my ( $filename, $search, $replace ) = @_;
+    my ( $dir, $filename, $search, $replace ) = @_;
     use Path::Tiny qw(path);
-    my $file = path( "$dir_for_files/$filename" );
+    my $file = path( "$dir/$filename" );
     my $data = $file->slurp_utf8;
     $data =~ s/$search/$replace/g;
     $file->spew_utf8( $data );
