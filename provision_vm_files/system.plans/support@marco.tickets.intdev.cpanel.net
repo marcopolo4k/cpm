@@ -2,4 +2,5 @@
 bash_custom.02.linux.user
 bash_custom.04.qa
 bash_custom.01.intdev
+bash_custom.06.tickets
 .vimrc:SNR:set tags.*:set tags=./tags,tags

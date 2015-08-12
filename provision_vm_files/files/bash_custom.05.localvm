@@ -5,7 +5,7 @@ alias routes='route add 10.4.0.1/32 dev eth0; route add default gw 10.4.0.1 eth0
 ########################
 # PROMPT COMMAND AND PS1
 # QA:
-hostip=$(hostname -i);
+if [ ! $hostip ]; then hostip=$(hostname -i); fi;
 cpver=$(cat /usr/local/cpanel/version);
 # arch1=$( perl -lane 'for (@F){$n = $1 if ($_=~/(\d+\.?\d{0,2})/)}; print "Cent$n"; exit;' /etc/*-release )
 # arch2=$( uname -m )

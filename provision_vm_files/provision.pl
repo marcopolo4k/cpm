@@ -2,62 +2,76 @@
 use strict;
 use warnings;
 use Getopt::Long;
+use File::Slurp;
 
-my $system = $ARGV[0];
-my $user = $ARGV[1] // 'root';
-if ( @ARGV < 1 or 2 < @ARGV or $ARGV[0] =~ /^-h$|^-help$|^--help$/ ) {
-    help();
-    exit;
-}
 my $help;
+my $system;
+my $user;
+my $transfer = 1;
+help() if ( @ARGV < 1 or 5 < @ARGV );
 GetOptions(
     "system=s" => \$system,
     "user=s"   => \$user,
+    "transfer!"   => \$transfer,
     "help"     => \$help
 ) or die("Error in command line arguments\n");
+help() if ( defined $help );
+$system = $ARGV[0] if ( ! defined $system );
+if ( ! defined $user || $user eq '' ) {
+    if ( defined $ARGV[1] && $ARGV[1] !~ /\./ ) {
+        $user = $ARGV[1];
+    }else{
+        $user = 'root';
+    }
+}
 
-my $dir_for_files = 'provision_files';
+my $dir_for_files = 'tmp/provision_files';
 make_tmp_dir();
 
 set_sysip_prompt() if ( $system =~ /(\d{1,3}\.){3}\d{1,3}/ );
 
-chomp( my @files = `cat system.plans/${user}\@$system` );
-my $use_ssh_key = '';
-my $use_port    = '';
+chomp( my @files = read_file( "system.plans/${user}\@$system" ) );
+my @use_ssh_key;
+my @use_port;
 foreach my $file ( sort @files ) {
+    $file =~ s/~/$ENV{HOME}/g;
     if ( $file =~ /\.ssh/ ) {
-        system( "cp ${file}.pub $dir_for_files/ssh_key ");
+        system( 'cp', "${file}.pub", "$dir_for_files/ssh_key");
         if ( $file =~ /(.*)\.pub$/ ) {
             $file = $1;
         }
-        $use_ssh_key = "-i $file";
+        @use_ssh_key = ( '-i', $file );
     }
     elsif ( $file =~ /port:(\d*)/ ) {
-        $use_port = "-P $1";
+        @use_port = ( '-P', $1 );
     }
     elsif ( $file =~ /bash_custom/ ) {
-        system( "echo '\n# $file' >> $dir_for_files/.bash_custom" );
-        system( "cat files/$file >> $dir_for_files/.bash_custom" );
+        my $file_part = read_file( "files/$file" );
+        write_file( "$dir_for_files/.bash_custom", {append => 1 }, "\n# $file\n" . $file_part );
     }
     elsif ( $file =~ /(.*):SNR:(.*):(.*)/ ) { # so can't use colons in the regex
         my ( $filename, $search, $replace ) = ( $1, $2, $3 );
         system( "cp files/$filename $dir_for_files/" );
         replace_text_in_file( $dir_for_files, $filename, $search, $replace );
     }
-    else { # default files going to ~
+    else { # default files going to user's home dir on destination
         system( "cp files/$file $dir_for_files/" );
     }
 }
 
 system( 'tar', '-cvf', 'totransfer.tar', $dir_for_files );
-`scp $use_ssh_key $use_port totransfer.tar ${user}\@$system:~/transferred_by_provision_script.tar`;
-`scp $use_ssh_key $use_port expand.pl ${user}\@$system:~/provision_expand.pl`;
+if ( $transfer ) {
+    my $place = "${user}\@$system";
+    system( 'scp', '-q', @use_ssh_key, @use_port, 'totransfer.tar', "$place:transferred_by_provision_script.tar" );
+    system( 'scp', '-q', @use_ssh_key, @use_port, 'expand.pl', "$place:provision_expand.pl" );
+}
 
 
 # subroutines
 sub make_tmp_dir {
-    if ( -d $dir_for_files ) { # just in case of oops
-        system( 'mv', $dir_for_files, "${dir_for_files}.bak" );
+    if ( -d $dir_for_files ) { # transfer will keep this tmp files dir
+        system( 'rm', '-rvf', "${dir_for_files}.bak" );
+        system( 'mv', '-v', $dir_for_files, "${dir_for_files}.bak" );
     }
     system( 'mkdir', $dir_for_files );
 }
@@ -83,8 +97,9 @@ sub help {
     print "provision.pl <system_name|ip_address> [username]\n\n";
     print "/system.plans - list of systems' plans\n";
     print "/files - list of files to include in those plans\n\n";
+    exit;
 }
 
 # cleanup
-system( 'rm', '-rf', $dir_for_files );
-system( 'rm', '-rf', 'totransfer.tar' );
+system( 'rm', '-rf', $dir_for_files ) if ( $transfer );
+system( 'rm', '-rf', 'totransfer.tar' ) if ( $transfer );
