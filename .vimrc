@@ -43,3 +43,8 @@ autocmd FileType csv set noexpandtab
 " experimental
 " let @c = 'mp{j^V}}kI# `p'
 " let @u = '{j}klx`p'
+"Better window navigation
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
