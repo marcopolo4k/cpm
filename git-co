@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+# post git checkout
+
+my $top_dir_in_git = `git rev-parse --show-toplevel`;
+system("
+cd $top_dir_in_git
+ctags --recurse --fields=+l --totals --exclude=blib --extra=+q --exclude='*~' --languages=Perl --langmap=Perl:+.t.test
+cd - 
+");
