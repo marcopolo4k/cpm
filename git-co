@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-# post git checkout
+print "After checkout, updating ctags:\n"; 
 
 my $top_dir_in_git = `git rev-parse --show-toplevel`;
 system("
