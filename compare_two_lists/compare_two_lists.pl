@@ -13,7 +13,7 @@ my @list2 = `cat $in2`;
 
 my @list1_pruned; # array of strings
 for (@list1) {
-    chomp(my $l1 = lc($_));
+    chomp(my $l1 = $_);
     # $l1 =~ s/=.*//;
     # $l1 =~ s/max//;
     # $l1 =~ s/^_//g;
@@ -22,13 +22,13 @@ for (@list1) {
 
 my @list2_pruned; # array of strings
 for (@list2) {
-    chomp(my $l2 = lc($_));
+    chomp(my $l2 = $_);
     # $l2 =~ s/domain(s)*//;
     push(@list2_pruned, $l2);
 }
 
 # establish first group to compare 2nd against
-my %first = map { $_ => 1 } @list1_pruned;
+my %first = map { lc($_) => 1 } @list1_pruned;
 
 print_in_common($in1, $in2, @list2_pruned);
 print_differences($in1, $in2, @list2_pruned);
@@ -53,5 +53,5 @@ sub print_differences {
 sub match_line {
     my ($line) = @_;
     my @words = split(/ /, $line);
-    return grep { $first{$_} } @words;
+    return grep { $first{lc($_)} } @words;
 }
