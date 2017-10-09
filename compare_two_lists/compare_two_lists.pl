@@ -24,10 +24,12 @@ my @list2_pruned; # array of strings
 for (@list2) {
     chomp(my $l2 = $_);
     # $l2 =~ s/domain(s)*//;
+	s/\s+// for (@list2_pruned);
     push(@list2_pruned, $l2);
 }
 
 # establish first group to compare 2nd against
+s/\s+// for (@list1_pruned);
 my %first = map { lc($_) => 1 } @list1_pruned;
 
 print_in_common($in1, $in2, @list2_pruned);
@@ -36,6 +38,7 @@ print "\n";
 
 sub print_in_common {
     my ($in1, $in2, @list2_pruned) = @_;
+
     my @incommon = grep {match_line($_)} @list2_pruned;
     print "\nItems in both $in2 and $in1 (" . scalar(@incommon) . "):\n";
     print " $_\n" for @incommon;
